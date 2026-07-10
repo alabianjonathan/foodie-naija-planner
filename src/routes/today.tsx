@@ -107,6 +107,92 @@ function Today() {
       </div>
 
       <div className="h-6" />
+
+      <Dialog open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
+        <DialogContent className="max-w-md rounded-3xl">
+          {open && (
+            <>
+              <DialogHeader className="text-left">
+                <div className="flex items-center gap-3">
+                  <div className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${open.meal.gradient} flex items-center justify-center text-2xl`}>{open.meal.emoji}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-brand font-semibold">{open.slot}</p>
+                    <DialogTitle className="font-display text-lg leading-tight">{open.meal.name}</DialogTitle>
+                    <DialogDescription className="text-xs">{open.meal.portion} · {open.meal.category}</DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-2xl bg-brand/5 p-3 text-center">
+                  <Flame className="h-4 w-4 text-brand mx-auto" />
+                  <p className="text-[10px] text-muted-foreground mt-1">Calories</p>
+                  <p className="text-sm font-semibold">{open.meal.caloriesMin}–{open.meal.caloriesMax}</p>
+                </div>
+                <div className="rounded-2xl bg-leaf/5 p-3 text-center">
+                  <Leaf className="h-4 w-4 text-leaf mx-auto" />
+                  <p className="text-[10px] text-muted-foreground mt-1">Health</p>
+                  <p className="text-sm font-semibold">{open.meal.healthScore}/10</p>
+                </div>
+                <div className="rounded-2xl bg-warm/10 p-3 text-center">
+                  <Clock className="h-4 w-4 text-charcoal mx-auto" />
+                  <p className="text-[10px] text-muted-foreground mt-1">Cook time</p>
+                  <p className="text-sm font-semibold">{open.meal.cookingTimeMin}m</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground mb-2">Nutrition breakdown</p>
+                <div className="space-y-2">
+                  {[
+                    { label: "Protein", val: open.meal.protein },
+                    { label: "Carbs", val: open.meal.carbs },
+                    { label: "Fat", val: open.meal.fat },
+                    { label: "Fiber", val: open.meal.fiber },
+                  ].map((n) => {
+                    const w = n.val === "High" ? "w-full" : n.val === "Medium" ? "w-2/3" : "w-1/3";
+                    return (
+                      <div key={n.label}>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="font-medium">{n.label}</span>
+                          <span className="text-muted-foreground">{n.val}</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                          <div className={`h-full bg-brand ${w}`} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-secondary/50 p-3">
+                <p className="text-xs font-semibold mb-1">Why this pick</p>
+                <p className="text-xs text-charcoal/80 leading-relaxed">{open.reason || open.meal.healthNote}</p>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div>
+                  <p className="text-muted-foreground">Cook cost</p>
+                  <p className="font-semibold text-sm">₦{open.meal.cookMin.toLocaleString()}–{open.meal.cookMax.toLocaleString()}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-muted-foreground">Order</p>
+                  <p className="font-semibold text-sm">₦{open.meal.orderMin.toLocaleString()}–{open.meal.orderMax.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <Link
+                to="/meal/$id"
+                params={{ id: open.meal.id }}
+                className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-brand text-brand-foreground py-3 text-sm font-medium"
+              >
+                View full meal <ArrowRight className="h-4 w-4" />
+              </Link>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </PhoneShell>
   );
 }
