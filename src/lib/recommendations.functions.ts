@@ -64,15 +64,17 @@ ${JSON.stringify(mealCatalog)}
 Task: Pick exactly 3 meals for TODAY — one Breakfast, one Lunch, one Dinner — that best fit the user's budget, goal, restriction and household size. Prefer meals whose bestTime matches the slot. Give a short warm one-sentence summary and a one-line reason per pick (mention cost or fit to their goal). Never invent meal IDs.`;
 
     try {
-      const { experimental_output } = await generateText({
+      const { output } = await generateText({
         model: createLovableAiGatewayProvider(key)("google/gemini-2.5-flash"),
-        experimental_output: Output.object({ schema: ResultSchema }),
+        output: Output.object({ schema: ResultSchema }),
         prompt,
       });
-      // Filter to valid meal IDs to be safe
       const validIds = new Set(meals.map((m) => m.id));
-      experimental_output.picks = experimental_output.picks.filter((p) => validIds.has(p.mealId));
-      return experimental_output;
+      const filtered: DailyRecommendation = {
+        summary: output.summary,
+        picks: output.picks.filter((p) => validIds.has(p.mealId)),
+      };
+      return filtered;
     } catch (err) {
       if (NoObjectGeneratedError.isInstance(err)) {
         try {
