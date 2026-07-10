@@ -19,10 +19,11 @@ function Today() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState<{ meal: Meal; slot: string; reason: string } | null>(null);
 
-  const run = async () => {
+  const run = async (avoidCurrent = false) => {
     setLoading(true);
     try {
-      const r = await generate();
+      const avoidIds = avoidCurrent && rec ? rec.picks.map((p) => p.mealId) : [];
+      const r = await generate({ data: { avoidIds } });
       setRec(r);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't generate today's meals");
