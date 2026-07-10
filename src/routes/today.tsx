@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
 import { meals, type Meal } from "@/data/meals";
-import { RefreshCw, Sparkles, Flame, Clock, Wallet, Loader2 } from "lucide-react";
+import { RefreshCw, Sparkles, Flame, Clock, Wallet, Loader2, Leaf, ArrowRight } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateDailyRecommendation, type DailyRecommendation } from "@/lib/recommendations.functions";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/today")({ component: Today });
 
