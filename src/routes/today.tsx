@@ -100,7 +100,7 @@ function Today() {
               <p className="font-semibold">Today's total</p>
               <p className="text-muted-foreground text-xs">~{Math.round(totalCal).toLocaleString()} kcal · ~₦{totalCost.toLocaleString()}</p>
             </div>
-            <button onClick={run} disabled={loading} className="inline-flex items-center gap-1.5 rounded-full bg-brand text-brand-foreground px-4 py-2 text-sm font-medium disabled:opacity-60">
+            <button onClick={() => run(true)} disabled={loading} className="inline-flex items-center gap-1.5 rounded-full bg-brand text-brand-foreground px-4 py-2 text-sm font-medium disabled:opacity-60">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Regenerate
             </button>
           </div>
