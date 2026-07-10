@@ -3,7 +3,7 @@ import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
 import { meals } from "@/data/meals";
 import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
 import logoAsset from "@/assets/mealbeta-logo.png.asset.json";
