@@ -17,6 +17,7 @@ function Today() {
   const generate = useServerFn(generateDailyRecommendation);
   const [rec, setRec] = useState<DailyRecommendation | null>(null);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState<{ meal: Meal; slot: string; reason: string } | null>(null);
 
   const run = async () => {
     setLoading(true);
