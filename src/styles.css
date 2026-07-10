@@ -50,73 +50,74 @@
 :root {
   --radius: 1rem;
 
-  /* Warm cream background, deep charcoal text */
-  --background: oklch(0.985 0.012 82);
-  --foreground: oklch(0.22 0.02 60);
+  /* Fresh green-tinted cream, deep charcoal text — MealBeta */
+  --background: oklch(0.985 0.014 130);
+  --foreground: oklch(0.22 0.03 155);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 60);
+  --card-foreground: oklch(0.22 0.03 155);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 60);
+  --popover-foreground: oklch(0.22 0.03 155);
 
-  /* Warm Nigerian orange primary */
-  --primary: oklch(0.68 0.19 42);
-  --primary-foreground: oklch(0.99 0.005 80);
+  /* Fresh leaf green primary (MealBeta green) */
+  --primary: oklch(0.58 0.16 145);
+  --primary-foreground: oklch(0.99 0.005 120);
 
-  --secondary: oklch(0.94 0.03 80);
-  --secondary-foreground: oklch(0.28 0.04 55);
+  --secondary: oklch(0.94 0.04 135);
+  --secondary-foreground: oklch(0.28 0.05 150);
 
-  --muted: oklch(0.95 0.015 80);
-  --muted-foreground: oklch(0.48 0.02 60);
+  --muted: oklch(0.95 0.02 135);
+  --muted-foreground: oklch(0.48 0.03 140);
 
-  --accent: oklch(0.92 0.05 75);
-  --accent-foreground: oklch(0.28 0.04 55);
+  --accent: oklch(0.92 0.06 90);
+  --accent-foreground: oklch(0.28 0.05 60);
 
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.99 0.005 80);
 
-  --border: oklch(0.9 0.02 75);
-  --input: oklch(0.92 0.02 75);
-  --ring: oklch(0.68 0.19 42);
+  --border: oklch(0.9 0.025 135);
+  --input: oklch(0.92 0.025 135);
+  --ring: oklch(0.58 0.16 145);
 
-  /* Brand tokens */
-  --brand: oklch(0.68 0.19 42);            /* pepper orange */
-  --brand-foreground: oklch(0.99 0.005 80);
-  --leaf: oklch(0.55 0.13 145);            /* ugu green */
-  --leaf-foreground: oklch(0.99 0.005 80);
-  --warm: oklch(0.78 0.15 65);             /* palm oil amber */
-  --warm-foreground: oklch(0.22 0.02 60);
-  --charcoal: oklch(0.22 0.02 60);
+  /* Brand tokens — green primary, orange accent */
+  --brand: oklch(0.58 0.16 145);           /* MealBeta green */
+  --brand-foreground: oklch(0.99 0.005 120);
+  --leaf: oklch(0.5 0.15 150);             /* deeper leaf green */
+  --leaf-foreground: oklch(0.99 0.005 120);
+  --warm: oklch(0.72 0.19 55);             /* MealBeta orange accent */
+  --warm-foreground: oklch(0.99 0.005 80);
+  --charcoal: oklch(0.22 0.03 155);
 }
 
 .dark {
-  --background: oklch(0.18 0.015 60);
-  --foreground: oklch(0.97 0.01 80);
-  --card: oklch(0.22 0.02 60);
-  --card-foreground: oklch(0.97 0.01 80);
-  --popover: oklch(0.22 0.02 60);
-  --popover-foreground: oklch(0.97 0.01 80);
-  --primary: oklch(0.72 0.19 45);
-  --primary-foreground: oklch(0.18 0.015 60);
-  --secondary: oklch(0.28 0.03 55);
-  --secondary-foreground: oklch(0.97 0.01 80);
-  --muted: oklch(0.28 0.03 55);
-  --muted-foreground: oklch(0.7 0.02 70);
-  --accent: oklch(0.32 0.04 60);
-  --accent-foreground: oklch(0.97 0.01 80);
+  --background: oklch(0.18 0.02 150);
+  --foreground: oklch(0.97 0.01 130);
+  --card: oklch(0.22 0.025 150);
+  --card-foreground: oklch(0.97 0.01 130);
+  --popover: oklch(0.22 0.025 150);
+  --popover-foreground: oklch(0.97 0.01 130);
+  --primary: oklch(0.68 0.17 145);
+  --primary-foreground: oklch(0.18 0.02 150);
+  --secondary: oklch(0.28 0.04 145);
+  --secondary-foreground: oklch(0.97 0.01 130);
+  --muted: oklch(0.28 0.04 145);
+  --muted-foreground: oklch(0.7 0.03 140);
+  --accent: oklch(0.32 0.05 90);
+  --accent-foreground: oklch(0.97 0.01 130);
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.97 0.01 80);
+  --destructive-foreground: oklch(0.97 0.01 130);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.72 0.19 45);
-  --brand: oklch(0.72 0.19 45);
-  --brand-foreground: oklch(0.18 0.015 60);
-  --leaf: oklch(0.6 0.14 145);
-  --leaf-foreground: oklch(0.18 0.015 60);
-  --warm: oklch(0.78 0.15 65);
-  --warm-foreground: oklch(0.22 0.02 60);
-  --charcoal: oklch(0.97 0.01 80);
+  --ring: oklch(0.68 0.17 145);
+  --brand: oklch(0.68 0.17 145);
+  --brand-foreground: oklch(0.18 0.02 150);
+  --leaf: oklch(0.6 0.15 150);
+  --leaf-foreground: oklch(0.18 0.02 150);
+  --warm: oklch(0.75 0.18 55);
+  --warm-foreground: oklch(0.22 0.03 60);
+  --charcoal: oklch(0.97 0.01 130);
 }
+
 
 @layer base {
   * { border-color: var(--color-border); }

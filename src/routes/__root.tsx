@@ -62,7 +62,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#f97316" },
+      { name: "theme-color", content: "#2e9d3a" },
       { title: "MealBeta — Plan Better. Eat Better. Spend Better." },
       { name: "description", content: "MealBeta is a Nigerian meal planning assistant. Decide what to eat, plan the week, estimate cost & calories, generate shopping lists, and find restaurants near you." },
       { name: "author", content: "MealBeta" },
