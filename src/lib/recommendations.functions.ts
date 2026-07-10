@@ -125,6 +125,7 @@ Respond ONLY with JSON in this exact shape (no extra keys, no markdown):
       const { output } = await generateText({
         model: createLovableAiGatewayProvider(key)("google/gemini-2.5-flash"),
         output: Output.object({ schema: ResultSchema }),
+        temperature: 1.1,
         prompt,
       });
       const result = normalize(output);
