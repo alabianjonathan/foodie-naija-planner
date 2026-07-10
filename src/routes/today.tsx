@@ -70,9 +70,15 @@ function Today() {
                 <p className="text-[10px] uppercase tracking-wider text-brand font-semibold">{slot}</p>
                 <h3 className="font-display text-base leading-tight truncate">{meal!.name}</h3>
                 <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3" />{meal!.caloriesMin}–{meal!.caloriesMax}</span>
+                  <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3" />{meal!.caloriesMin}–{meal!.caloriesMax} kcal</span>
                   <span className="inline-flex items-center gap-1"><Wallet className="h-3 w-3" />₦{meal!.cookMin.toLocaleString()}</span>
                   <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{meal!.cookingTimeMin}m</span>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">Protein: {meal!.protein}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">Carbs: {meal!.carbs}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">Fat: {meal!.fat}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fiber: {meal!.fiber}</span>
                 </div>
                 {reason && <p className="mt-1.5 text-xs text-charcoal/70 leading-snug">{reason}</p>}
               </div>
