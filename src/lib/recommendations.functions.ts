@@ -49,6 +49,13 @@ export const generateDailyRecommendation = createServerFn({ method: "POST" })
       description: m.description,
     }));
 
+    // Shuffle catalog so the model doesn't anchor on the first items every call.
+    for (let i = mealCatalog.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mealCatalog[i], mealCatalog[j]] = [mealCatalog[j], mealCatalog[i]];
+    }
+    const seed = Math.random().toString(36).slice(2, 8);
+
     const profileText = profile
       ? `Planning for: ${profile.planning_type ?? "n/a"}
 People: ${profile.people ?? "n/a"}
