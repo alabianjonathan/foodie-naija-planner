@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
-import { meals } from "@/data/meals";
+import { meals, type Meal } from "@/data/meals";
 import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
 import logoAsset from "@/assets/mealbeta-logo.png.asset.json";
@@ -16,8 +16,15 @@ export const Route = createFileRoute("/home")({
 function Home() {
   const { user, loading } = useRequireAuth();
   const [name, setName] = useState<string>("");
-  const featured = meals.slice(0, 4);
-  const quick = meals.filter(m => m.cookingTimeMin <= 40).slice(0, 3);
+  const [nonce, setNonce] = useState(0);
+  const { featured, quick } = useMemo(() => {
+    const shuffled = [...meals].sort(() => Math.random() - 0.5);
+    const quickPool = shuffled.filter(m => m.cookingTimeMin <= 45);
+    return {
+      featured: shuffled.slice(0, 4),
+      quick: (quickPool.length >= 4 ? quickPool : shuffled).slice(0, 5),
+    };
+  }, [nonce]);
 
   useEffect(() => {
     if (!user) return;
@@ -83,18 +90,18 @@ function Home() {
 
       <section className="px-6 mt-8">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-display text-xl">Popular meals</h2>
-          <Link to="/saved" className="text-xs text-brand font-medium">See all</Link>
+          <h2 className="font-display text-xl">Quick picks for you</h2>
+          <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium">Shuffle</button>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4">
-          {featured.map(m => <MealCard key={m.id} meal={m} />)}
+          {featured.map((m: Meal) => <MealCard key={m.id} meal={m} />)}
         </div>
       </section>
 
       <section className="px-6 mt-8">
         <h2 className="font-display text-xl">Quick meals (under 40 min)</h2>
         <div className="mt-4 flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 snap-x">
-          {quick.map(m => (
+          {quick.map((m: Meal) => (
             <Link key={m.id} to="/meal/$id" params={{ id: m.id }} className="min-w-[220px] snap-start card-soft">
               <div className={`aspect-video rounded-2xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-5xl mb-3`}>{m.emoji}</div>
               <h3 className="font-display text-base leading-tight">{m.name}</h3>

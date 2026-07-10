@@ -2,23 +2,72 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
 import { restaurants, getMeal } from "@/data/meals";
-import { Phone, MessageCircle, Navigation, Star, Truck } from "lucide-react";
+import { Phone, MessageCircle, Navigation, Star, Truck, MapPin } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/restaurants")({ component: Restaurants });
 
+const FILTERS = ["All", "Delivery", "Buka", "Grill", "Continental", "Fast food", "Seafood", "Snacks"] as const;
+type Filter = typeof FILTERS[number];
+
+const NEARBY_KM = 8;
+
 function Restaurants() {
+  const { user } = useRequireAuth();
+  const [city, setCity] = useState<string>("Lagos");
+  const [filter, setFilter] = useState<Filter>("All");
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("city").eq("id", user.id).maybeSingle()
+      .then(({ data }) => { if (data?.city && data.city !== "Other") setCity(data.city); });
+  }, [user]);
+
+  const nearby = useMemo(() => {
+    return restaurants
+      .filter(r => r.city === city && r.distanceKm <= NEARBY_KM)
+      .filter(r => {
+        if (filter === "All") return true;
+        if (filter === "Delivery") return r.delivery;
+        return r.tags.includes(filter as never);
+      })
+      .sort((a, b) => a.distanceKm - b.distanceKm);
+  }, [city, filter]);
+
   return (
     <PhoneShell>
       <TopBar title="Restaurants near you" back="/home" />
-      <div className="px-6 pt-4">
+      <div className="px-6 pt-2">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
+          <MapPin className="h-3.5 w-3.5 text-brand" />
+          Showing spots within {NEARBY_KM} km of <span className="font-semibold text-charcoal">{city}</span>
+        </div>
+
         <div className="flex gap-2 overflow-x-auto -mx-6 px-6 pb-1">
-          {["All", "Delivery", "Buka", "Grill", "Continental"].map(t => (
-            <button key={t} className="px-4 py-2 rounded-full bg-secondary text-xs font-medium whitespace-nowrap first:bg-brand first:text-brand-foreground">{t}</button>
-          ))}
+          {FILTERS.map(t => {
+            const active = filter === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setFilter(t)}
+                className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${active ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}
+              >
+                {t}
+              </button>
+            );
+          })}
         </div>
 
         <div className="mt-5 space-y-4">
-          {restaurants.map(r => {
+          {nearby.length === 0 && (
+            <div className="card-soft text-center py-10">
+              <p className="text-sm text-muted-foreground">No restaurants match this filter near {city}.</p>
+              <button onClick={() => setFilter("All")} className="mt-3 text-xs font-semibold text-brand">Show all nearby</button>
+            </div>
+          )}
+          {nearby.map(r => {
             const featured = r.meals.slice(0, 3).map(id => getMeal(id)?.name).filter(Boolean);
             return (
               <div key={r.id} className="card-soft !p-0 overflow-hidden">
@@ -32,7 +81,7 @@ function Restaurants() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-display text-lg leading-tight">{r.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">{r.area} · {r.distanceKm} km · {r.opening}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{r.area}, {r.city} · {r.distanceKm} km · {r.opening}</p>
                     </div>
                     <div className="flex items-center gap-1 text-sm font-semibold">
                       <Star className="h-4 w-4 fill-warm text-warm" /> {r.rating}
@@ -46,9 +95,13 @@ function Restaurants() {
                     <a href={`https://wa.me/${r.phone.replace(/\D/g,"")}`} className="flex items-center justify-center gap-1.5 rounded-full bg-leaf text-leaf-foreground py-2 text-xs font-medium">
                       <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
                     </a>
-                    <button className="flex items-center justify-center gap-1.5 rounded-full bg-brand text-brand-foreground py-2 text-xs font-medium">
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${r.name} ${r.area} ${r.city}`)}`}
+                      target="_blank" rel="noreferrer"
+                      className="flex items-center justify-center gap-1.5 rounded-full bg-brand text-brand-foreground py-2 text-xs font-medium"
+                    >
                       <Navigation className="h-3.5 w-3.5" /> Directions
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>

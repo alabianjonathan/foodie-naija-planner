@@ -623,10 +623,47 @@ export const meals: Meal[] = [
 export const getMeal = (id: string) => meals.find(m => m.id === id);
 
 
-export const restaurants = [
-  { id: "1", name: "Iya Basira Kitchen", area: "Yaba, Lagos", rating: 4.7, distanceKm: 1.2, delivery: true, meals: ["jollof-rice", "beans-plantain", "eba-egusi", "amala-ewedu"], phone: "+2348000000001", opening: "8am – 9pm" },
-  { id: "2", name: "The Place", area: "Lekki, Lagos", rating: 4.5, distanceKm: 3.8, delivery: true, meals: ["jollof-rice", "grilled-fish", "spaghetti-egg", "pepper-soup"], phone: "+2348000000002", opening: "9am – 11pm" },
-  { id: "3", name: "Mama Nkechi Buka", area: "Surulere, Lagos", rating: 4.8, distanceKm: 2.1, delivery: false, meals: ["eba-egusi", "amala-ewedu", "beans-plantain", "moi-moi", "pap-akara"], phone: "+2348000000003", opening: "7am – 8pm" },
-  { id: "4", name: "Ocean Basket", area: "Victoria Island, Lagos", rating: 4.6, distanceKm: 5.4, delivery: true, meals: ["grilled-fish", "pepper-soup", "jollof-rice"], phone: "+2348000000004", opening: "11am – 11pm" },
-  { id: "5", name: "Chicken Republic", area: "Ikeja, Lagos", rating: 4.3, distanceKm: 4.0, delivery: true, meals: ["jollof-rice", "spaghetti-egg"], phone: "+2348000000005", opening: "8am – 10pm" },
+export type Restaurant = {
+  id: string;
+  name: string;
+  area: string;
+  city: string;
+  rating: number;
+  distanceKm: number;
+  delivery: boolean;
+  meals: string[];
+  phone: string;
+  opening: string;
+  tags: ("Buka" | "Grill" | "Continental" | "Fast food" | "Seafood" | "Snacks")[];
+};
+
+export const restaurants: Restaurant[] = [
+  // Lagos
+  { id: "1", name: "Iya Basira Kitchen", area: "Yaba", city: "Lagos", rating: 4.7, distanceKm: 1.2, delivery: true, meals: ["jollof-rice", "beans-plantain", "eba-egusi", "amala-ewedu"], phone: "+2348000000001", opening: "8am – 9pm", tags: ["Buka"] },
+  { id: "2", name: "The Place", area: "Lekki", city: "Lagos", rating: 4.5, distanceKm: 3.8, delivery: true, meals: ["jollof-rice", "grilled-fish", "spaghetti-egg", "pepper-soup"], phone: "+2348000000002", opening: "9am – 11pm", tags: ["Continental", "Fast food"] },
+  { id: "3", name: "Mama Nkechi Buka", area: "Surulere", city: "Lagos", rating: 4.8, distanceKm: 2.1, delivery: false, meals: ["eba-egusi", "amala-ewedu", "beans-plantain", "moi-moi", "pap-akara"], phone: "+2348000000003", opening: "7am – 8pm", tags: ["Buka"] },
+  { id: "4", name: "Ocean Basket", area: "Victoria Island", city: "Lagos", rating: 4.6, distanceKm: 5.4, delivery: true, meals: ["grilled-fish", "pepper-soup", "coconut-rice"], phone: "+2348000000004", opening: "11am – 11pm", tags: ["Seafood", "Continental"] },
+  { id: "5", name: "Chicken Republic", area: "Ikeja", city: "Lagos", rating: 4.3, distanceKm: 4.0, delivery: true, meals: ["jollof-rice", "spaghetti-egg", "chicken-shawarma"], phone: "+2348000000005", opening: "8am – 10pm", tags: ["Fast food"] },
+  { id: "6", name: "Sweet Sensation", area: "Ojuelegba", city: "Lagos", rating: 4.2, distanceKm: 2.6, delivery: true, meals: ["meat-pie", "puff-puff", "jollof-rice", "fried-rice"], phone: "+2348000000006", opening: "7am – 10pm", tags: ["Fast food", "Snacks"] },
+  { id: "7", name: "Suya Spot Alhaji", area: "Allen Ave, Ikeja", city: "Lagos", rating: 4.6, distanceKm: 3.3, delivery: false, meals: ["suya", "asun"], phone: "+2348000000007", opening: "5pm – 1am", tags: ["Grill"] },
+  { id: "8", name: "Iya Moria Amala", area: "Mushin", city: "Lagos", rating: 4.7, distanceKm: 2.9, delivery: false, meals: ["amala-ewedu", "efo-riro", "ofada-ayamase"], phone: "+2348000000008", opening: "10am – 9pm", tags: ["Buka"] },
+  { id: "9", name: "Ghana High", area: "Obalende", city: "Lagos", rating: 4.4, distanceKm: 4.5, delivery: false, meals: ["banga-starch", "afang-fufu", "okra-soup"], phone: "+2348000000009", opening: "9am – 8pm", tags: ["Buka"] },
+  { id: "10", name: "Yellow Chilli", area: "Ikoyi", city: "Lagos", rating: 4.6, distanceKm: 6.1, delivery: true, meals: ["nkwobi", "efo-riro", "coconut-rice", "grilled-fish"], phone: "+2348000000010", opening: "12pm – 11pm", tags: ["Continental"] },
+  { id: "11", name: "Green Grill Lagos", area: "Lekki Phase 1", city: "Lagos", rating: 4.8, distanceKm: 5.9, delivery: true, meals: ["chicken-salad", "grilled-fish", "smoothie-bowl", "oats-fruit"], phone: "+2348000000011", opening: "8am – 10pm", tags: ["Continental", "Grill"] },
+  // Abuja
+  { id: "12", name: "Salamander Café", area: "Wuse 2", city: "Abuja", rating: 4.5, distanceKm: 1.8, delivery: true, meals: ["chicken-shawarma", "chicken-salad", "smoothie-bowl", "meat-pie"], phone: "+2349000000012", opening: "7am – 10pm", tags: ["Continental", "Snacks"] },
+  { id: "13", name: "Bature Brewery Kitchen", area: "Jabi", city: "Abuja", rating: 4.6, distanceKm: 3.2, delivery: true, meals: ["suya", "asun", "grilled-fish"], phone: "+2349000000013", opening: "4pm – 12am", tags: ["Grill"] },
+  { id: "14", name: "Mama Cass", area: "Garki", city: "Abuja", rating: 4.4, distanceKm: 2.4, delivery: true, meals: ["jollof-rice", "eba-egusi", "beans-plantain"], phone: "+2349000000014", opening: "8am – 9pm", tags: ["Buka", "Fast food"] },
+  { id: "15", name: "Blucabana", area: "Maitama", city: "Abuja", rating: 4.5, distanceKm: 4.1, delivery: false, meals: ["pepper-soup", "nkwobi", "asun"], phone: "+2349000000015", opening: "5pm – 12am", tags: ["Grill", "Continental"] },
+  // Port Harcourt
+  { id: "16", name: "Kilimanjaro", area: "GRA", city: "Port Harcourt", rating: 4.3, distanceKm: 2.0, delivery: true, meals: ["jollof-rice", "fried-rice", "meat-pie"], phone: "+2348400000016", opening: "8am – 10pm", tags: ["Fast food"] },
+  { id: "17", name: "Genesis Restaurant", area: "Trans Amadi", city: "Port Harcourt", rating: 4.5, distanceKm: 3.5, delivery: true, meals: ["banga-starch", "afang-fufu", "coconut-rice", "grilled-fish"], phone: "+2348400000017", opening: "10am – 11pm", tags: ["Continental", "Seafood"] },
+  { id: "18", name: "Mama Uche Buka", area: "D-Line", city: "Port Harcourt", rating: 4.7, distanceKm: 1.4, delivery: false, meals: ["eba-egusi", "okra-soup", "beans-plantain"], phone: "+2348400000018", opening: "7am – 9pm", tags: ["Buka"] },
+  // Ibadan
+  { id: "19", name: "Amala Skye", area: "Bodija", city: "Ibadan", rating: 4.8, distanceKm: 1.6, delivery: false, meals: ["amala-ewedu", "efo-riro", "ofada-ayamase"], phone: "+2348100000019", opening: "8am – 9pm", tags: ["Buka"] },
+  { id: "20", name: "Kokodome", area: "Ring Road", city: "Ibadan", rating: 4.4, distanceKm: 2.8, delivery: true, meals: ["jollof-rice", "fried-rice", "chicken-shawarma"], phone: "+2348100000020", opening: "10am – 11pm", tags: ["Continental", "Fast food"] },
+  // Kano
+  { id: "21", name: "Alhaji Bola Suya", area: "Sabon Gari", city: "Kano", rating: 4.9, distanceKm: 1.1, delivery: false, meals: ["suya", "asun"], phone: "+2348200000021", opening: "4pm – 1am", tags: ["Grill"] },
+  { id: "22", name: "Mr Biggs Kano", area: "Nasarawa GRA", city: "Kano", rating: 4.1, distanceKm: 2.3, delivery: true, meals: ["jollof-rice", "meat-pie", "spaghetti-egg"], phone: "+2348200000022", opening: "8am – 10pm", tags: ["Fast food"] },
 ];
+
