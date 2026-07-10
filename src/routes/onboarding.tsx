@@ -11,7 +11,7 @@ export const Route = createFileRoute("/onboarding")({
 
 type Answers = {
   planningType?: string;
-  people?: number;
+  people?: string;
   city?: string;
   budget?: string;
   cookOrder?: string;
