@@ -66,7 +66,11 @@ function Today() {
             </div>
           )}
           {picks.map(({ slot, meal, reason }) => (
-            <Link key={slot + meal!.id} to="/meal/$id" params={{ id: meal!.id }} className="flex items-start gap-4 card-soft !p-4">
+            <button
+              key={slot + meal!.id}
+              onClick={() => setOpen({ meal: meal!, slot, reason })}
+              className="w-full text-left flex items-start gap-4 card-soft !p-4 hover:border-brand/40 transition-colors"
+            >
               <div className={`h-16 w-16 flex-shrink-0 rounded-2xl bg-gradient-to-br ${meal!.gradient} flex items-center justify-center text-3xl`}>{meal!.emoji}</div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-brand font-semibold">{slot}</p>
@@ -83,8 +87,9 @@ function Today() {
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fiber: {meal!.fiber}</span>
                 </div>
                 {reason && <p className="mt-1.5 text-xs text-charcoal/70 leading-snug">{reason}</p>}
+                <p className="mt-1.5 text-[11px] text-brand font-medium">Tap for full nutrition →</p>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
 
