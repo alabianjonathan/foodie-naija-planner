@@ -10,13 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TodayRouteImport } from './routes/today'
+import { Route as ShoppingRouteImport } from './routes/shopping'
+import { Route as SavedRouteImport } from './routes/saved'
+import { Route as RestaurantsRouteImport } from './routes/restaurants'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MealIdRouteImport } from './routes/meal.$id'
 
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
   path: '/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShoppingRoute = ShoppingRouteImport.update({
+  id: '/shopping',
+  path: '/shopping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RestaurantsRoute = RestaurantsRouteImport.update({
+  id: '/restaurants',
+  path: '/restaurants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlannerRoute = PlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -34,39 +65,99 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MealIdRoute = MealIdRouteImport.update({
+  id: '/meal/$id',
+  path: '/meal/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
+  '/planner': typeof PlannerRoute
+  '/profile': typeof ProfileRoute
+  '/restaurants': typeof RestaurantsRoute
+  '/saved': typeof SavedRoute
+  '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/meal/$id': typeof MealIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
+  '/planner': typeof PlannerRoute
+  '/profile': typeof ProfileRoute
+  '/restaurants': typeof RestaurantsRoute
+  '/saved': typeof SavedRoute
+  '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/meal/$id': typeof MealIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
+  '/planner': typeof PlannerRoute
+  '/profile': typeof ProfileRoute
+  '/restaurants': typeof RestaurantsRoute
+  '/saved': typeof SavedRoute
+  '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/meal/$id': typeof MealIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/onboarding' | '/today'
+  fullPaths:
+    | '/'
+    | '/home'
+    | '/onboarding'
+    | '/planner'
+    | '/profile'
+    | '/restaurants'
+    | '/saved'
+    | '/shopping'
+    | '/today'
+    | '/meal/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/onboarding' | '/today'
-  id: '__root__' | '/' | '/home' | '/onboarding' | '/today'
+  to:
+    | '/'
+    | '/home'
+    | '/onboarding'
+    | '/planner'
+    | '/profile'
+    | '/restaurants'
+    | '/saved'
+    | '/shopping'
+    | '/today'
+    | '/meal/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/home'
+    | '/onboarding'
+    | '/planner'
+    | '/profile'
+    | '/restaurants'
+    | '/saved'
+    | '/shopping'
+    | '/today'
+    | '/meal/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRoute
   OnboardingRoute: typeof OnboardingRoute
+  PlannerRoute: typeof PlannerRoute
+  ProfileRoute: typeof ProfileRoute
+  RestaurantsRoute: typeof RestaurantsRoute
+  SavedRoute: typeof SavedRoute
+  ShoppingRoute: typeof ShoppingRoute
   TodayRoute: typeof TodayRoute
+  MealIdRoute: typeof MealIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +167,41 @@ declare module '@tanstack/react-router' {
       path: '/today'
       fullPath: '/today'
       preLoaderRoute: typeof TodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shopping': {
+      id: '/shopping'
+      path: '/shopping'
+      fullPath: '/shopping'
+      preLoaderRoute: typeof ShoppingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/restaurants': {
+      id: '/restaurants'
+      path: '/restaurants'
+      fullPath: '/restaurants'
+      preLoaderRoute: typeof RestaurantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planner': {
+      id: '/planner'
+      path: '/planner'
+      fullPath: '/planner'
+      preLoaderRoute: typeof PlannerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -99,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/meal/$id': {
+      id: '/meal/$id'
+      path: '/meal/$id'
+      fullPath: '/meal/$id'
+      preLoaderRoute: typeof MealIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,7 +239,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRoute,
   OnboardingRoute: OnboardingRoute,
+  PlannerRoute: PlannerRoute,
+  ProfileRoute: ProfileRoute,
+  RestaurantsRoute: RestaurantsRoute,
+  SavedRoute: SavedRoute,
+  ShoppingRoute: ShoppingRoute,
   TodayRoute: TodayRoute,
+  MealIdRoute: MealIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
