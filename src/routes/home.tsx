@@ -94,7 +94,7 @@ function Home() {
           <Link to="/saved" className="text-xs text-brand font-medium">See all</Link>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4">
-          {featured.map(m => <MealCard key={m.id} meal={m} />)}
+          {featured.map((m: Meal) => <MealCard key={m.id} meal={m} />)}
         </div>
       </section>
 
