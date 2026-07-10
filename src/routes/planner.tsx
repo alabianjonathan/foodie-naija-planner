@@ -129,19 +129,36 @@ function Planner() {
     navigate({ to: "/shopping" });
   };
 
-  const filteredMeals = useMemo(() => {
-    const slotName = picker ? plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.name ?? "" : "";
-    let pool = meals;
-    if (slotName) {
-      const preferred = meals.filter(m => m.bestTime.some(b => b.toLowerCase() === slotName.toLowerCase()));
-      if (preferred.length) pool = preferred;
+  const pickerSlotName = picker ? plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.name ?? "" : "";
+
+  const { recommended, other } = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const matchesQuery = (m: Meal) => !q || m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q);
+    const slotLower = pickerSlotName.toLowerCase();
+    const rec: Meal[] = [];
+    const oth: Meal[] = [];
+    meals.forEach(m => {
+      if (!matchesQuery(m)) return;
+      const fits = !slotLower || m.bestTime.some(b => b.toLowerCase() === slotLower);
+      if (fits) rec.push(m); else oth.push(m);
+    });
+    return { recommended: rec, other: oth };
+  }, [pickerSlotName, query]);
+
+  const handlePickMeal = (meal: Meal) => {
+    if (!picker) return;
+    const slotLower = pickerSlotName.toLowerCase();
+    const fits = !slotLower || meal.bestTime.some(b => b.toLowerCase() === slotLower);
+    setSlotMeal(picker.dayIdx, picker.slotId, meal.id);
+    setPicker(null);
+    if (!fits) {
+      toast.warning(`${meal.name} isn't typically eaten for ${pickerSlotName}`, {
+        description: `Best time: ${meal.bestTime.join(", ")}. Added anyway.`,
+      });
     }
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      pool = pool.filter(m => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
-    }
-    return pool;
-  }, [picker, plan, query]);
+  };
+
+
 
   const day = plan[activeDay];
 
