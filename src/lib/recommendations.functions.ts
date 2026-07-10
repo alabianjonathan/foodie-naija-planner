@@ -18,11 +18,17 @@ const ResultSchema = z.object({
 
 export type DailyRecommendation = z.infer<typeof ResultSchema>;
 
+const InputSchema = z.object({
+  avoidIds: z.array(z.string()).optional(),
+}).optional();
+
 export const generateDailyRecommendation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((input: unknown) => InputSchema.parse(input))
+  .handler(async ({ data, context }) => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
+    const avoidIds = data?.avoidIds ?? [];
 
     const { data: profile } = await context.supabase
       .from("profiles")
@@ -43,6 +49,13 @@ export const generateDailyRecommendation = createServerFn({ method: "POST" })
       description: m.description,
     }));
 
+    // Shuffle catalog so the model doesn't anchor on the first items every call.
+    for (let i = mealCatalog.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mealCatalog[i], mealCatalog[j]] = [mealCatalog[j], mealCatalog[i]];
+    }
+    const seed = Math.random().toString(36).slice(2, 8);
+
     const profileText = profile
       ? `Planning for: ${profile.planning_type ?? "n/a"}
 People: ${profile.people ?? "n/a"}
@@ -61,7 +74,13 @@ ${profileText}
 MEAL CATALOG (choose meal IDs strictly from this list):
 ${JSON.stringify(mealCatalog)}
 
-Task: Pick exactly 3 meals for TODAY — one Breakfast, one Lunch, one Dinner — that best fit the user's budget, goal, restriction and household size. Prefer meals whose bestTime matches the slot. Give a short warm one-sentence summary and a one-line reason per pick. Never invent meal IDs.
+Task: Pick exactly 3 DIFFERENT meals for TODAY — one Breakfast, one Lunch, one Dinner — that fit the user's budget, goal, restriction and household size. Prefer meals whose bestTime matches the slot. Give a warm one-sentence summary and a one-line reason per pick. Never invent meal IDs.
+
+Variety rules (IMPORTANT — vary picks each call, don't default to the same meals):
+- Session seed: ${seed} — use it to pick a fresh combination.
+- ${avoidIds.length ? `AVOID these recently-shown meal IDs unless nothing else fits: ${avoidIds.join(", ")}.` : "Rotate across the catalog — don't always pick the healthiest-looking or first meal."}
+- If several meals fit the slot equally, pick a less-obvious one to keep the plan interesting.
+- The three picks must have different meal IDs.
 
 Respond ONLY with JSON in this exact shape (no extra keys, no markdown):
 {
@@ -106,6 +125,7 @@ Respond ONLY with JSON in this exact shape (no extra keys, no markdown):
       const { output } = await generateText({
         model: createLovableAiGatewayProvider(key)("google/gemini-2.5-flash"),
         output: Output.object({ schema: ResultSchema }),
+        temperature: 1.1,
         prompt,
       });
       const result = normalize(output);
