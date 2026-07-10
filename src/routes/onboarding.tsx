@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
@@ -27,20 +30,36 @@ const steps = [
 ] as const;
 
 function Onboarding() {
+  const { user } = useRequireAuth();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const navigate = useNavigate();
   const current = steps[step];
   const progress = ((step + 1) / steps.length) * 100;
 
+  const save = async (final: Answers) => {
+    if (!user) return;
+    const peopleNum = final.people === "5+" ? 5 : final.people ? Number(final.people) : null;
+    const { error } = await supabase.from("profiles").update({
+      planning_type: final.planningType ?? null,
+      people: peopleNum,
+      city: final.city ?? null,
+      budget: final.budget ?? null,
+      cook_order: final.cookOrder ?? null,
+      goal: final.goal ?? null,
+      restriction: final.restriction ?? null,
+      onboarded: true,
+    }).eq("id", user.id);
+    if (error) toast.error("Couldn't save preferences");
+    navigate({ to: "/home" });
+  };
+
   const select = (val: string) => {
-    setAnswers(a => ({ ...a, [current.key]: val }));
+    const next = { ...answers, [current.key]: val };
+    setAnswers(next);
     setTimeout(() => {
       if (step < steps.length - 1) setStep(step + 1);
-      else {
-        try { localStorage.setItem("mealbeta:onboarding", JSON.stringify({ ...answers, [current.key]: val })); } catch {}
-        navigate({ to: "/home" });
-      }
+      else void save(next);
     }, 200);
   };
 
