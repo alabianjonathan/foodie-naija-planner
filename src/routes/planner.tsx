@@ -318,10 +318,16 @@ function Planner() {
                 </div>
                 <span className="text-sm font-medium">Clear meal</span>
               </button>
-              {filteredMeals.map(m => {
+
+              {recommended.length > 0 && (
+                <p className="px-2 pt-2 pb-1 text-[10px] uppercase tracking-wider text-brand font-semibold">
+                  Recommended for {pickerSlotName || "this slot"}
+                </p>
+              )}
+              {recommended.map(m => {
                 const selected = plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.mealId === m.id;
                 return (
-                  <button key={m.id} onClick={() => { setSlotMeal(picker.dayIdx, picker.slotId, m.id); setPicker(null); }}
+                  <button key={m.id} onClick={() => handlePickMeal(m)}
                     className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-colors ${selected ? "bg-brand/10" : "hover:bg-secondary"}`}>
                     <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-xl flex-shrink-0`}>{m.emoji}</div>
                     <div className="flex-1 min-w-0">
@@ -332,10 +338,32 @@ function Planner() {
                   </button>
                 );
               })}
-              {filteredMeals.length === 0 && (
+
+              {other.length > 0 && (
+                <p className="px-2 pt-3 pb-1 text-[10px] uppercase tracking-wider text-warm font-semibold flex items-center gap-1">
+                  ⚠︎ Not typical for {pickerSlotName || "this slot"}
+                </p>
+              )}
+              {other.map(m => {
+                const selected = plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.mealId === m.id;
+                return (
+                  <button key={m.id} onClick={() => handlePickMeal(m)}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-colors border border-dashed border-warm/30 ${selected ? "bg-warm/10" : "hover:bg-warm/5"}`}>
+                    <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-xl flex-shrink-0 opacity-80`}>{m.emoji}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{m.name}</p>
+                      <p className="text-[11px] text-muted-foreground">Best: {m.bestTime.join(", ")}</p>
+                    </div>
+                    {selected && <Check className="h-4 w-4 text-warm" />}
+                  </button>
+                );
+              })}
+
+              {recommended.length === 0 && other.length === 0 && (
                 <p className="text-center text-sm text-muted-foreground py-8">No meals match "{query}"</p>
               )}
             </div>
+
           </div>
         </div>
       )}
