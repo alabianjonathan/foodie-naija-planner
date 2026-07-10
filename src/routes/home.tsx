@@ -101,7 +101,7 @@ function Home() {
       <section className="px-6 mt-8">
         <h2 className="font-display text-xl">Quick meals (under 40 min)</h2>
         <div className="mt-4 flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 snap-x">
-          {quick.map(m => (
+          {quick.map((m: Meal) => (
             <Link key={m.id} to="/meal/$id" params={{ id: m.id }} className="min-w-[220px] snap-start card-soft">
               <div className={`aspect-video rounded-2xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-5xl mb-3`}>{m.emoji}</div>
               <h3 className="font-display text-base leading-tight">{m.name}</h3>
