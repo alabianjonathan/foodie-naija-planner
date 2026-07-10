@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
 import { meals } from "@/data/meals";
@@ -7,21 +7,47 @@ import { Share2, Plus, Trash2, Check } from "lucide-react";
 
 export const Route = createFileRoute("/shopping")({ component: Shopping });
 
+const SHOPPING_KEY = "mealbeta:shopping:v1";
+
+type Item = { id: string; name: string; qty: string; price: number; mealId: string; checked: boolean };
+
+function seed(): Item[] {
+  return meals.slice(0, 4).flatMap(m => m.ingredients.slice(0, 3).map(i => ({
+    ...i, mealId: m.id, checked: false, id: `${m.id}-${i.name}`,
+  })));
+}
+
 function Shopping() {
-  const initial = meals.slice(0, 4).flatMap(m => m.ingredients.slice(0, 3).map(i => ({ ...i, mealId: m.id, checked: false, id: `${m.id}-${i.name}` })));
-  const [items, setItems] = useState(initial);
+  const [items, setItems] = useState<Item[]>(() => seed());
   const [newItem, setNewItem] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(SHOPPING_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Item[];
+        if (Array.isArray(parsed)) setItems(parsed);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") window.localStorage.setItem(SHOPPING_KEY, JSON.stringify(items));
+  }, [items]);
 
   const toggle = (id: string) => setItems(items => items.map(i => i.id === id ? { ...i, checked: !i.checked } : i));
   const remove = (id: string) => setItems(items => items.filter(i => i.id !== id));
+  const clearDone = () => setItems(items => items.filter(i => !i.checked));
   const add = () => {
     if (!newItem.trim()) return;
-    setItems([{ id: crypto.randomUUID(), name: newItem, qty: "1", price: 500, mealId: "custom", checked: false }, ...items]);
+    setItems([{ id: crypto.randomUUID(), name: newItem, qty: "1", price: 0, mealId: "custom", checked: false }, ...items]);
     setNewItem("");
   };
 
   const total = items.filter(i => !i.checked).reduce((s, i) => s + i.price, 0);
   const done = items.filter(i => i.checked).length;
+
 
   return (
     <PhoneShell>
@@ -35,8 +61,14 @@ function Shopping() {
         <div className="rounded-3xl bg-leaf text-leaf-foreground p-5">
           <p className="text-xs opacity-80">Estimated total</p>
           <p className="mt-1 font-display text-3xl">₦{total.toLocaleString()}</p>
-          <p className="text-xs opacity-80 mt-1">{done}/{items.length} items picked up</p>
+          <div className="mt-1 flex items-center justify-between">
+            <p className="text-xs opacity-80">{done}/{items.length} items picked up</p>
+            {done > 0 && (
+              <button onClick={clearDone} className="text-xs underline opacity-90">Clear done</button>
+            )}
+          </div>
         </div>
+
 
         <div className="mt-5 flex gap-2">
           <input value={newItem} onChange={e => setNewItem(e.target.value)} onKeyDown={e => e.key === "Enter" && add()}

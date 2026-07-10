@@ -6,6 +6,8 @@ import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2 }
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
+import logoAsset from "@/assets/mealbeta-logo.png.asset.json";
+
 
 export const Route = createFileRoute("/home")({
   component: Home,
@@ -29,14 +31,16 @@ function Home() {
 
   return (
     <PhoneShell>
-      <header className="px-6 pt-8 pb-4">
+      <header className="px-6 pt-6 pb-4">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-muted-foreground">Welcome</p>
-            <h1 className="font-display text-2xl">{name || "there"} 👋</h1>
-          </div>
+          <img src={logoAsset.url} alt="MealBeta" className="h-9 w-auto" />
           <Link to="/profile" className="h-11 w-11 rounded-full bg-gradient-to-br from-brand to-warm flex items-center justify-center text-white font-display text-lg">{initial}</Link>
         </div>
+        <div className="mt-4">
+          <p className="text-xs text-muted-foreground">Welcome</p>
+          <h1 className="font-display text-2xl">{name || "there"} 👋</h1>
+        </div>
+
 
         <Link to="/today" className="mt-5 block rounded-3xl bg-gradient-to-br from-brand to-[oklch(0.6_0.2_25)] p-5 text-brand-foreground shadow-[var(--shadow-lift)]">
           <div className="flex items-start justify-between">
