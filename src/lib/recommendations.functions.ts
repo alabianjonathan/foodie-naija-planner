@@ -18,9 +18,17 @@ const ResultSchema = z.object({
 
 export type DailyRecommendation = z.infer<typeof ResultSchema>;
 
+const InputSchema = z.object({
+  avoidIds: z.array(z.string()).optional(),
+}).optional();
+
 export const generateDailyRecommendation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((input: unknown) => InputSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const key = process.env.LOVABLE_API_KEY;
+    if (!key) throw new Error("Missing LOVABLE_API_KEY");
+    const avoidIds = data?.avoidIds ?? [];
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
