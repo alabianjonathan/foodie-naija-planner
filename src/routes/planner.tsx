@@ -129,19 +129,36 @@ function Planner() {
     navigate({ to: "/shopping" });
   };
 
-  const filteredMeals = useMemo(() => {
-    const slotName = picker ? plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.name ?? "" : "";
-    let pool = meals;
-    if (slotName) {
-      const preferred = meals.filter(m => m.bestTime.some(b => b.toLowerCase() === slotName.toLowerCase()));
-      if (preferred.length) pool = preferred;
+  const pickerSlotName = picker ? plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.name ?? "" : "";
+
+  const { recommended, other } = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const matchesQuery = (m: Meal) => !q || m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q);
+    const slotLower = pickerSlotName.toLowerCase();
+    const rec: Meal[] = [];
+    const oth: Meal[] = [];
+    meals.forEach(m => {
+      if (!matchesQuery(m)) return;
+      const fits = !slotLower || m.bestTime.some(b => b.toLowerCase() === slotLower);
+      if (fits) rec.push(m); else oth.push(m);
+    });
+    return { recommended: rec, other: oth };
+  }, [pickerSlotName, query]);
+
+  const handlePickMeal = (meal: Meal) => {
+    if (!picker) return;
+    const slotLower = pickerSlotName.toLowerCase();
+    const fits = !slotLower || meal.bestTime.some(b => b.toLowerCase() === slotLower);
+    setSlotMeal(picker.dayIdx, picker.slotId, meal.id);
+    setPicker(null);
+    if (!fits) {
+      toast.warning(`${meal.name} isn't typically eaten for ${pickerSlotName}`, {
+        description: `Best time: ${meal.bestTime.join(", ")}. Added anyway.`,
+      });
     }
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      pool = pool.filter(m => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
-    }
-    return pool;
-  }, [picker, plan, query]);
+  };
+
+
 
   const day = plan[activeDay];
 
@@ -301,10 +318,16 @@ function Planner() {
                 </div>
                 <span className="text-sm font-medium">Clear meal</span>
               </button>
-              {filteredMeals.map(m => {
+
+              {recommended.length > 0 && (
+                <p className="px-2 pt-2 pb-1 text-[10px] uppercase tracking-wider text-brand font-semibold">
+                  Recommended for {pickerSlotName || "this slot"}
+                </p>
+              )}
+              {recommended.map(m => {
                 const selected = plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.mealId === m.id;
                 return (
-                  <button key={m.id} onClick={() => { setSlotMeal(picker.dayIdx, picker.slotId, m.id); setPicker(null); }}
+                  <button key={m.id} onClick={() => handlePickMeal(m)}
                     className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-colors ${selected ? "bg-brand/10" : "hover:bg-secondary"}`}>
                     <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-xl flex-shrink-0`}>{m.emoji}</div>
                     <div className="flex-1 min-w-0">
@@ -315,10 +338,32 @@ function Planner() {
                   </button>
                 );
               })}
-              {filteredMeals.length === 0 && (
+
+              {other.length > 0 && (
+                <p className="px-2 pt-3 pb-1 text-[10px] uppercase tracking-wider text-warm font-semibold flex items-center gap-1">
+                  ⚠︎ Not typical for {pickerSlotName || "this slot"}
+                </p>
+              )}
+              {other.map(m => {
+                const selected = plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.mealId === m.id;
+                return (
+                  <button key={m.id} onClick={() => handlePickMeal(m)}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-colors border border-dashed border-warm/30 ${selected ? "bg-warm/10" : "hover:bg-warm/5"}`}>
+                    <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-xl flex-shrink-0 opacity-80`}>{m.emoji}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{m.name}</p>
+                      <p className="text-[11px] text-muted-foreground">Best: {m.bestTime.join(", ")}</p>
+                    </div>
+                    {selected && <Check className="h-4 w-4 text-warm" />}
+                  </button>
+                );
+              })}
+
+              {recommended.length === 0 && other.length === 0 && (
                 <p className="text-center text-sm text-muted-foreground py-8">No meals match "{query}"</p>
               )}
             </div>
+
           </div>
         </div>
       )}
