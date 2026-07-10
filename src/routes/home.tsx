@@ -90,8 +90,8 @@ function Home() {
 
       <section className="px-6 mt-8">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-display text-xl">Popular meals</h2>
-          <Link to="/saved" className="text-xs text-brand font-medium">See all</Link>
+          <h2 className="font-display text-xl">Quick picks for you</h2>
+          <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium">Shuffle</button>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4">
           {featured.map((m: Meal) => <MealCard key={m.id} meal={m} />)}
