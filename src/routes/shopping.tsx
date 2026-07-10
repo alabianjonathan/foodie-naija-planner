@@ -61,8 +61,14 @@ function Shopping() {
         <div className="rounded-3xl bg-leaf text-leaf-foreground p-5">
           <p className="text-xs opacity-80">Estimated total</p>
           <p className="mt-1 font-display text-3xl">₦{total.toLocaleString()}</p>
-          <p className="text-xs opacity-80 mt-1">{done}/{items.length} items picked up</p>
+          <div className="mt-1 flex items-center justify-between">
+            <p className="text-xs opacity-80">{done}/{items.length} items picked up</p>
+            {done > 0 && (
+              <button onClick={clearDone} className="text-xs underline opacity-90">Clear done</button>
+            )}
+          </div>
         </div>
+
 
         <div className="mt-5 flex gap-2">
           <input value={newItem} onChange={e => setNewItem(e.target.value)} onKeyDown={e => e.key === "Enter" && add()}
