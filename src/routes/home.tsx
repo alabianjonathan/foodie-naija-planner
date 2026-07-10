@@ -16,8 +16,15 @@ export const Route = createFileRoute("/home")({
 function Home() {
   const { user, loading } = useRequireAuth();
   const [name, setName] = useState<string>("");
-  const featured = meals.slice(0, 4);
-  const quick = meals.filter(m => m.cookingTimeMin <= 40).slice(0, 3);
+  const [nonce, setNonce] = useState(0);
+  const { featured, quick } = useMemo(() => {
+    const shuffled = [...meals].sort(() => Math.random() - 0.5);
+    const quickPool = shuffled.filter(m => m.cookingTimeMin <= 45);
+    return {
+      featured: shuffled.slice(0, 4),
+      quick: (quickPool.length >= 4 ? quickPool : shuffled).slice(0, 5),
+    };
+  }, [nonce]);
 
   useEffect(() => {
     if (!user) return;
