@@ -2,25 +2,40 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
 import { meals } from "@/data/meals";
-import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame } from "lucide-react";
+import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useRequireAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/home")({
   component: Home,
 });
 
 function Home() {
+  const { user, loading } = useRequireAuth();
+  const [name, setName] = useState<string>("");
   const featured = meals.slice(0, 4);
   const quick = meals.filter(m => m.cookingTimeMin <= 40).slice(0, 3);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("display_name").eq("id", user.id).maybeSingle()
+      .then(({ data }) => setName(data?.display_name?.split(" ")[0] ?? ""));
+  }, [user]);
+
+  if (loading || !user) return <PhoneShell><div className="flex-1 flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-brand" /></div></PhoneShell>;
+
+  const initial = (name || user.email || "U").charAt(0).toUpperCase();
 
   return (
     <PhoneShell>
       <header className="px-6 pt-8 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground">Good afternoon</p>
-            <h1 className="font-display text-2xl">Adaeze 👋</h1>
+            <p className="text-xs text-muted-foreground">Welcome</p>
+            <h1 className="font-display text-2xl">{name || "there"} 👋</h1>
           </div>
-          <Link to="/profile" className="h-11 w-11 rounded-full bg-gradient-to-br from-brand to-warm flex items-center justify-center text-white font-display text-lg">A</Link>
+          <Link to="/profile" className="h-11 w-11 rounded-full bg-gradient-to-br from-brand to-warm flex items-center justify-center text-white font-display text-lg">{initial}</Link>
         </div>
 
         <Link to="/today" className="mt-5 block rounded-3xl bg-gradient-to-br from-brand to-[oklch(0.6_0.2_25)] p-5 text-brand-foreground shadow-[var(--shadow-lift)]">
