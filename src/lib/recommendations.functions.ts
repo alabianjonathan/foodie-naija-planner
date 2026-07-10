@@ -74,7 +74,13 @@ ${profileText}
 MEAL CATALOG (choose meal IDs strictly from this list):
 ${JSON.stringify(mealCatalog)}
 
-Task: Pick exactly 3 meals for TODAY — one Breakfast, one Lunch, one Dinner — that best fit the user's budget, goal, restriction and household size. Prefer meals whose bestTime matches the slot. Give a short warm one-sentence summary and a one-line reason per pick. Never invent meal IDs.
+Task: Pick exactly 3 DIFFERENT meals for TODAY — one Breakfast, one Lunch, one Dinner — that fit the user's budget, goal, restriction and household size. Prefer meals whose bestTime matches the slot. Give a warm one-sentence summary and a one-line reason per pick. Never invent meal IDs.
+
+Variety rules (IMPORTANT — vary picks each call, don't default to the same meals):
+- Session seed: ${seed} — use it to pick a fresh combination.
+- ${avoidIds.length ? `AVOID these recently-shown meal IDs unless nothing else fits: ${avoidIds.join(", ")}.` : "Rotate across the catalog — don't always pick the healthiest-looking or first meal."}
+- If several meals fit the slot equally, pick a less-obvious one to keep the plan interesting.
+- The three picks must have different meal IDs.
 
 Respond ONLY with JSON in this exact shape (no extra keys, no markdown):
 {
