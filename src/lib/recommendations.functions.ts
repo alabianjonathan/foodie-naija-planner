@@ -29,8 +29,6 @@ export const generateDailyRecommendation = createServerFn({ method: "POST" })
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
     const avoidIds = data?.avoidIds ?? [];
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
     const { data: profile } = await context.supabase
       .from("profiles")
