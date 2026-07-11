@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          area: string | null
           avatar_url: string | null
           budget: string | null
           city: string | null
@@ -32,6 +33,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          area?: string | null
           avatar_url?: string | null
           budget?: string | null
           city?: string | null
@@ -48,6 +50,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          area?: string | null
           avatar_url?: string | null
           budget?: string | null
           city?: string | null
