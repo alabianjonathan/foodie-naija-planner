@@ -253,7 +253,6 @@ export const meals: Meal[] = [
       { name: "Ginger", qty: "50g", price: 150 },
     ],
     description: "Hot, aromatic broth with fresh catfish, scent leaves and native spices.",
-    popular: true,
   },
   {
     id: "moi-moi",
