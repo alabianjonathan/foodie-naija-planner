@@ -13,24 +13,48 @@ export const Route = createFileRoute("/home")({
   component: Home,
 });
 
+function currentSlot(): "Breakfast" | "Lunch" | "Dinner" {
+  const h = new Date().getHours();
+  if (h < 11) return "Breakfast";
+  if (h < 16) return "Lunch";
+  return "Dinner";
+}
+
 function Home() {
   const { user, loading } = useRequireAuth();
   const [name, setName] = useState<string>("");
+  const [profile, setProfile] = useState<{ restriction?: string | null; goal?: string | null } | null>(null);
   const [nonce, setNonce] = useState(0);
+  const slot = useMemo(() => currentSlot(), [nonce]);
+
   const { featured, quick } = useMemo(() => {
-    const popular = [...meals].filter(m => m.popular).sort(() => Math.random() - 0.5);
-    const quickPopular = popular.filter(m => m.cookingTimeMin <= 45);
-    return {
-      featured: popular.slice(0, 4),
-      quick: (quickPopular.length >= 4 ? quickPopular : popular).slice(0, 6),
+    const restriction = (profile?.restriction ?? "").toLowerCase();
+    const goal = (profile?.goal ?? "").toLowerCase();
+    const matchesPrefs = (m: Meal) => {
+      if (restriction.includes("vegetarian") && m.protein && /chicken|beef|fish|meat|suya|goat|turkey/i.test(m.protein)) return false;
+      if (restriction.includes("no pork") && /pork/i.test(m.name)) return false;
+      if (goal.includes("lose") && m.healthScore != null && m.healthScore < 6) return false;
+      return true;
     };
-  }, [nonce]);
+    const popular = meals.filter(m => m.popular);
+    const forSlot = popular.filter(m => m.bestTime.includes(slot) && matchesPrefs(m));
+    const featuredPool = (forSlot.length >= 4 ? forSlot : popular.filter(matchesPrefs)).sort(() => Math.random() - 0.5);
+    const quickPool = popular.filter(m => m.cookingTimeMin <= 45 && matchesPrefs(m)).sort(() => Math.random() - 0.5);
+    return {
+      featured: featuredPool.slice(0, 4),
+      quick: (quickPool.length >= 4 ? quickPool : popular.filter(matchesPrefs)).slice(0, 6),
+    };
+  }, [nonce, profile, slot]);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("display_name").eq("id", user.id).maybeSingle()
-      .then(({ data }) => setName(data?.display_name?.split(" ")[0] ?? ""));
+    supabase.from("profiles").select("display_name, restriction, goal").eq("id", user.id).maybeSingle()
+      .then(({ data }) => {
+        setName(data?.display_name?.split(" ")[0] ?? "");
+        setProfile({ restriction: data?.restriction, goal: data?.goal });
+      });
   }, [user]);
+
 
   if (loading || !user) return <PhoneShell><div className="flex-1 flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-brand" /></div></PhoneShell>;
 
