@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { restaurants, getMeal } from "@/data/meals";
+import { restaurants, getMeal, cityAreas, CITIES } from "@/data/meals";
 import { Phone, MessageCircle, Navigation, Star, Truck, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,70 +12,87 @@ export const Route = createFileRoute("/restaurants")({ component: Restaurants })
 const FILTERS = ["All", "Delivery", "Buka", "Grill", "Continental", "Fast food", "Seafood", "Snacks"] as const;
 type Filter = typeof FILTERS[number];
 
-const NEARBY_KM = 8;
-const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano"] as const;
-
 function Restaurants() {
   const { user } = useRequireAuth();
   const [city, setCity] = useState<string>("Lagos");
+  const [area, setArea] = useState<string>("All");
   const [filter, setFilter] = useState<Filter>("All");
-  const [pickingCity, setPickingCity] = useState(false);
-  const [savingCity, setSavingCity] = useState(false);
+  const [picking, setPicking] = useState<"city" | "area" | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("city").eq("id", user.id).maybeSingle()
-      .then(({ data }) => { if (data?.city && CITIES.includes(data.city as never)) setCity(data.city); });
+    supabase.from("profiles").select("city, area").eq("id", user.id).maybeSingle()
+      .then(({ data }) => {
+        if (data?.city && (CITIES as readonly string[]).includes(data.city)) setCity(data.city);
+        if (data?.area) setArea(data.area);
+      });
   }, [user]);
+
+  const areas = useMemo(() => cityAreas[city] ?? [], [city]);
 
   const changeCity = async (next: string) => {
     setCity(next);
-    setPickingCity(false);
+    setArea("All");
+    setPicking(null);
     if (!user) return;
-    setSavingCity(true);
-    await supabase.from("profiles").update({ city: next }).eq("id", user.id);
-    setSavingCity(false);
+    setSaving(true);
+    await supabase.from("profiles").update({ city: next, area: null }).eq("id", user.id);
+    setSaving(false);
+  };
+
+  const changeArea = async (next: string) => {
+    setArea(next);
+    setPicking(null);
+    if (!user) return;
+    setSaving(true);
+    await supabase.from("profiles").update({ area: next === "All" ? null : next }).eq("id", user.id);
+    setSaving(false);
   };
 
   const nearby = useMemo(() => {
     return restaurants
-      .filter(r => r.city === city && r.distanceKm <= NEARBY_KM)
+      .filter(r => r.city === city)
+      .filter(r => area === "All" || r.area === area)
       .filter(r => {
         if (filter === "All") return true;
         if (filter === "Delivery") return r.delivery;
         return r.tags.includes(filter as never);
       })
-      .sort((a, b) => a.distanceKm - b.distanceKm);
-  }, [city, filter]);
+      .sort((a, b) => b.rating - a.rating);
+  }, [city, area, filter]);
 
   return (
     <PhoneShell>
       <TopBar title="Restaurants near you" back="/home" />
       <div className="px-6 pt-2">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5 text-brand" />
-            Within {NEARBY_KM} km of <span className="font-semibold text-charcoal">{city}</span>
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
+            <MapPin className="h-3.5 w-3.5 text-brand shrink-0" />
+            <span className="truncate">
+              <span className="font-semibold text-charcoal">{city}</span>
+              {area !== "All" && <> · <span className="font-semibold text-charcoal">{area}</span></>}
+            </span>
           </div>
-          <button
-            onClick={() => setPickingCity(v => !v)}
-            className="text-xs font-semibold text-brand"
-            disabled={savingCity}
-          >
-            {savingCity ? "Saving…" : "Change city"}
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button onClick={() => setPicking(p => p === "city" ? null : "city")} className="text-xs font-semibold text-brand" disabled={saving}>
+              {saving ? "Saving…" : "City"}
+            </button>
+            {areas.length > 0 && (
+              <button onClick={() => setPicking(p => p === "area" ? null : "area")} className="text-xs font-semibold text-brand" disabled={saving}>
+                Area
+              </button>
+            )}
+          </div>
         </div>
 
-        {pickingCity && (
+        {picking === "city" && (
           <div className="mb-4 card-soft !p-3">
             <p className="text-[11px] text-muted-foreground mb-2">Choose your city</p>
             <div className="flex flex-wrap gap-2">
               {CITIES.map(c => (
-                <button
-                  key={c}
-                  onClick={() => changeCity(c)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${city === c ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}
-                >
+                <button key={c} onClick={() => changeCity(c)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${city === c ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}>
                   {c}
                 </button>
               ))}
@@ -83,6 +100,23 @@ function Restaurants() {
           </div>
         )}
 
+        {picking === "area" && areas.length > 0 && (
+          <div className="mb-4 card-soft !p-3">
+            <p className="text-[11px] text-muted-foreground mb-2">Choose an area in {city}</p>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => changeArea("All")}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium ${area === "All" ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}>
+                All areas
+              </button>
+              {areas.map(a => (
+                <button key={a} onClick={() => changeArea(a)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${area === a ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}>
+                  {a}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex gap-2 overflow-x-auto -mx-6 px-6 pb-1">
           {FILTERS.map(t => {
@@ -102,8 +136,12 @@ function Restaurants() {
         <div className="mt-5 space-y-4">
           {nearby.length === 0 && (
             <div className="card-soft text-center py-10">
-              <p className="text-sm text-muted-foreground">No restaurants match this filter near {city}.</p>
-              <button onClick={() => setFilter("All")} className="mt-3 text-xs font-semibold text-brand">Show all nearby</button>
+              <p className="text-sm text-muted-foreground">
+                No restaurants match this filter{area !== "All" ? ` in ${area}` : ""}.
+              </p>
+              <button onClick={() => { setFilter("All"); setArea("All"); }} className="mt-3 text-xs font-semibold text-brand">
+                Show all in {city}
+              </button>
             </div>
           )}
           {nearby.map(r => {
@@ -120,7 +158,7 @@ function Restaurants() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-display text-lg leading-tight">{r.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">{r.area}, {r.city} · {r.distanceKm} km · {r.opening}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{r.area}, {r.city} · {r.opening}</p>
                     </div>
                     <div className="flex items-center gap-1 text-sm font-semibold">
                       <Star className="h-4 w-4 fill-warm text-warm" /> {r.rating}
