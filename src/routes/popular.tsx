@@ -33,34 +33,30 @@ function Popular() {
             <h1 className="font-display text-xl">{group.emoji} {group.title}</h1>
           </div>
         </div>
-        <div className="px-6 mt-4 space-y-2 pb-8">
+        <div className="px-6 mt-4 grid grid-cols-2 gap-3 pb-8">
           {group.items.map((item, i) => {
             const meal = item.mealId ? getMeal(item.mealId) : null;
-            const inner = (
-              <div className="flex items-center justify-between card-soft !py-3">
-                <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center text-xl ${meal ? `bg-gradient-to-br ${meal.gradient}` : "bg-secondary"}`}>
-                    {meal?.emoji ?? group.emoji}
-                  </div>
-                  <div>
-                    <p className="font-display text-sm">{item.name}</p>
-                    {meal ? (
-                      <p className="text-[11px] text-muted-foreground">₦{meal.cookMin.toLocaleString()}+ · {meal.cookingTimeMin}m</p>
-                    ) : (
-                      <p className="text-[11px] text-muted-foreground">Tap to add — recipe coming soon</p>
-                    )}
-                  </div>
+            const tile = (
+              <div className="card-soft h-full flex flex-col">
+                <div className={`aspect-[16/10] rounded-2xl flex items-center justify-center text-4xl mb-3 ${meal ? `bg-gradient-to-br ${meal.gradient}` : "bg-gradient-to-br from-brand/15 to-warm/25"}`}>
+                  <span className="drop-shadow-lg">{meal?.emoji ?? group.emoji}</span>
                 </div>
-                {meal && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                <h3 className="font-display text-sm leading-tight line-clamp-2 min-h-[2.25rem]">{item.name}</h3>
+                {meal ? (
+                  <span className="mt-2 inline-flex chip !bg-leaf/10 !text-leaf !px-2 !py-0.5 text-[11px] whitespace-nowrap self-start">₦{meal.cookMin.toLocaleString()}+ · {meal.cookingTimeMin}m</span>
+                ) : (
+                  <span className="mt-2 text-[10px] text-muted-foreground">Recipe coming soon</span>
+                )}
               </div>
             );
             return meal ? (
-              <Link key={i} to="/meal/$id" params={{ id: meal.id }}>{inner}</Link>
+              <Link key={i} to="/meal/$id" params={{ id: meal.id }} className="block">{tile}</Link>
             ) : (
-              <div key={i}>{inner}</div>
+              <div key={i}>{tile}</div>
             );
           })}
         </div>
+
       </PhoneShell>
     );
   }
