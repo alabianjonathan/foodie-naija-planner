@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TodayRouteImport } from './routes/today'
 import { Route as ShoppingRouteImport } from './routes/shopping'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as RestaurantsRouteImport } from './routes/restaurants'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -30,6 +31,11 @@ const TodayRoute = TodayRouteImport.update({
 const ShoppingRoute = ShoppingRouteImport.update({
   id: '/shopping',
   path: '/shopping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedRoute = SavedRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/restaurants': typeof RestaurantsRoute
   '/saved': typeof SavedRoute
+  '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
   '/meal/$id': typeof MealIdRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/restaurants': typeof RestaurantsRoute
   '/saved': typeof SavedRoute
+  '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
   '/meal/$id': typeof MealIdRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/restaurants': typeof RestaurantsRoute
   '/saved': typeof SavedRoute
+  '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
   '/meal/$id': typeof MealIdRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/restaurants'
     | '/saved'
+    | '/settings'
     | '/shopping'
     | '/today'
     | '/meal/$id'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/restaurants'
     | '/saved'
+    | '/settings'
     | '/shopping'
     | '/today'
     | '/meal/$id'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/restaurants'
     | '/saved'
+    | '/settings'
     | '/shopping'
     | '/today'
     | '/meal/$id'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RestaurantsRoute: typeof RestaurantsRoute
   SavedRoute: typeof SavedRoute
+  SettingsRoute: typeof SettingsRoute
   ShoppingRoute: typeof ShoppingRoute
   TodayRoute: typeof TodayRoute
   MealIdRoute: typeof MealIdRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/shopping'
       fullPath: '/shopping'
       preLoaderRoute: typeof ShoppingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved': {
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RestaurantsRoute: RestaurantsRoute,
   SavedRoute: SavedRoute,
+  SettingsRoute: SettingsRoute,
   ShoppingRoute: ShoppingRoute,
   TodayRoute: TodayRoute,
   MealIdRoute: MealIdRoute,
