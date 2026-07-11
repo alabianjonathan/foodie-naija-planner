@@ -87,11 +87,11 @@ function Home() {
         </Link>
       </header>
 
-      <section className="px-6 mt-2">
+      <section className="sticky top-0 z-20 px-6 py-3 bg-background/85 backdrop-blur-md">
         <div className="grid grid-cols-4 gap-2">
           {[
-            { to: "/popular", icon: Flame, label: "Popular", color: "bg-brand/10 text-brand" },
             { to: "/planner", icon: CalendarDays, label: "Planner", color: "bg-leaf/10 text-leaf" },
+            { to: "/popular", icon: Flame, label: "General", color: "bg-brand/10 text-brand" },
             { to: "/shopping", icon: ShoppingBasket, label: "Shop list", color: "bg-warm/20 text-charcoal" },
             { to: "/restaurants", icon: Store, label: "Restaurants", color: "bg-secondary text-charcoal" },
           ].map(({ to, icon: Icon, label, color }) => (
@@ -104,6 +104,7 @@ function Home() {
           ))}
         </div>
       </section>
+
 
       <section className="px-6 mt-8">
         <div className="relative">
