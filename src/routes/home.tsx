@@ -114,7 +114,10 @@ function Home() {
 
       <section className="px-6 mt-8">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-display text-xl">Quick picks for you</h2>
+          <div>
+            <h2 className="font-display text-xl">Quick picks for you</h2>
+            <p className="text-[11px] text-muted-foreground mt-0.5">{slot} picks · tuned to your preferences</p>
+          </div>
           <div className="flex items-center gap-3">
             <Link to="/popular" className="text-xs text-brand font-medium">Browse all</Link>
             <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium">Shuffle</button>
