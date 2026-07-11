@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { ChevronRight, Heart, Wallet, Target, Users, Store, Bell, LogOut, Flame, Camera, Loader2 } from "lucide-react";
+import { ChevronRight, Heart, Wallet, Target, Users, Store, Bell, LogOut, Flame, Camera, Loader2, MapPin } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
@@ -98,6 +98,7 @@ function Profile() {
   ];
 
   const links = [
+    { icon: MapPin, label: `Location · ${cityLabel}`, to: "/settings" as const },
     { icon: Heart, label: "Saved meals & plans", to: "/saved" as const },
     { icon: Store, label: "Become a restaurant partner", to: "/home" as const },
     { icon: Bell, label: "Notifications", to: "/home" as const },
