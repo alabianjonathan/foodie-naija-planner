@@ -13,17 +13,29 @@ const FILTERS = ["All", "Delivery", "Buka", "Grill", "Continental", "Fast food",
 type Filter = typeof FILTERS[number];
 
 const NEARBY_KM = 8;
+const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano"] as const;
 
 function Restaurants() {
   const { user } = useRequireAuth();
   const [city, setCity] = useState<string>("Lagos");
   const [filter, setFilter] = useState<Filter>("All");
+  const [pickingCity, setPickingCity] = useState(false);
+  const [savingCity, setSavingCity] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("city").eq("id", user.id).maybeSingle()
-      .then(({ data }) => { if (data?.city && data.city !== "Other") setCity(data.city); });
+      .then(({ data }) => { if (data?.city && CITIES.includes(data.city as never)) setCity(data.city); });
   }, [user]);
+
+  const changeCity = async (next: string) => {
+    setCity(next);
+    setPickingCity(false);
+    if (!user) return;
+    setSavingCity(true);
+    await supabase.from("profiles").update({ city: next }).eq("id", user.id);
+    setSavingCity(false);
+  };
 
   const nearby = useMemo(() => {
     return restaurants
@@ -40,10 +52,37 @@ function Restaurants() {
     <PhoneShell>
       <TopBar title="Restaurants near you" back="/home" />
       <div className="px-6 pt-2">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
-          <MapPin className="h-3.5 w-3.5 text-brand" />
-          Showing spots within {NEARBY_KM} km of <span className="font-semibold text-charcoal">{city}</span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5 text-brand" />
+            Within {NEARBY_KM} km of <span className="font-semibold text-charcoal">{city}</span>
+          </div>
+          <button
+            onClick={() => setPickingCity(v => !v)}
+            className="text-xs font-semibold text-brand"
+            disabled={savingCity}
+          >
+            {savingCity ? "Saving…" : "Change city"}
+          </button>
         </div>
+
+        {pickingCity && (
+          <div className="mb-4 card-soft !p-3">
+            <p className="text-[11px] text-muted-foreground mb-2">Choose your city</p>
+            <div className="flex flex-wrap gap-2">
+              {CITIES.map(c => (
+                <button
+                  key={c}
+                  onClick={() => changeCity(c)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${city === c ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
 
         <div className="flex gap-2 overflow-x-auto -mx-6 px-6 pb-1">
           {FILTERS.map(t => {
