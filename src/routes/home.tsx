@@ -66,10 +66,10 @@ function Home() {
       <section className="px-6 mt-2">
         <div className="grid grid-cols-4 gap-2">
           {[
+            { to: "/popular", icon: Flame, label: "Popular", color: "bg-brand/10 text-brand" },
             { to: "/planner", icon: CalendarDays, label: "Planner", color: "bg-leaf/10 text-leaf" },
             { to: "/shopping", icon: ShoppingBasket, label: "Shop list", color: "bg-warm/20 text-charcoal" },
-            { to: "/restaurants", icon: Store, label: "Restaurants", color: "bg-brand/10 text-brand" },
-            { to: "/today", icon: Flame, label: "Calories", color: "bg-secondary text-charcoal" },
+            { to: "/restaurants", icon: Store, label: "Restaurants", color: "bg-secondary text-charcoal" },
           ].map(({ to, icon: Icon, label, color }) => (
             <Link key={label} to={to} className="flex flex-col items-center gap-1.5 rounded-2xl bg-card p-3 shadow-[var(--shadow-soft)]">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${color}`}>
@@ -91,7 +91,10 @@ function Home() {
       <section className="px-6 mt-8">
         <div className="flex items-baseline justify-between">
           <h2 className="font-display text-xl">Quick picks for you</h2>
-          <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium">Shuffle</button>
+          <div className="flex items-center gap-3">
+            <Link to="/popular" className="text-xs text-brand font-medium">Browse all</Link>
+            <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium">Shuffle</button>
+          </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4">
           {featured.map((m: Meal) => <MealCard key={m.id} meal={m} />)}
