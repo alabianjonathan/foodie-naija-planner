@@ -664,11 +664,46 @@ export type Restaurant = {
 export const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Owerri"] as const;
 
 export const cityAreas: Record<string, string[]> = {
-  "Lagos": ["Alausa", "Gbagada", "Ikeja GRA", "Ilupeju", "Lekki Phase 1", "Maroko / Oniru", "Ogudu", "Ojodu", "Victoria Island", "Victoria Island / Oniru"],
-  "Abuja": ["Asokoro", "Garki II", "Mabushi", "Maitama", "Wuse 2", "Wuse Zone 5"],
-  "Port Harcourt": ["Forces Avenue", "GRA Phase 1", "GRA Phase 2", "Nkpogu", "Rumueme / GRA", "Trans Amadi"],
+  "Lagos": [
+    "Ikeja", "Allen Avenue", "Opebi", "Alausa", "Maryland", "Ogba", "Ojodu", "Berger", "Magodo", "Agege",
+    "Yaba", "Sabo Yaba", "Akoka", "Surulere", "Bode Thomas", "Ojuelegba", "Lawanson", "Mushin", "Ilupeju",
+    "Anthony Village", "Gbagada", "Bariga", "Shomolu", "Palmgrove", "Victoria Island", "Ikoyi",
+    "Lekki Phase 1", "Admiralty Way", "Oniru", "Ikate", "Chevron", "Osapa London", "Agungi",
+    "Jakande Lekki", "Ajah", "Sangotedo", "Abraham Adesanya", "Awoyaya", "Ibeju-Lekki", "Epe",
+    "Lagos Island", "Marina", "CMS", "Obalende", "Ikorodu", "Festac", "Amuwo Odofin", "Satellite Town",
+    "Mile 2", "Apapa", "Ajegunle", "Orile", "Coker", "Isolo", "Oshodi", "Ajao Estate", "Mafoluku",
+    "Egbeda", "Akowonjo", "Ipaja", "Dopemu", "Iyana Ipaja", "Abule Egba", "Alimosho", "Idimu", "Ikotun",
+    "Ejigbo", "Badagry", "Ojo", "Trade Fair", "LASU / Iba", "Okokomaiko", "Ikate Elegushi",
+    "Banana Island", "Lekki County", "VGC", "Orchid Road", "Ogudu", "Ketu", "Mile 12",
+  ],
+  "Abuja": [
+    "Wuse", "Wuse 2", "Garki", "Garki 2", "Maitama", "Asokoro", "Central Business District", "Jabi",
+    "Utako", "Gwarinpa", "Life Camp", "Katampe", "Kado", "Mabushi", "Wuye", "Apo", "Lokogoma",
+    "Galadimawa", "Games Village", "Durumi", "Guzape", "Jahi", "Dakibiyu", "Kaura", "Lugbe", "Kubwa",
+    "Dei-Dei", "Dawaki", "Mpape", "Karu", "Nyanya", "Mararaba", "Gwagwalada", "Kuje", "Airport Road",
+    "Jikwoyi", "Kurudu", "Karshi", "Orozo", "Bwari", "Dutse Alhaji", "Zuba", "Idu", "Karmo",
+    "Jabi Lake Area", "Area 1", "Area 2", "Area 3", "Area 8", "Area 10", "Area 11",
+    "Banex / Aminu Kano Crescent", "Ademola Adetokunbo Crescent", "Ceddi Plaza Area",
+  ],
+  "Port Harcourt": [
+    "Port Harcourt Town", "Old GRA", "New GRA", "GRA Phase 1", "GRA Phase 2", "GRA Phase 3",
+    "Peter Odili Road", "Trans Amadi", "D-Line", "Stadium Road", "Aba Road", "Olu Obasanjo Road",
+    "Waterlines", "Rumuola", "Rumuomasi", "Rumuokwuta", "Rumuigbo", "Rumuodara", "Rumuokoro",
+    "Rumuibekwe", "Rumuogba", "Rumukwurushi", "Eliozu", "Woji", "Elelenwo", "Akpajo", "Artillery",
+    "Garrison", "Mile 1", "Mile 2", "Mile 3", "Mile 4", "Diobu", "Borokiri", "Marine Base",
+    "Abuloma", "Amadi-Ama", "Eagle Island", "Choba", "Alakahia", "Uniport Area", "Ada George",
+    "NTA Road", "Location Road", "Mgbuoba", "Agip Road", "Igwuruta", "Eneka", "Oyigbo", "Eleme",
+    "Onne", "Bori Camp", "Psychiatric Road", "Slaughter", "Shell RA Area",
+  ],
   "Ibadan": ["Dugbe", "Iyaganku", "Jericho", "New Bodija", "Ring Road", "Sango-Ojoo"],
-  "Owerri": ["Concorde Avenue", "Ikenegbu"],
+  "Owerri": [
+    "Owerri Municipal", "Ikenegbu", "Wetheral Road", "Douglas Road", "Bank Road", "World Bank",
+    "New Owerri", "Old Owerri", "Aladinma", "Orji", "Amakohia", "Akwakuma", "Works Layout", "Prefab",
+    "Naze", "Nekede", "Ihiagwa", "Obinze", "Egbu", "Emekuku", "MCC Road", "Chukwuma Nwoha Road",
+    "Toronto Road", "Port Harcourt Road, Owerri", "Aba Road, Owerri", "Control Post",
+    "Concorde Area", "IMSU Area", "FUTO Area", "Relief Market Area", "Mbari Street",
+    "Okigwe Road, Owerri", "Hospital Road", "Tetlow Road", "Warehouse Junction",
+  ],
 };
 
 export const restaurants: Restaurant[] = [
