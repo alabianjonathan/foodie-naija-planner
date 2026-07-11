@@ -14,6 +14,7 @@ import { Route as ShoppingRouteImport } from './routes/shopping'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as RestaurantsRouteImport } from './routes/restaurants'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PopularRouteImport } from './routes/popular'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as HomeRouteImport } from './routes/home'
@@ -44,6 +45,11 @@ const RestaurantsRoute = RestaurantsRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PopularRoute = PopularRouteImport.update({
+  id: '/popular',
+  path: '/popular',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlannerRoute = PlannerRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
+  '/popular': typeof PopularRoute
   '/profile': typeof ProfileRoute
   '/restaurants': typeof RestaurantsRoute
   '/saved': typeof SavedRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
+  '/popular': typeof PopularRoute
   '/profile': typeof ProfileRoute
   '/restaurants': typeof RestaurantsRoute
   '/saved': typeof SavedRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
+  '/popular': typeof PopularRoute
   '/profile': typeof ProfileRoute
   '/restaurants': typeof RestaurantsRoute
   '/saved': typeof SavedRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/onboarding'
     | '/planner'
+    | '/popular'
     | '/profile'
     | '/restaurants'
     | '/saved'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/onboarding'
     | '/planner'
+    | '/popular'
     | '/profile'
     | '/restaurants'
     | '/saved'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/onboarding'
     | '/planner'
+    | '/popular'
     | '/profile'
     | '/restaurants'
     | '/saved'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   OnboardingRoute: typeof OnboardingRoute
   PlannerRoute: typeof PlannerRoute
+  PopularRoute: typeof PopularRoute
   ProfileRoute: typeof ProfileRoute
   RestaurantsRoute: typeof RestaurantsRoute
   SavedRoute: typeof SavedRoute
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/popular': {
+      id: '/popular'
+      path: '/popular'
+      fullPath: '/popular'
+      preLoaderRoute: typeof PopularRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/planner': {
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   OnboardingRoute: OnboardingRoute,
   PlannerRoute: PlannerRoute,
+  PopularRoute: PopularRoute,
   ProfileRoute: ProfileRoute,
   RestaurantsRoute: RestaurantsRoute,
   SavedRoute: SavedRoute,
