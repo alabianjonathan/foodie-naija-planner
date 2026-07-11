@@ -36,7 +36,7 @@ export const generateDailyRecommendation = createServerFn({ method: "POST" })
       .eq("id", context.userId)
       .maybeSingle();
 
-    const mealCatalog = meals.map((m) => ({
+    const mealCatalog = meals.filter((m) => m.popular).map((m) => ({
       id: m.id,
       name: m.name,
       category: m.category,

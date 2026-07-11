@@ -19,10 +19,10 @@ function Home() {
   const [nonce, setNonce] = useState(0);
   const { featured, quick } = useMemo(() => {
     const popular = [...meals].filter(m => m.popular).sort(() => Math.random() - 0.5);
-    const quickPool = [...meals].filter(m => m.cookingTimeMin <= 45).sort(() => Math.random() - 0.5);
+    const quickPopular = popular.filter(m => m.cookingTimeMin <= 45);
     return {
       featured: popular.slice(0, 4),
-      quick: (quickPool.length >= 4 ? quickPool : [...meals].sort(() => Math.random() - 0.5)).slice(0, 5),
+      quick: (quickPopular.length >= 4 ? quickPopular : popular).slice(0, 6),
     };
   }, [nonce]);
 
