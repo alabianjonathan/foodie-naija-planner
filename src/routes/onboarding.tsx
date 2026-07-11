@@ -49,6 +49,13 @@ function Onboarding() {
   const [customBudget, setCustomBudget] = useState("");
   const [showCustom, setShowCustom] = useState(false);
   const navigate = useNavigate();
+
+  const steps = useMemo(() => {
+    const city = answers.city;
+    const areas = city ? cityAreas[city] : undefined;
+    return baseSteps.filter(s => s.key !== "area" || (areas && areas.length > 0));
+  }, [answers.city]);
+
   const current = steps[step];
   const progress = ((step + 1) / steps.length) * 100;
 
@@ -76,6 +83,7 @@ function Onboarding() {
       planning_type: final.planningType ?? null,
       people: peopleNum,
       city: final.city ?? null,
+      area: final.area ?? null,
       budget: final.budget ?? null,
       cook_order: final.cookOrder ?? null,
       goal: final.goal ?? null,
