@@ -4,6 +4,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { cityAreas, CITIES } from "@/data/meals";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
@@ -13,6 +14,7 @@ type Answers = {
   planningType?: string;
   people?: string;
   city?: string;
+  area?: string;
   budget?: string;
   cookOrder?: string;
   goal?: string;
@@ -23,13 +25,14 @@ type Step = {
   key: keyof Answers;
   q: string;
   opts?: readonly string[];
-  kind?: "budget";
+  kind?: "budget" | "area";
 };
 
-const steps: readonly Step[] = [
+const baseSteps: readonly Step[] = [
   { key: "planningType", q: "Who are you planning for?", opts: ["Just me", "Me + partner", "Family", "Roommates"] },
   { key: "people", q: "How many people are eating?", opts: ["1", "2", "3", "4", "5+"] },
-  { key: "city", q: "Which city are you in?", opts: ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Other"] },
+  { key: "city", q: "Which city are you in?", opts: [...CITIES, "Other"] },
+  { key: "area", q: "Which area?", kind: "area" },
   { key: "budget", q: "What's your daily food budget?", kind: "budget" },
   { key: "cookOrder", q: "Do you prefer to cook or order?", opts: ["I love to cook", "I mostly order", "Both work for me"] },
   { key: "goal", q: "What's your health goal?", opts: ["Weight loss", "Weight gain", "Healthy eating", "Just normal meals", "High protein"] },
@@ -46,6 +49,13 @@ function Onboarding() {
   const [customBudget, setCustomBudget] = useState("");
   const [showCustom, setShowCustom] = useState(false);
   const navigate = useNavigate();
+
+  const steps = useMemo(() => {
+    const city = answers.city;
+    const areas = city ? cityAreas[city] : undefined;
+    return baseSteps.filter(s => s.key !== "area" || (areas && areas.length > 0));
+  }, [answers.city]);
+
   const current = steps[step];
   const progress = ((step + 1) / steps.length) * 100;
 
@@ -73,6 +83,7 @@ function Onboarding() {
       planning_type: final.planningType ?? null,
       people: peopleNum,
       city: final.city ?? null,
+      area: final.area ?? null,
       budget: final.budget ?? null,
       cook_order: final.cookOrder ?? null,
       goal: final.goal ?? null,
@@ -163,7 +174,7 @@ function Onboarding() {
             </div>
           ) : (
             <div className="mt-8 space-y-3">
-              {(current.opts ?? []).map(opt => {
+              {(current.kind === "area" ? (answers.city ? cityAreas[answers.city] ?? [] : []) : (current.opts ?? [])).map(opt => {
                 const active = answers[current.key]?.toString() === opt;
                 return (
                   <button
