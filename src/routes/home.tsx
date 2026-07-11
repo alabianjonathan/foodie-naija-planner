@@ -18,11 +18,11 @@ function Home() {
   const [name, setName] = useState<string>("");
   const [nonce, setNonce] = useState(0);
   const { featured, quick } = useMemo(() => {
-    const shuffled = [...meals].sort(() => Math.random() - 0.5);
-    const quickPool = shuffled.filter(m => m.cookingTimeMin <= 45);
+    const popular = [...meals].filter(m => m.popular).sort(() => Math.random() - 0.5);
+    const quickPool = [...meals].filter(m => m.cookingTimeMin <= 45).sort(() => Math.random() - 0.5);
     return {
-      featured: shuffled.slice(0, 4),
-      quick: (quickPool.length >= 4 ? quickPool : shuffled).slice(0, 5),
+      featured: popular.slice(0, 4),
+      quick: (quickPool.length >= 4 ? quickPool : [...meals].sort(() => Math.random() - 0.5)).slice(0, 5),
     };
   }, [nonce]);
 

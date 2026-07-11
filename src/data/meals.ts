@@ -22,6 +22,7 @@ export type Meal = {
   goals: string[];
   ingredients: { name: string; qty: string; price: number }[];
   description: string;
+  popular?: boolean;
 };
 
 export const meals: Meal[] = [
@@ -50,6 +51,7 @@ export const meals: Meal[] = [
       { name: "Seasoning", qty: "to taste", price: 300 },
     ],
     description: "Nigeria's national favourite — smoky party rice cooked in a rich tomato-pepper base and served with tender chicken.",
+    popular: true,
   },
   {
     id: "beans-plantain",
@@ -75,6 +77,7 @@ export const meals: Meal[] = [
       { name: "Crayfish", qty: "1 tbsp", price: 200 },
     ],
     description: "Soft honey beans slow-cooked with palm oil and pepper, served with sweet fried plantain.",
+    popular: true,
   },
   {
     id: "eba-egusi",
@@ -100,6 +103,7 @@ export const meals: Meal[] = [
       { name: "Stockfish", qty: "2 pcs", price: 800 },
     ],
     description: "Classic melon-seed soup rich with assorted meat and ugu, paired with fluffy eba.",
+    popular: true,
   },
   {
     id: "pap-akara",
@@ -124,6 +128,7 @@ export const meals: Meal[] = [
       { name: "Oil for frying", qty: "1 cup", price: 500 },
     ],
     description: "Smooth, warm corn pap paired with crispy bean cakes — a beloved way to start the day.",
+    popular: true,
   },
   {
     id: "yam-egg",
@@ -148,6 +153,7 @@ export const meals: Meal[] = [
       { name: "Onion", qty: "1 bulb", price: 150 },
     ],
     description: "Tender boiled yam served with a spicy tomato-pepper egg sauce.",
+    popular: true,
   },
   {
     id: "grilled-fish",
@@ -196,6 +202,7 @@ export const meals: Meal[] = [
       { name: "Palm oil", qty: "3 tbsp", price: 300 },
     ],
     description: "Silky yam-flour swallow served with jute-leaf soup and rich stew — a Yoruba classic.",
+    popular: true,
   },
   {
     id: "spaghetti-egg",
@@ -221,6 +228,7 @@ export const meals: Meal[] = [
       { name: "Oil", qty: "3 tbsp", price: 200 },
     ],
     description: "Quick stir-fried spaghetti in tomato sauce, topped with fluffy scrambled eggs.",
+    popular: true,
   },
   {
     id: "pepper-soup",
@@ -245,6 +253,7 @@ export const meals: Meal[] = [
       { name: "Ginger", qty: "50g", price: 150 },
     ],
     description: "Hot, aromatic broth with fresh catfish, scent leaves and native spices.",
+    popular: true,
   },
   {
     id: "moi-moi",
@@ -270,6 +279,7 @@ export const meals: Meal[] = [
       { name: "Boiled egg", qty: "2 pcs", price: 400 },
     ],
     description: "Steamed bean pudding, silky and rich, layered with egg, fish or beef.",
+    popular: true,
   },
   {
     id: "fried-rice",
@@ -291,6 +301,7 @@ export const meals: Meal[] = [
       { name: "Groundnut oil", qty: "1/4 cup", price: 500 },
     ],
     description: "Colourful stir-fried rice with liver, carrots, green beans and chicken.",
+    popular: true,
   },
   {
     id: "ofada-ayamase",
@@ -311,6 +322,7 @@ export const meals: Meal[] = [
       { name: "Palm oil", qty: "1 cup", price: 700 },
     ],
     description: "Local unpolished rice paired with fiery green-pepper ayamase stew.",
+    popular: true,
   },
   {
     id: "efo-riro",
@@ -331,6 +343,7 @@ export const meals: Meal[] = [
       { name: "Pepper mix", qty: "5 pcs", price: 300 },
     ],
     description: "Well-seasoned Yoruba vegetable stew with pounded yam.",
+    popular: true,
   },
   {
     id: "afang-fufu",
@@ -351,6 +364,7 @@ export const meals: Meal[] = [
       { name: "Palm oil", qty: "1/3 cup", price: 400 },
     ],
     description: "Efik classic — afang and waterleaf simmered with periwinkle and meat.",
+    popular: true,
   },
   {
     id: "banga-starch",
@@ -370,6 +384,7 @@ export const meals: Meal[] = [
       { name: "Banga spice", qty: "1 sachet", price: 300 },
     ],
     description: "Delta-style banga soup with silky yellow starch.",
+    popular: true,
   },
   {
     id: "suya",
@@ -389,6 +404,7 @@ export const meals: Meal[] = [
       { name: "Tomato", qty: "2 pcs", price: 200 },
     ],
     description: "Smoky, spicy grilled beef skewers dusted with yaji.",
+    popular: true,
   },
   {
     id: "chicken-shawarma",
@@ -408,6 +424,7 @@ export const meals: Meal[] = [
       { name: "Sauces", qty: "3 tbsp", price: 300 },
     ],
     description: "Warm wrap of spiced chicken, crisp veg and creamy sauce.",
+    popular: true,
   },
   {
     id: "puff-puff",
@@ -427,6 +444,7 @@ export const meals: Meal[] = [
       { name: "Oil for frying", qty: "3 cups", price: 800 },
     ],
     description: "Fluffy sweet dough balls, deep-fried golden — a party favourite.",
+    popular: true,
   },
   {
     id: "meat-pie",
@@ -446,6 +464,7 @@ export const meals: Meal[] = [
       { name: "Potato & carrot", qty: "200g", price: 300 },
     ],
     description: "Flaky pastry filled with savoury beef, potato and carrots.",
+    popular: true,
   },
   {
     id: "bread-akara",
@@ -465,6 +484,7 @@ export const meals: Meal[] = [
       { name: "Oil for frying", qty: "1 cup", price: 500 },
     ],
     description: "Warm agege bread with crunchy bean cakes — a Lagos classic.",
+    popular: true,
   },
   {
     id: "oats-fruit",
@@ -503,6 +523,7 @@ export const meals: Meal[] = [
       { name: "Oil", qty: "3 tbsp", price: 200 },
     ],
     description: "Golden fried plantain served with a spicy scrambled-egg sauce.",
+    popular: true,
   },
   {
     id: "okra-soup",
@@ -522,6 +543,7 @@ export const meals: Meal[] = [
       { name: "Palm oil", qty: "1/4 cup", price: 300 },
     ],
     description: "Silky okra soup with assorted meat, paired with soft semo.",
+    popular: true,
   },
   {
     id: "nkwobi",
@@ -541,6 +563,7 @@ export const meals: Meal[] = [
       { name: "Utazi leaves", qty: "1 handful", price: 200 },
     ],
     description: "Spicy cow-foot delicacy in a creamy palm-oil sauce — Igbo classic.",
+    popular: true,
   },
   {
     id: "asun",
@@ -560,6 +583,7 @@ export const meals: Meal[] = [
       { name: "Seasoning", qty: "to taste", price: 200 },
     ],
     description: "Smoky grilled goat tossed in a fiery pepper sauce.",
+    popular: true,
   },
   {
     id: "chicken-salad",
@@ -617,6 +641,7 @@ export const meals: Meal[] = [
       { name: "Mixed vegetables", qty: "200g", price: 500 },
     ],
     description: "Fragrant rice simmered in coconut milk, served with grilled fish.",
+    popular: true,
   },
 ];
 
