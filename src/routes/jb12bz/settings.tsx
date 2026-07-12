@@ -1,14 +1,14 @@
 import { createFileRoute, useRouteContext, Navigate } from "@tanstack/react-router";
 import { PageHeader } from "@/components/admin/PageHeader";
 
-export const Route = createFileRoute("/admin/settings")({
+export const Route = createFileRoute("/jb12bz/settings")({
   head: () => ({ meta: [{ title: "Settings — MealBeta Admin" }] }),
   component: SettingsPage,
 });
 
 function SettingsPage() {
-  const { adminRole } = useRouteContext({ from: "/admin" });
-  if (adminRole !== "super_admin") return <Navigate to="/admin" />;
+  const { adminRole } = useRouteContext({ from: "/jb12bz" });
+  if (adminRole !== "super_admin") return <Navigate to="/jb12bz" />;
 
   return (
     <div>

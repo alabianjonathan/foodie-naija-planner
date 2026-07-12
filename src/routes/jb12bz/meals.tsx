@@ -5,7 +5,7 @@ import { DataTable, StatusPill } from "@/components/admin/DataTable";
 import { sampleMeals, sampleCategories, type AdminMeal } from "@/data/admin-sample";
 import { Plus, Trash2, ImagePlus } from "lucide-react";
 
-export const Route = createFileRoute("/admin/meals")({
+export const Route = createFileRoute("/jb12bz/meals")({
   head: () => ({ meta: [{ title: "Meals — MealBeta Admin" }] }),
   component: MealsPage,
 });

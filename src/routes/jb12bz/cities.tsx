@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { sampleCities, type AdminCity } from "@/data/admin-sample";
 import { Plus, Trash2, Power } from "lucide-react";
 
-export const Route = createFileRoute("/admin/cities")({
+export const Route = createFileRoute("/jb12bz/cities")({
   head: () => ({ meta: [{ title: "Cities & Areas — MealBeta Admin" }] }),
   component: CitiesPage,
 });

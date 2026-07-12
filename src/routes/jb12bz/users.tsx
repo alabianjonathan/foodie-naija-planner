@@ -5,13 +5,13 @@ import { DataTable, StatusPill } from "@/components/admin/DataTable";
 import { sampleUsers, type AdminUser } from "@/data/admin-sample";
 import { Ban, Trash2, ShieldCheck, RotateCcw } from "lucide-react";
 
-export const Route = createFileRoute("/admin/users")({
+export const Route = createFileRoute("/jb12bz/users")({
   head: () => ({ meta: [{ title: "Users — MealBeta Admin" }] }),
   component: UsersPage,
 });
 
 function UsersPage() {
-  const { adminRole } = useRouteContext({ from: "/admin" });
+  const { adminRole } = useRouteContext({ from: "/jb12bz" });
   const [users, setUsers] = useState<AdminUser[]>(sampleUsers);
 
   const updateRole = (id: string, role: AdminUser["role"]) =>

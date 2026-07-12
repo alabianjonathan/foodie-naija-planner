@@ -24,20 +24,20 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as Jb12bzRouteRouteImport } from './routes/jb12bz/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as Jb12bzIndexRouteImport } from './routes/jb12bz/index'
 import { Route as MealIdRouteImport } from './routes/meal.$id'
-import { Route as AdminUsersRouteImport } from './routes/admin/users'
-import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
-import { Route as AdminRestaurantsRouteImport } from './routes/admin/restaurants'
-import { Route as AdminNutritionRouteImport } from './routes/admin/nutrition'
-import { Route as AdminMealsRouteImport } from './routes/admin/meals'
-import { Route as AdminMealPlansRouteImport } from './routes/admin/meal-plans'
-import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
-import { Route as AdminIngredientsRouteImport } from './routes/admin/ingredients'
-import { Route as AdminCitiesRouteImport } from './routes/admin/cities'
-import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as Jb12bzUsersRouteImport } from './routes/jb12bz/users'
+import { Route as Jb12bzSettingsRouteImport } from './routes/jb12bz/settings'
+import { Route as Jb12bzRestaurantsRouteImport } from './routes/jb12bz/restaurants'
+import { Route as Jb12bzNutritionRouteImport } from './routes/jb12bz/nutrition'
+import { Route as Jb12bzMealsRouteImport } from './routes/jb12bz/meals'
+import { Route as Jb12bzMealPlansRouteImport } from './routes/jb12bz/meal-plans'
+import { Route as Jb12bzLeadsRouteImport } from './routes/jb12bz/leads'
+import { Route as Jb12bzIngredientsRouteImport } from './routes/jb12bz/ingredients'
+import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
+import { Route as Jb12bzCategoriesRouteImport } from './routes/jb12bz/categories'
 
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
@@ -114,9 +114,9 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRouteRoute = AdminRouteRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const Jb12bzRouteRoute = Jb12bzRouteRouteImport.update({
+  id: '/jb12bz',
+  path: '/jb12bz',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -124,70 +124,70 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
+const Jb12bzIndexRoute = Jb12bzIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
 const MealIdRoute = MealIdRouteImport.update({
   id: '/meal/$id',
   path: '/meal/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
+const Jb12bzUsersRoute = Jb12bzUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
+const Jb12bzSettingsRoute = Jb12bzSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminRestaurantsRoute = AdminRestaurantsRouteImport.update({
+const Jb12bzRestaurantsRoute = Jb12bzRestaurantsRouteImport.update({
   id: '/restaurants',
   path: '/restaurants',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminNutritionRoute = AdminNutritionRouteImport.update({
+const Jb12bzNutritionRoute = Jb12bzNutritionRouteImport.update({
   id: '/nutrition',
   path: '/nutrition',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminMealsRoute = AdminMealsRouteImport.update({
+const Jb12bzMealsRoute = Jb12bzMealsRouteImport.update({
   id: '/meals',
   path: '/meals',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminMealPlansRoute = AdminMealPlansRouteImport.update({
+const Jb12bzMealPlansRoute = Jb12bzMealPlansRouteImport.update({
   id: '/meal-plans',
   path: '/meal-plans',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminLeadsRoute = AdminLeadsRouteImport.update({
+const Jb12bzLeadsRoute = Jb12bzLeadsRouteImport.update({
   id: '/leads',
   path: '/leads',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminIngredientsRoute = AdminIngredientsRouteImport.update({
+const Jb12bzIngredientsRoute = Jb12bzIngredientsRouteImport.update({
   id: '/ingredients',
   path: '/ingredients',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminCitiesRoute = AdminCitiesRouteImport.update({
+const Jb12bzCitiesRoute = Jb12bzCitiesRouteImport.update({
   id: '/cities',
   path: '/cities',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+const Jb12bzCategoriesRoute = Jb12bzCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
-  getParentRoute: () => AdminRouteRoute,
+  getParentRoute: () => Jb12bzRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRouteWithChildren
+  '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -203,18 +203,18 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
-  '/admin/categories': typeof AdminCategoriesRoute
-  '/admin/cities': typeof AdminCitiesRoute
-  '/admin/ingredients': typeof AdminIngredientsRoute
-  '/admin/leads': typeof AdminLeadsRoute
-  '/admin/meal-plans': typeof AdminMealPlansRoute
-  '/admin/meals': typeof AdminMealsRoute
-  '/admin/nutrition': typeof AdminNutritionRoute
-  '/admin/restaurants': typeof AdminRestaurantsRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/users': typeof AdminUsersRoute
+  '/jb12bz/categories': typeof Jb12bzCategoriesRoute
+  '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/ingredients': typeof Jb12bzIngredientsRoute
+  '/jb12bz/leads': typeof Jb12bzLeadsRoute
+  '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
+  '/jb12bz/meals': typeof Jb12bzMealsRoute
+  '/jb12bz/nutrition': typeof Jb12bzNutritionRoute
+  '/jb12bz/restaurants': typeof Jb12bzRestaurantsRoute
+  '/jb12bz/settings': typeof Jb12bzSettingsRoute
+  '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
-  '/admin/': typeof AdminIndexRoute
+  '/jb12bz/': typeof Jb12bzIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -233,23 +233,23 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
-  '/admin/categories': typeof AdminCategoriesRoute
-  '/admin/cities': typeof AdminCitiesRoute
-  '/admin/ingredients': typeof AdminIngredientsRoute
-  '/admin/leads': typeof AdminLeadsRoute
-  '/admin/meal-plans': typeof AdminMealPlansRoute
-  '/admin/meals': typeof AdminMealsRoute
-  '/admin/nutrition': typeof AdminNutritionRoute
-  '/admin/restaurants': typeof AdminRestaurantsRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/users': typeof AdminUsersRoute
+  '/jb12bz/categories': typeof Jb12bzCategoriesRoute
+  '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/ingredients': typeof Jb12bzIngredientsRoute
+  '/jb12bz/leads': typeof Jb12bzLeadsRoute
+  '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
+  '/jb12bz/meals': typeof Jb12bzMealsRoute
+  '/jb12bz/nutrition': typeof Jb12bzNutritionRoute
+  '/jb12bz/restaurants': typeof Jb12bzRestaurantsRoute
+  '/jb12bz/settings': typeof Jb12bzSettingsRoute
+  '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
-  '/admin': typeof AdminIndexRoute
+  '/jb12bz': typeof Jb12bzIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRouteWithChildren
+  '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -265,24 +265,24 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
-  '/admin/categories': typeof AdminCategoriesRoute
-  '/admin/cities': typeof AdminCitiesRoute
-  '/admin/ingredients': typeof AdminIngredientsRoute
-  '/admin/leads': typeof AdminLeadsRoute
-  '/admin/meal-plans': typeof AdminMealPlansRoute
-  '/admin/meals': typeof AdminMealsRoute
-  '/admin/nutrition': typeof AdminNutritionRoute
-  '/admin/restaurants': typeof AdminRestaurantsRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/users': typeof AdminUsersRoute
+  '/jb12bz/categories': typeof Jb12bzCategoriesRoute
+  '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/ingredients': typeof Jb12bzIngredientsRoute
+  '/jb12bz/leads': typeof Jb12bzLeadsRoute
+  '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
+  '/jb12bz/meals': typeof Jb12bzMealsRoute
+  '/jb12bz/nutrition': typeof Jb12bzNutritionRoute
+  '/jb12bz/restaurants': typeof Jb12bzRestaurantsRoute
+  '/jb12bz/settings': typeof Jb12bzSettingsRoute
+  '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
-  '/admin/': typeof AdminIndexRoute
+  '/jb12bz/': typeof Jb12bzIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
+    | '/jb12bz'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
@@ -298,18 +298,18 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
-    | '/admin/categories'
-    | '/admin/cities'
-    | '/admin/ingredients'
-    | '/admin/leads'
-    | '/admin/meal-plans'
-    | '/admin/meals'
-    | '/admin/nutrition'
-    | '/admin/restaurants'
-    | '/admin/settings'
-    | '/admin/users'
+    | '/jb12bz/categories'
+    | '/jb12bz/cities'
+    | '/jb12bz/ingredients'
+    | '/jb12bz/leads'
+    | '/jb12bz/meal-plans'
+    | '/jb12bz/meals'
+    | '/jb12bz/nutrition'
+    | '/jb12bz/restaurants'
+    | '/jb12bz/settings'
+    | '/jb12bz/users'
     | '/meal/$id'
-    | '/admin/'
+    | '/jb12bz/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -328,22 +328,22 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
-    | '/admin/categories'
-    | '/admin/cities'
-    | '/admin/ingredients'
-    | '/admin/leads'
-    | '/admin/meal-plans'
-    | '/admin/meals'
-    | '/admin/nutrition'
-    | '/admin/restaurants'
-    | '/admin/settings'
-    | '/admin/users'
+    | '/jb12bz/categories'
+    | '/jb12bz/cities'
+    | '/jb12bz/ingredients'
+    | '/jb12bz/leads'
+    | '/jb12bz/meal-plans'
+    | '/jb12bz/meals'
+    | '/jb12bz/nutrition'
+    | '/jb12bz/restaurants'
+    | '/jb12bz/settings'
+    | '/jb12bz/users'
     | '/meal/$id'
-    | '/admin'
+    | '/jb12bz'
   id:
     | '__root__'
     | '/'
-    | '/admin'
+    | '/jb12bz'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
@@ -359,23 +359,23 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
-    | '/admin/categories'
-    | '/admin/cities'
-    | '/admin/ingredients'
-    | '/admin/leads'
-    | '/admin/meal-plans'
-    | '/admin/meals'
-    | '/admin/nutrition'
-    | '/admin/restaurants'
-    | '/admin/settings'
-    | '/admin/users'
+    | '/jb12bz/categories'
+    | '/jb12bz/cities'
+    | '/jb12bz/ingredients'
+    | '/jb12bz/leads'
+    | '/jb12bz/meal-plans'
+    | '/jb12bz/meals'
+    | '/jb12bz/nutrition'
+    | '/jb12bz/restaurants'
+    | '/jb12bz/settings'
+    | '/jb12bz/users'
     | '/meal/$id'
-    | '/admin/'
+    | '/jb12bz/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  Jb12bzRouteRoute: typeof Jb12bzRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -501,11 +501,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteRouteImport
+    '/jb12bz': {
+      id: '/jb12bz'
+      path: '/jb12bz'
+      fullPath: '/jb12bz'
+      preLoaderRoute: typeof Jb12bzRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -515,12 +515,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
+    '/jb12bz/': {
+      id: '/jb12bz/'
       path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/'
+      preLoaderRoute: typeof Jb12bzIndexRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
     '/meal/$id': {
       id: '/meal/$id'
@@ -529,114 +529,114 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MealIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/users': {
-      id: '/admin/users'
+    '/jb12bz/users': {
+      id: '/jb12bz/users'
       path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/users'
+      preLoaderRoute: typeof Jb12bzUsersRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/settings': {
-      id: '/admin/settings'
+    '/jb12bz/settings': {
+      id: '/jb12bz/settings'
       path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/settings'
+      preLoaderRoute: typeof Jb12bzSettingsRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/restaurants': {
-      id: '/admin/restaurants'
+    '/jb12bz/restaurants': {
+      id: '/jb12bz/restaurants'
       path: '/restaurants'
-      fullPath: '/admin/restaurants'
-      preLoaderRoute: typeof AdminRestaurantsRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/restaurants'
+      preLoaderRoute: typeof Jb12bzRestaurantsRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/nutrition': {
-      id: '/admin/nutrition'
+    '/jb12bz/nutrition': {
+      id: '/jb12bz/nutrition'
       path: '/nutrition'
-      fullPath: '/admin/nutrition'
-      preLoaderRoute: typeof AdminNutritionRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/nutrition'
+      preLoaderRoute: typeof Jb12bzNutritionRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/meals': {
-      id: '/admin/meals'
+    '/jb12bz/meals': {
+      id: '/jb12bz/meals'
       path: '/meals'
-      fullPath: '/admin/meals'
-      preLoaderRoute: typeof AdminMealsRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/meals'
+      preLoaderRoute: typeof Jb12bzMealsRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/meal-plans': {
-      id: '/admin/meal-plans'
+    '/jb12bz/meal-plans': {
+      id: '/jb12bz/meal-plans'
       path: '/meal-plans'
-      fullPath: '/admin/meal-plans'
-      preLoaderRoute: typeof AdminMealPlansRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/meal-plans'
+      preLoaderRoute: typeof Jb12bzMealPlansRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/leads': {
-      id: '/admin/leads'
+    '/jb12bz/leads': {
+      id: '/jb12bz/leads'
       path: '/leads'
-      fullPath: '/admin/leads'
-      preLoaderRoute: typeof AdminLeadsRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/leads'
+      preLoaderRoute: typeof Jb12bzLeadsRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/ingredients': {
-      id: '/admin/ingredients'
+    '/jb12bz/ingredients': {
+      id: '/jb12bz/ingredients'
       path: '/ingredients'
-      fullPath: '/admin/ingredients'
-      preLoaderRoute: typeof AdminIngredientsRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/ingredients'
+      preLoaderRoute: typeof Jb12bzIngredientsRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/cities': {
-      id: '/admin/cities'
+    '/jb12bz/cities': {
+      id: '/jb12bz/cities'
       path: '/cities'
-      fullPath: '/admin/cities'
-      preLoaderRoute: typeof AdminCitiesRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/cities'
+      preLoaderRoute: typeof Jb12bzCitiesRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
-    '/admin/categories': {
-      id: '/admin/categories'
+    '/jb12bz/categories': {
+      id: '/jb12bz/categories'
       path: '/categories'
-      fullPath: '/admin/categories'
-      preLoaderRoute: typeof AdminCategoriesRouteImport
-      parentRoute: typeof AdminRouteRoute
+      fullPath: '/jb12bz/categories'
+      preLoaderRoute: typeof Jb12bzCategoriesRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
     }
   }
 }
 
-interface AdminRouteRouteChildren {
-  AdminCategoriesRoute: typeof AdminCategoriesRoute
-  AdminCitiesRoute: typeof AdminCitiesRoute
-  AdminIngredientsRoute: typeof AdminIngredientsRoute
-  AdminLeadsRoute: typeof AdminLeadsRoute
-  AdminMealPlansRoute: typeof AdminMealPlansRoute
-  AdminMealsRoute: typeof AdminMealsRoute
-  AdminNutritionRoute: typeof AdminNutritionRoute
-  AdminRestaurantsRoute: typeof AdminRestaurantsRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminUsersRoute: typeof AdminUsersRoute
-  AdminIndexRoute: typeof AdminIndexRoute
+interface Jb12bzRouteRouteChildren {
+  Jb12bzCategoriesRoute: typeof Jb12bzCategoriesRoute
+  Jb12bzCitiesRoute: typeof Jb12bzCitiesRoute
+  Jb12bzIngredientsRoute: typeof Jb12bzIngredientsRoute
+  Jb12bzLeadsRoute: typeof Jb12bzLeadsRoute
+  Jb12bzMealPlansRoute: typeof Jb12bzMealPlansRoute
+  Jb12bzMealsRoute: typeof Jb12bzMealsRoute
+  Jb12bzNutritionRoute: typeof Jb12bzNutritionRoute
+  Jb12bzRestaurantsRoute: typeof Jb12bzRestaurantsRoute
+  Jb12bzSettingsRoute: typeof Jb12bzSettingsRoute
+  Jb12bzUsersRoute: typeof Jb12bzUsersRoute
+  Jb12bzIndexRoute: typeof Jb12bzIndexRoute
 }
 
-const AdminRouteRouteChildren: AdminRouteRouteChildren = {
-  AdminCategoriesRoute: AdminCategoriesRoute,
-  AdminCitiesRoute: AdminCitiesRoute,
-  AdminIngredientsRoute: AdminIngredientsRoute,
-  AdminLeadsRoute: AdminLeadsRoute,
-  AdminMealPlansRoute: AdminMealPlansRoute,
-  AdminMealsRoute: AdminMealsRoute,
-  AdminNutritionRoute: AdminNutritionRoute,
-  AdminRestaurantsRoute: AdminRestaurantsRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
-  AdminUsersRoute: AdminUsersRoute,
-  AdminIndexRoute: AdminIndexRoute,
+const Jb12bzRouteRouteChildren: Jb12bzRouteRouteChildren = {
+  Jb12bzCategoriesRoute: Jb12bzCategoriesRoute,
+  Jb12bzCitiesRoute: Jb12bzCitiesRoute,
+  Jb12bzIngredientsRoute: Jb12bzIngredientsRoute,
+  Jb12bzLeadsRoute: Jb12bzLeadsRoute,
+  Jb12bzMealPlansRoute: Jb12bzMealPlansRoute,
+  Jb12bzMealsRoute: Jb12bzMealsRoute,
+  Jb12bzNutritionRoute: Jb12bzNutritionRoute,
+  Jb12bzRestaurantsRoute: Jb12bzRestaurantsRoute,
+  Jb12bzSettingsRoute: Jb12bzSettingsRoute,
+  Jb12bzUsersRoute: Jb12bzUsersRoute,
+  Jb12bzIndexRoute: Jb12bzIndexRoute,
 }
 
-const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
-  AdminRouteRouteChildren,
+const Jb12bzRouteRouteWithChildren = Jb12bzRouteRoute._addFileChildren(
+  Jb12bzRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRouteRoute: AdminRouteRouteWithChildren,
+  Jb12bzRouteRoute: Jb12bzRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ChangePasswordRoute: ChangePasswordRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,

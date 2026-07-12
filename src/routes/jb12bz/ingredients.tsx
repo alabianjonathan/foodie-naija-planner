@@ -5,7 +5,7 @@ import { DataTable } from "@/components/admin/DataTable";
 import { sampleIngredients, type AdminIngredient } from "@/data/admin-sample";
 import { Plus, Trash2 } from "lucide-react";
 
-export const Route = createFileRoute("/admin/ingredients")({
+export const Route = createFileRoute("/jb12bz/ingredients")({
   head: () => ({ meta: [{ title: "Ingredients — MealBeta Admin" }] }),
   component: IngredientsPage,
 });
