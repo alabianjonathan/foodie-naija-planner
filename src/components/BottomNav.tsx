@@ -12,7 +12,7 @@ const items = [
 export function BottomNav() {
   return (
     <nav
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-40 border-t border-border bg-card/95 backdrop-blur px-2 pt-2 md:rounded-b-[36px]"
+      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-40 border-t border-border bg-card/95 backdrop-blur px-2 pt-2"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
     >
       <ul className="flex items-center justify-between">
