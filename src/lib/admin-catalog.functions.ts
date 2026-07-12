@@ -246,13 +246,22 @@ export const adminListMealPlans = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await requireAdmin(context);
-    const { data, error } = await context.supabase
+    const { data: plans, error } = await context.supabase
       .from("meal_plans")
-      .select("*, profiles:user_id(display_name)")
+      .select("*")
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw error;
-    return data;
+    const userIds = Array.from(new Set((plans ?? []).map((p) => p.user_id).filter(Boolean)));
+    let profileMap = new Map<string, { display_name: string | null }>();
+    if (userIds.length > 0) {
+      const { data: profs } = await context.supabase
+        .from("profiles")
+        .select("id, display_name")
+        .in("id", userIds);
+      profileMap = new Map((profs ?? []).map((p) => [p.id, { display_name: p.display_name }]));
+    }
+    return (plans ?? []).map((p) => ({ ...p, profiles: profileMap.get(p.user_id) ?? null }));
   });
 
 // ============ DASHBOARD ============
