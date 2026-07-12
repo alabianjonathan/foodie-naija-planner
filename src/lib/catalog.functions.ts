@@ -48,6 +48,8 @@ export type CatalogRestaurant = {
   name: string;
   city: string;
   area: string | null;
+  address: string | null;
+
   rating: number;
   distanceKm: number;
   delivery: boolean;
