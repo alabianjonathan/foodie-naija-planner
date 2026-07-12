@@ -80,7 +80,7 @@ function Home() {
               <div className="inline-flex items-center gap-1.5 text-xs font-medium bg-white/20 rounded-full px-2.5 py-1">
                 <Sparkles className="h-3 w-3" /> AI Suggestion
               </div>
-              <h2 className="mt-3 font-display text-xl leading-tight">What should I eat today?</h2>
+              <h2 className="mt-3 font-display text-xl leading-tight">What should I eat this {mealPeriod()}?</h2>
               <p className="mt-1 text-sm text-white/85">Tap for 3 meals tuned to your budget & goal.</p>
             </div>
             <span className="text-3xl">🍲</span>
