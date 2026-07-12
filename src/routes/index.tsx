@@ -19,35 +19,35 @@ function Splash() {
   }, [navigate]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-[oklch(0.97_0.03_75)] to-[oklch(0.94_0.05_60)] py-0 md:py-6">
-      <div className="phone-shell overflow-hidden md:rounded-[36px] md:min-h-[900px] md:max-h-[900px] flex flex-col">
-        <div className="relative h-[55%] min-h-[420px] overflow-hidden">
+      <div className="phone-shell overflow-hidden md:rounded-[36px] md:min-h-[680px] md:max-h-[820px] flex flex-col">
+        <div className="relative h-[42%] min-h-[260px] overflow-hidden">
           <img src={heroFood} alt="Nigerian jollof rice with chicken" width={1200} height={1200} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background" />
-          <div className="absolute top-6 left-6 right-6 flex items-center gap-2">
-            <div className="h-9 w-9 rounded-2xl bg-brand flex items-center justify-center text-brand-foreground font-display text-lg">M</div>
-            <span className="font-display text-lg text-white drop-shadow-md">MealBeta</span>
+          <div className="absolute top-5 left-5 right-5 flex items-center gap-2">
+            <div className="h-8 w-8 rounded-xl bg-brand flex items-center justify-center text-brand-foreground font-display text-base">M</div>
+            <span className="font-display text-base text-white drop-shadow-md">MealBeta</span>
           </div>
         </div>
 
-        <div className="flex-1 px-6 pt-5 pb-6 flex flex-col justify-between">
+        <div className="flex-1 px-6 pt-4 pb-5 flex flex-col justify-between">
           <div>
-            <span className="chip !bg-warm/20 !text-charcoal">
-              <Sparkles className="h-3.5 w-3.5" /> AI meals for Nigeria
+            <span className="chip !bg-warm/20 !text-charcoal !py-1 !text-xs">
+              <Sparkles className="h-3 w-3" /> AI meals for Nigeria
             </span>
-            <h1 className="mt-3 font-display text-[2.4rem] leading-[1.05] text-foreground">
+            <h1 className="mt-2.5 font-display text-[2rem] leading-[1.05] text-foreground">
               Know wetin<br/>
               <span className="text-brand">to chop.</span>
             </h1>
-            <p className="mt-3 text-muted-foreground text-[15px] leading-snug">
+            <p className="mt-2 text-muted-foreground text-[14px] leading-snug">
               Plans, prices, shopping lists & nearby spots — tuned to Naija food.
             </p>
           </div>
 
-          <div className="mt-6 space-y-2">
-            <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-brand-foreground font-semibold shadow-[var(--shadow-lift)]">
+          <div className="mt-4 space-y-2">
+            <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-brand-foreground font-semibold shadow-[var(--shadow-lift)]">
               Get started <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/auth" className="w-full flex items-center justify-center rounded-full px-6 py-2.5 text-sm text-muted-foreground font-medium">
+            <Link to="/auth" className="w-full flex items-center justify-center rounded-full px-6 py-2 text-sm text-muted-foreground font-medium">
               I already have an account
             </Link>
           </div>
