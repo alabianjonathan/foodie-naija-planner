@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
-import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2 } from "lucide-react";
+import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2, X, Clock } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
 import logoAsset from "@/assets/mealbeta-logo.png.asset.json";
+
 
 
 export const Route = createFileRoute("/home")({
@@ -33,8 +34,20 @@ function Home() {
   const [name, setName] = useState<string>("");
   const [profile, setProfile] = useState<{ restriction?: string | null; goal?: string | null } | null>(null);
   const [nonce, setNonce] = useState(0);
+  const [query, setQuery] = useState("");
   const slot = useMemo(() => currentSlot(), [nonce]);
   const { meals, isLoading: mealsLoading } = useCatalogMeals();
+
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return meals.filter(m =>
+      m.name.toLowerCase().includes(q) ||
+      m.category.toLowerCase().includes(q) ||
+      m.ingredients.some(i => i.name.toLowerCase().includes(q))
+    ).slice(0, 12);
+  }, [query, meals]);
+
 
   const { featured, quick } = useMemo(() => {
     const restriction = (profile?.restriction ?? "").toLowerCase();
@@ -97,9 +110,43 @@ function Home() {
       <section className="px-5">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input placeholder="Search jollof, egusi, moi moi…" className="w-full rounded-2xl bg-secondary/60 border border-border/60 px-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search jollof, egusi, moi moi…"
+            className="w-full rounded-2xl bg-secondary/60 border border-border/60 pl-11 pr-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 flex items-center justify-center"
+            >
+              <X className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          )}
         </div>
       </section>
+
+      {query.trim() && (
+        <section className="px-5 mt-4">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-3">
+            {searchResults.length} result{searchResults.length === 1 ? "" : "s"} for "{query}"
+          </p>
+          {searchResults.length === 0 ? (
+            <div className="text-sm text-muted-foreground text-center py-8">
+              No meals match. Try "rice", "soup" or "beans".
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {searchResults.map((m) => <MealCard key={m.id} meal={m} />)}
+            </div>
+          )}
+        </section>
+      )}
+
+      {!query.trim() && (<>
+
 
       {/* Bento grid */}
       <section className="px-5 mt-5 grid grid-cols-6 gap-3">
@@ -182,7 +229,7 @@ function Home() {
         )}
       </section>
 
-      {/* Under 40 min — horizontal editorial */}
+      {/* Under 40 min — compact horizontal cards */}
       <section className="mt-8">
         <div className="px-5 flex items-baseline justify-between">
           <div>
@@ -192,20 +239,29 @@ function Home() {
         </div>
         <div className="mt-4 flex gap-3 overflow-x-auto pb-2 px-5 snap-x scrollbar-hide">
           {quick.map((m) => (
-            <Link key={m.id} to="/meal/$id" params={{ id: m.id }} className="min-w-[200px] snap-start">
-              <div className={`aspect-[4/5] rounded-3xl bg-gradient-to-br ${m.gradient} flex items-end p-4 text-5xl shadow-[var(--shadow-soft)] relative overflow-hidden`}>
-                <span className="absolute top-3 right-3 text-[10px] font-medium bg-background/90 text-foreground rounded-full px-2 py-0.5">{m.cookingTimeMin}m</span>
+            <Link
+              key={m.id}
+              to="/meal/$id"
+              params={{ id: m.id }}
+              className="min-w-[160px] max-w-[160px] snap-start card-soft !p-3 flex flex-col"
+            >
+              <div className={`aspect-square rounded-2xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-5xl relative overflow-hidden`}>
+                <span className="absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] font-medium bg-background/90 text-foreground rounded-full px-1.5 py-0.5">
+                  <Clock className="h-2.5 w-2.5" /> {m.cookingTimeMin}m
+                </span>
                 <span className="drop-shadow-lg">{m.emoji}</span>
               </div>
-              <h3 className="font-display text-sm leading-tight mt-2 line-clamp-2">{m.name}</h3>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{m.caloriesMin}–{m.caloriesMax} kcal</p>
+              <h3 className="font-display text-sm leading-tight mt-3 line-clamp-2 min-h-[2.5rem]">{m.name}</h3>
+              <p className="text-[11px] text-muted-foreground mt-1">{m.caloriesMin}–{m.caloriesMax} kcal</p>
             </Link>
           ))}
         </div>
       </section>
+      </>)}
 
       <div className="h-8" />
     </PhoneShell>
+
   );
 }
 
