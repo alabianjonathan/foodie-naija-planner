@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { Phone, MessageCircle, Navigation, Star, Truck, MapPin } from "lucide-react";
+import { Navigation, Star, Truck, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -183,7 +183,6 @@ function Restaurants() {
           )}
           {nearby.map(r => {
             const featured = r.mealSlugs.slice(0, 3).map((s) => mealByslug.get(s)?.name).filter(Boolean);
-            const phone = r.phone ?? "";
             return (
               <div key={r.id} className="card-soft !p-0 overflow-hidden">
                 <div className="h-24 bg-gradient-to-br from-brand via-warm to-leaf flex items-end justify-between p-3">
@@ -203,13 +202,7 @@ function Restaurants() {
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2 line-clamp-1">Offers: {featured.join(" · ")}</p>
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    <a href={`tel:${phone}`} className="flex items-center justify-center gap-1.5 rounded-full bg-secondary py-2 text-xs font-medium">
-                      <Phone className="h-3.5 w-3.5" /> Call
-                    </a>
-                    <a href={`https://wa.me/${phone.replace(/\D/g,"")}`} className="flex items-center justify-center gap-1.5 rounded-full bg-leaf text-leaf-foreground py-2 text-xs font-medium">
-                      <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
-                    </a>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${r.name} ${r.area} ${r.city}`)}`}
                       target="_blank" rel="noreferrer"
@@ -217,6 +210,9 @@ function Restaurants() {
                     >
                       <Navigation className="h-3.5 w-3.5" /> Directions
                     </a>
+                    <button disabled className="flex items-center justify-center gap-1.5 rounded-full bg-secondary py-2 text-xs font-medium opacity-70 cursor-not-allowed">
+                      <Truck className="h-3.5 w-3.5" /> Order (coming soon)
+                    </button>
                   </div>
                 </div>
               </div>
