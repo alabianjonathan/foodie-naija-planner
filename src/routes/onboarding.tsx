@@ -144,7 +144,7 @@ function Onboarding() {
           )}
 
           {current.kind === "budget" ? (
-            <div className="mt-6 space-y-3">
+            <div className="mt-4 sm:mt-6 space-y-3">
 
               <div className="grid grid-cols-2 gap-3">
                 {budgetOpts.map(opt => {
@@ -153,7 +153,7 @@ function Onboarding() {
                     <button
                       key={opt}
                       onClick={() => select(opt)}
-                      className={`rounded-2xl border-2 px-4 py-4 font-display text-lg transition-all ${active ? "border-brand bg-brand/5 text-brand" : "border-border bg-card hover:border-brand/40"}`}
+                      className={`rounded-2xl border-2 px-4 py-3.5 md:py-4 font-display text-base md:text-lg transition-all ${active ? "border-brand bg-brand/5 text-brand" : "border-border bg-card hover:border-brand/40"}`}
                     >
                       {opt}
                     </button>
@@ -164,7 +164,7 @@ function Onboarding() {
               {!showCustom ? (
                 <button
                   onClick={() => setShowCustom(true)}
-                  className="w-full rounded-2xl border-2 border-dashed border-border bg-card px-5 py-4 text-left font-medium hover:border-brand/40"
+                  className="w-full rounded-2xl border-2 border-dashed border-border bg-card px-5 py-3.5 md:py-4 text-left font-medium hover:border-brand/40"
                 >
                   ✏️  Custom amount
                 </button>
