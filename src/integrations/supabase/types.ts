@@ -454,7 +454,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_seed_restaurants: { Args: { rows: Json }; Returns: number }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "restaurant" | "user"
