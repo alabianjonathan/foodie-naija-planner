@@ -46,6 +46,7 @@ function loadPlan(): Plan {
 
 function Planner() {
   const navigate = useNavigate();
+  const { meals, getMeal } = useCatalogMeals();
   const [plan, setPlan] = useState<Plan>(() => seedPlan());
   const [activeDay, setActiveDay] = useState(0);
   const [picker, setPicker] = useState<{ dayIdx: number; slotId: string } | null>(null);
@@ -60,6 +61,7 @@ function Planner() {
   }, [plan]);
 
   const slotMeal = (s: Slot) => (s.mealId ? getMeal(s.mealId) : undefined);
+
 
   const dayCost = (i: number) => plan[i].slots.reduce((s, sl) => s + (slotMeal(sl)?.cookMin ?? 0), 0);
   const dayCal = (i: number) => plan[i].slots.reduce((s, sl) => {
