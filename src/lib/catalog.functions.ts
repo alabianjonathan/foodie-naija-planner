@@ -101,7 +101,7 @@ export const listRestaurants = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<CatalogRestaurant[]> => {
     const { data } = await context.supabase.from("restaurants").select("*").eq("status", "active").order("rating", { ascending: false });
     return (data ?? []).map((r) => ({
-      id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area,
+      id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area, address: r.address ?? null,
       rating: Number(r.rating), distanceKm: Number(r.distance_km), delivery: r.delivery,
       phone: r.phone, whatsapp: r.whatsapp, email: r.email, opening: r.opening,
       tags: r.tags ?? [], mealSlugs: r.meal_slugs ?? [], verified: r.verified, status: r.status,
