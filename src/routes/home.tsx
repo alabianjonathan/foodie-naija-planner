@@ -229,7 +229,7 @@ function Home() {
         )}
       </section>
 
-      {/* Under 40 min — horizontal editorial */}
+      {/* Under 40 min — compact horizontal cards */}
       <section className="mt-8">
         <div className="px-5 flex items-baseline justify-between">
           <div>
@@ -239,20 +239,29 @@ function Home() {
         </div>
         <div className="mt-4 flex gap-3 overflow-x-auto pb-2 px-5 snap-x scrollbar-hide">
           {quick.map((m) => (
-            <Link key={m.id} to="/meal/$id" params={{ id: m.id }} className="min-w-[200px] snap-start">
-              <div className={`aspect-[4/5] rounded-3xl bg-gradient-to-br ${m.gradient} flex items-end p-4 text-5xl shadow-[var(--shadow-soft)] relative overflow-hidden`}>
-                <span className="absolute top-3 right-3 text-[10px] font-medium bg-background/90 text-foreground rounded-full px-2 py-0.5">{m.cookingTimeMin}m</span>
+            <Link
+              key={m.id}
+              to="/meal/$id"
+              params={{ id: m.id }}
+              className="min-w-[160px] max-w-[160px] snap-start card-soft !p-3 flex flex-col"
+            >
+              <div className={`aspect-square rounded-2xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-5xl relative overflow-hidden`}>
+                <span className="absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] font-medium bg-background/90 text-foreground rounded-full px-1.5 py-0.5">
+                  <Clock className="h-2.5 w-2.5" /> {m.cookingTimeMin}m
+                </span>
                 <span className="drop-shadow-lg">{m.emoji}</span>
               </div>
-              <h3 className="font-display text-sm leading-tight mt-2 line-clamp-2">{m.name}</h3>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{m.caloriesMin}–{m.caloriesMax} kcal</p>
+              <h3 className="font-display text-sm leading-tight mt-3 line-clamp-2 min-h-[2.5rem]">{m.name}</h3>
+              <p className="text-[11px] text-muted-foreground mt-1">{m.caloriesMin}–{m.caloriesMax} kcal</p>
             </Link>
           ))}
         </div>
       </section>
+      </>)}
 
       <div className="h-8" />
     </PhoneShell>
+
   );
 }
 
