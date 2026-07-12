@@ -240,7 +240,7 @@ export const adminDashboardStats = createServerFn({ method: "GET" })
       supabaseAdmin.from("restaurants").select("*", { count: "exact", head: true }).eq("status", "pending"),
       supabaseAdmin.from("leads").select("*", { count: "exact", head: true }).eq("status", "pending"),
       supabaseAdmin.from("restaurants").select("id,name,city,area,status,created_at").order("created_at", { ascending: false }).limit(5),
-      supabaseAdmin.from("meals").select("id,name,category,cooking_time,cook_min,cook_max").order("name").limit(5),
+      supabaseAdmin.from("meals").select("id,name,category,cooking_time_min,cook_min,cook_max").order("name").limit(5),
     ]);
     return {
       totalUsers: users.count ?? 0,
