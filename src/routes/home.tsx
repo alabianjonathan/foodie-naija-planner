@@ -20,6 +20,14 @@ function currentSlot(): "Breakfast" | "Lunch" | "Dinner" {
   return "Dinner";
 }
 
+function mealPeriod(): string {
+  const h = new Date().getHours();
+  if (h < 11) return "morning";
+  if (h < 16) return "afternoon";
+  if (h < 21) return "evening";
+  return "night";
+}
+
 function Home() {
   const { user, loading } = useRequireAuth();
   const [name, setName] = useState<string>("");
