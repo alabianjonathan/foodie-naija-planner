@@ -35,7 +35,7 @@ function Splash() {
         </div>
 
         {/* Hero image banner */}
-        <div className="relative h-[42dvh] min-h-[260px] overflow-hidden rounded-b-[2.5rem]">
+        <div className="relative h-[44dvh] min-h-[280px] overflow-hidden rounded-b-[3rem]">
           <img
             src={heroFood}
             alt="Nigerian jollof rice with chicken and plantain"
@@ -43,7 +43,7 @@ function Splash() {
             height={1200}
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-background" />
           <div className="absolute top-4 left-4 pt-[env(safe-area-inset-top)]">
             <div className="rounded-2xl bg-white/95 backdrop-blur-sm shadow-lg p-2 pr-3 flex items-center gap-2">
               <img src={logoAsset.url} alt="MealBeta" className="h-8 w-auto" />
