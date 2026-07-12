@@ -4,6 +4,11 @@ import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
 import { getMeal, restaurants, meals } from "@/data/meals";
 import { Flame, Clock, Wallet, Heart, Share2, ShoppingBasket, CalendarPlus, Store, ArrowRight, Minus, Plus } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { getMealBySlug } from "@/lib/user-data.functions";
+import { useSavedMealIds, useToggleSavedMeal } from "@/hooks/useSavedMeals";
+import type { CatalogMeal } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/meal/$id")({
   loader: ({ params }) => {
@@ -19,9 +24,17 @@ export const Route = createFileRoute("/meal/$id")({
 });
 
 function MealPage() {
-  const meal = getMeal(Route.useParams().id) ?? meals[0];
+  const slug = Route.useParams().id;
+  const meal = getMeal(slug) ?? meals[0];
   const [servings, setServings] = useState(1);
-  const [saved, setSaved] = useState(false);
+  const getBySlug = useServerFn(getMealBySlug);
+  const { data: dbMeal } = useQuery({
+    queryKey: ["meal-by-slug", slug],
+    queryFn: () => getBySlug({ data: { slug } }) as unknown as Promise<CatalogMeal | null>,
+  });
+  const { data: savedIds = [] } = useSavedMealIds();
+  const toggle = useToggleSavedMeal();
+  const saved = !!(dbMeal && savedIds.includes(dbMeal.id));
 
   const kcal = Math.round(((meal.caloriesMin + meal.caloriesMax) / 2) * servings);
   const cost = Math.round(((meal.cookMin + meal.cookMax) / 2) * servings);
