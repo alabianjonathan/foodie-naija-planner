@@ -192,7 +192,7 @@ function Onboarding() {
               )}
             </div>
           ) : (
-            <div className="mt-8 space-y-3">
+            <div className="mt-6 space-y-2.5">
               {(current.kind === "area" ? (answers.city ? cityAreas[answers.city] ?? [] : []) : (current.opts ?? [])).map(opt => {
                 const active = answers[current.key]?.toString() === opt;
                 return (
