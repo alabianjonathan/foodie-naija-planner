@@ -1,5 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { z } from "zod";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function requireAdminRoles(context: any): Promise<Set<string>> {
+  const { data: roleRows } = await context.supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", context.userId);
+  const roles = new Set(((roleRows ?? []) as { role: string }[]).map((r) => r.role));
+  if (!roles.has("admin") && !roles.has("super_admin")) {
+    throw new Response("Forbidden", { status: 403 });
+  }
+  return roles;
+}
+
 
 export type AdminUserRow = {
   id: string;
