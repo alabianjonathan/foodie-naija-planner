@@ -40,10 +40,10 @@ function Restaurants() {
     if (!user) return;
     supabase.from("profiles").select("city, area").eq("id", user.id).maybeSingle()
       .then(({ data }) => {
-        if (data?.city && CITIES.includes(data.city)) setCity(data.city);
+        if (data?.city) setCity(data.city);
         if (data?.area) setArea(data.area);
       });
-  }, [user, CITIES]);
+  }, [user]);
 
   const changeCity = async (next: string) => {
     setCity(next);
