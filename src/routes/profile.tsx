@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { ChevronRight, Heart, Wallet, Target, Users, Store, Bell, LogOut, Flame, Camera, Loader2, MapPin } from "lucide-react";
+import { ChevronRight, Heart, Wallet, Target, Users, Store, Bell, LogOut, Flame, Camera, Loader2, MapPin, Lock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
