@@ -195,13 +195,13 @@ function Restaurants() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-display text-lg leading-tight">{r.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">{r.area}, {r.city} · {r.opening}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{r.address || `${r.area}, ${r.city}`}{r.opening ? ` · ${r.opening}` : ""}</p>
                     </div>
                     <div className="flex items-center gap-1 text-sm font-semibold">
                       <Star className="h-4 w-4 fill-warm text-warm" /> {r.rating}
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2 line-clamp-1">Offers: {featured.join(" · ")}</p>
+
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${r.name} ${r.area} ${r.city}`)}`}
