@@ -21,7 +21,7 @@ export const listAllUsers = createServerFn({ method: "GET" })
       .select("role")
       .eq("user_id", context.userId);
     const callerRoles = new Set((roleRows ?? []).map((r) => r.role));
-    if (!roles.has("admin") && !roles.has("super_admin")) {
+    if (!callerRoles.has("admin") && !callerRoles.has("super_admin")) {
       throw new Response("Forbidden", { status: 403 });
     }
 
