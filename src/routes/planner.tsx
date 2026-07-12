@@ -2,11 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { meals, getMeal, type Meal } from "@/data/meals";
+import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
 import { Copy, Plus, RefreshCw, ShoppingBasket, Trash2, Utensils, X, Check, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/planner")({ component: Planner });
+type Meal = UiMeal;
+
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 const DEFAULT_SLOTS = ["Breakfast", "Lunch", "Dinner"] as const;
