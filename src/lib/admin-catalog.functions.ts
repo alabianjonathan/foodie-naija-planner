@@ -2,12 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function requireAdmin(ctx: { supabase: ReturnType<typeof requireSupabaseAuth>["_type_ctx"] extends never ? never : never; userId: string }): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const supabase = (ctx as any).supabase;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function requireAdmin(context: any): Promise<void> {
   const [{ data: isAdmin }, { data: isSuper }] = await Promise.all([
-    supabase.rpc("has_role", { _user_id: ctx.userId, _role: "admin" }),
-    supabase.rpc("has_role", { _user_id: ctx.userId, _role: "super_admin" }),
+    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
+    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "super_admin" }),
   ]);
   if (!isAdmin && !isSuper) throw new Response("Forbidden", { status: 403 });
 }
