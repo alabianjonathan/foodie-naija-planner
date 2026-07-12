@@ -46,7 +46,8 @@ const SOLO_BUDGETS = ["₦2,000", "₦5,000", "₦10,000", "₦20,000"];
 const FAMILY_BUDGETS = ["₦10,000", "₦20,000", "₦30,000", "₦50,000"];
 
 function Onboarding() {
-  const { user } = useRequireAuth();
+  // TEMP: mock user for layout screenshots
+  const user = { id: "test-user" } as { id: string };
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [customBudget, setCustomBudget] = useState("");
