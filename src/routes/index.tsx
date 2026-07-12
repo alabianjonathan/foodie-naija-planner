@@ -29,21 +29,19 @@ function Splash() {
           </div>
         </div>
 
-        <div className="flex-1 px-6 pt-4 pb-5 flex flex-col justify-between">
-          <div>
-            <span className="chip !bg-warm/20 !text-charcoal !py-1 !text-xs">
-              <Sparkles className="h-3 w-3" /> AI meals for Nigeria
-            </span>
-            <h1 className="mt-2.5 font-display text-[2rem] leading-[1.05] text-foreground">
-              Know wetin<br/>
-              <span className="text-brand">to chop.</span>
-            </h1>
-            <p className="mt-2 text-muted-foreground text-[14px] leading-snug">
-              Plans, prices, shopping lists & nearby spots — tuned to Naija food.
-            </p>
-          </div>
+        <div className="flex-1 px-6 pt-4 pb-5 flex flex-col">
+          <span className="chip !bg-warm/20 !text-charcoal !py-1 !text-xs">
+            <Sparkles className="h-3 w-3" /> AI meals for Nigeria
+          </span>
+          <h1 className="mt-2.5 font-display text-[2rem] leading-[1.05] text-foreground">
+            Know wetin<br/>
+            <span className="text-brand">to chop.</span>
+          </h1>
+          <p className="mt-2 text-muted-foreground text-[14px] leading-snug">
+            Plans, prices, shopping lists & nearby spots — tuned to Naija food.
+          </p>
 
-          <div className="mt-4 space-y-2">
+          <div className="mt-auto pt-6 space-y-2">
             <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-brand-foreground font-semibold shadow-[var(--shadow-lift)]">
               Get started <ArrowRight className="h-4 w-4" />
             </Link>
