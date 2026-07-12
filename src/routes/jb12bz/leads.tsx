@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { DataTable, StatusPill } from "@/components/admin/DataTable";
 import { adminListLeads, adminUpdateLeadStatus } from "@/lib/admin-catalog.functions";
 import { Check, Clock, Phone } from "lucide-react";
+
 
 type Row = {
   id: string; user_id: string; restaurant_id: string | null; meal_slug: string | null;
@@ -28,16 +30,26 @@ function LeadsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "leads"] }),
   });
 
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const filtered = statusFilter === "all" ? rows : rows.filter((r) => r.status === statusFilter);
+
   return (
     <div>
       <PageHeader title="Restaurant leads" subtitle="Customer requests sent to restaurants from the app." />
       {error && <div className="mb-4 text-sm p-3 rounded border border-destructive/30 bg-destructive/5 text-destructive">{(error as Error).message}</div>}
-      {isLoading ? <div className="text-sm text-muted-foreground">Loading…</div> : rows.length === 0 ? (
-        <div className="bg-card border rounded-xl p-10 text-center text-sm text-muted-foreground">No leads yet. Once customers contact restaurants from the app, they will appear here.</div>
+      <div className="mb-3 flex items-center gap-2 text-sm">
+        <span className="text-muted-foreground">Filter status:</span>
+        {["all", "pending", "contacted", "completed", "cancelled"].map((s) => (
+          <button key={s} onClick={() => setStatusFilter(s)} className={`px-2.5 py-1 rounded-full border ${statusFilter === s ? "bg-brand text-brand-foreground border-brand" : "bg-card"}`}>{s}</button>
+        ))}
+      </div>
+      {isLoading ? <div className="text-sm text-muted-foreground">Loading…</div> : filtered.length === 0 ? (
+        <div className="bg-card border rounded-xl p-10 text-center text-sm text-muted-foreground">No leads match this filter.</div>
       ) : (
         <DataTable<Row>
-          rows={rows}
+          rows={filtered}
           searchKeys={["meal_slug", "city", "status", "request_type"]}
+
           columns={[
             { key: "user", header: "Customer", render: (r) => r.profiles?.display_name ?? "—" },
             { key: "restaurant", header: "Restaurant", render: (r) => r.restaurants?.name ?? "—" },

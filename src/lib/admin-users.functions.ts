@@ -1,5 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { z } from "zod";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function requireAdminRoles(context: any): Promise<Set<string>> {
+  const { data: roleRows } = await context.supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", context.userId);
+  const roles = new Set(((roleRows ?? []) as { role: string }[]).map((r) => r.role));
+  if (!roles.has("admin") && !roles.has("super_admin")) {
+    throw new Response("Forbidden", { status: 403 });
+  }
+  return roles;
+}
+
 
 export type AdminUserRow = {
   id: string;
@@ -71,4 +86,49 @@ export const listAllUsers = createServerFn({ method: "GET" })
 
     rows.sort((a, b) => (a.joined < b.joined ? 1 : -1));
     return rows;
+  });
+
+export const adminSetUserRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({
+    userId: z.string().uuid(),
+    role: z.enum(["user", "restaurant", "admin", "super_admin"]),
+  }).parse(d))
+  .handler(async ({ data, context }) => {
+    const roles = await requireAdminRoles(context);
+    // Only super_admin can grant admin or super_admin
+    if ((data.role === "admin" || data.role === "super_admin") && !roles.has("super_admin")) {
+      throw new Response("Forbidden", { status: 403 });
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId);
+    const { error } = await supabaseAdmin.from("user_roles").insert({ user_id: data.userId, role: data.role });
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const adminBanUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ userId: z.string().uuid(), ban: z.boolean() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdminRoles(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabaseAdmin.auth.admin as any).updateUserById(data.userId, {
+      ban_duration: data.ban ? "8760h" : "none",
+    });
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const adminDeleteUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ userId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const roles = await requireAdminRoles(context);
+    if (!roles.has("super_admin")) throw new Response("Forbidden", { status: 403 });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw error;
+    return { ok: true };
   });
