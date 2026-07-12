@@ -144,7 +144,8 @@ function Onboarding() {
           )}
 
           {current.kind === "budget" ? (
-            <div className="mt-8 space-y-3">
+            <div className="mt-6 space-y-3">
+
               <div className="grid grid-cols-2 gap-3">
                 {budgetOpts.map(opt => {
                   const active = answers.budget === opt;
