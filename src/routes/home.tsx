@@ -69,93 +69,143 @@ function Home() {
 
   const initial = (name || user.email || "U").charAt(0).toUpperCase();
 
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  })();
+
   return (
     <PhoneShell>
-      <header className="px-6 pt-6 pb-4">
-        <div className="flex items-center justify-between">
-          <img src={logoAsset.url} alt="MealBeta" className="h-9 w-auto" />
-          <Link to="/profile" className="h-11 w-11 rounded-full bg-gradient-to-br from-brand to-warm flex items-center justify-center text-white font-display text-lg">{initial}</Link>
-        </div>
-        <div className="mt-4">
-          <p className="text-xs text-muted-foreground">Welcome</p>
-          <h1 className="font-display text-2xl">{name || "there"} 👋</h1>
-        </div>
-
-
-        <Link to="/today" className="mt-5 block rounded-3xl bg-gradient-to-br from-brand to-[oklch(0.6_0.2_25)] p-5 text-brand-foreground shadow-[var(--shadow-lift)]">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-medium bg-white/20 rounded-full px-2.5 py-1">
-                <Sparkles className="h-3 w-3" /> AI Suggestion
-              </div>
-              <h2 className="mt-3 font-display text-xl leading-tight">What should I eat this {mealPeriod()}?</h2>
-              <p className="mt-1 text-sm text-white/85">Tap for 3 meals tuned to your budget & goal.</p>
-            </div>
-            <span className="text-3xl">🍲</span>
-          </div>
-        </Link>
+      {/* Top bar */}
+      <header className="px-5 pt-6 pb-3 flex items-center justify-between">
+        <img src={logoAsset.url} alt="MealBeta" className="h-8 w-auto" />
+        <Link to="/profile" className="h-10 w-10 rounded-full bg-gradient-to-br from-brand to-warm flex items-center justify-center text-white font-display text-base shadow-[var(--shadow-soft)]">{initial}</Link>
       </header>
 
-      <section className="sticky top-0 z-20 px-6 py-3 bg-background/85 backdrop-blur-md">
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { to: "/planner", icon: CalendarDays, label: "Planner", color: "bg-leaf/10 text-leaf" },
-            { to: "/popular", icon: Flame, label: "General", color: "bg-brand/10 text-brand" },
-            { to: "/shopping", icon: ShoppingBasket, label: "Shop list", color: "bg-warm/20 text-charcoal" },
-            { to: "/restaurants", icon: Store, label: "Restaurants", color: "bg-secondary text-charcoal" },
-          ].map(({ to, icon: Icon, label, color }) => (
-            <Link key={label} to={to} className="flex flex-col items-center gap-1.5 rounded-2xl bg-card p-3 shadow-[var(--shadow-soft)]">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${color}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <span className="text-[11px] font-medium">{label}</span>
-            </Link>
-          ))}
-        </div>
+      {/* Editorial greeting */}
+      <section className="px-5 pt-2 pb-5">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{greeting}</p>
+        <h1 className="mt-1 font-display text-[2rem] leading-[1.05] tracking-tight">
+          {name || "Welcome"},<br/>
+          <span className="italic text-brand">wetin dey your mind?</span>
+        </h1>
       </section>
 
-
-      <section className="px-6 mt-8">
+      {/* Search */}
+      <section className="px-5">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input placeholder="Search jollof, egusi, moi moi…" className="w-full rounded-full bg-secondary px-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+          <input placeholder="Search jollof, egusi, moi moi…" className="w-full rounded-2xl bg-secondary/60 border border-border/60 px-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
         </div>
       </section>
 
-      <section className="px-6 mt-8">
-        <div className="flex items-baseline justify-between">
+      {/* Bento grid */}
+      <section className="px-5 mt-5 grid grid-cols-6 gap-3">
+        {/* Hero AI suggestion — spans full width */}
+        <Link to="/today" className="col-span-6 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand via-leaf to-[oklch(0.5_0.15_150)] p-5 text-brand-foreground shadow-[var(--shadow-lift)]">
+          <div className="absolute -right-6 -bottom-6 text-[7rem] opacity-25 leading-none select-none">🍲</div>
+          <div className="relative">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/25 backdrop-blur rounded-full px-2.5 py-1">
+              <Sparkles className="h-3 w-3" /> Today's AI pick
+            </div>
+            <h2 className="mt-3 font-display text-[1.5rem] leading-[1.1]">What to chop this {mealPeriod()}</h2>
+            <p className="mt-1 text-sm text-white/85 max-w-[75%]">3 meals tuned to your budget & goal.</p>
+          </div>
+        </Link>
+
+        {/* Planner — tall */}
+        <Link to="/planner" className="col-span-3 row-span-2 rounded-3xl bg-card p-4 shadow-[var(--shadow-soft)] flex flex-col justify-between min-h-[150px]">
+          <div className="h-11 w-11 rounded-2xl bg-leaf/15 text-leaf flex items-center justify-center">
+            <CalendarDays className="h-5 w-5" />
+          </div>
           <div>
-            <h2 className="font-display text-xl">Quick picks for you</h2>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{slot} picks · tuned to your preferences</p>
+            <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Week</p>
+            <h3 className="font-display text-lg leading-tight">Meal planner</h3>
+            <p className="text-xs text-muted-foreground mt-1">Plan 7 days ahead</p>
           </div>
+        </Link>
+
+        {/* Shopping */}
+        <Link to="/shopping" className="col-span-3 rounded-3xl bg-warm/25 p-4 shadow-[var(--shadow-soft)] flex items-center gap-3">
+          <div className="h-10 w-10 rounded-2xl bg-warm/60 text-charcoal flex items-center justify-center shrink-0">
+            <ShoppingBasket className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-display text-sm leading-tight truncate">Shop list</h3>
+            <p className="text-[11px] text-muted-foreground truncate">Market ready</p>
+          </div>
+        </Link>
+
+        {/* Restaurants */}
+        <Link to="/restaurants" className="col-span-3 rounded-3xl bg-secondary p-4 shadow-[var(--shadow-soft)] flex items-center gap-3">
+          <div className="h-10 w-10 rounded-2xl bg-background text-charcoal flex items-center justify-center shrink-0">
+            <Store className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-display text-sm leading-tight truncate">Nearby</h3>
+            <p className="text-[11px] text-muted-foreground truncate">Buka & spots</p>
+          </div>
+        </Link>
+
+        {/* Popular full width strip */}
+        <Link to="/popular" className="col-span-6 rounded-3xl bg-brand/8 p-4 shadow-[var(--shadow-soft)] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/popular" className="text-xs text-brand font-medium">Browse all</Link>
-            <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium">Shuffle</button>
+            <div className="h-10 w-10 rounded-2xl bg-brand/15 text-brand flex items-center justify-center">
+              <Flame className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-display text-sm leading-tight">Popular in Naija</h3>
+              <p className="text-[11px] text-muted-foreground">Trending this week</p>
+            </div>
           </div>
+          <span className="text-xs text-brand font-medium">Browse →</span>
+        </Link>
+      </section>
+
+      {/* Quick picks — editorial */}
+      <section className="px-5 mt-8">
+        <div className="flex items-end justify-between mb-4">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{slot} · for you</p>
+            <h2 className="font-display text-2xl mt-1">Quick picks</h2>
+          </div>
+          <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium underline underline-offset-4">Shuffle</button>
         </div>
         {mealsLoading ? (
-          <div className="mt-4 flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>
+          <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>
         ) : (
-          <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {featured.map((m) => <MealCard key={m.id} meal={m} />)}
           </div>
         )}
       </section>
 
-      <section className="px-6 mt-8">
-        <h2 className="font-display text-xl">Quick meals (under 40 min)</h2>
-        <div className="mt-4 flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 snap-x">
+      {/* Under 40 min — horizontal editorial */}
+      <section className="mt-8">
+        <div className="px-5 flex items-baseline justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Fast lane</p>
+            <h2 className="font-display text-2xl mt-1">Under 40 min</h2>
+          </div>
+        </div>
+        <div className="mt-4 flex gap-3 overflow-x-auto pb-2 px-5 snap-x scrollbar-hide">
           {quick.map((m) => (
-            <Link key={m.id} to="/meal/$id" params={{ id: m.id }} className="min-w-[220px] snap-start card-soft">
-              <div className={`aspect-video rounded-2xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-5xl mb-3`}>{m.emoji}</div>
-              <h3 className="font-display text-base leading-tight">{m.name}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{m.cookingTimeMin} min • {m.caloriesMin}–{m.caloriesMax} kcal</p>
+            <Link key={m.id} to="/meal/$id" params={{ id: m.id }} className="min-w-[200px] snap-start">
+              <div className={`aspect-[4/5] rounded-3xl bg-gradient-to-br ${m.gradient} flex items-end p-4 text-5xl shadow-[var(--shadow-soft)] relative overflow-hidden`}>
+                <span className="absolute top-3 right-3 text-[10px] font-medium bg-background/90 text-foreground rounded-full px-2 py-0.5">{m.cookingTimeMin}m</span>
+                <span className="drop-shadow-lg">{m.emoji}</span>
+              </div>
+              <h3 className="font-display text-sm leading-tight mt-2 line-clamp-2">{m.name}</h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{m.caloriesMin}–{m.caloriesMax} kcal</p>
             </Link>
           ))}
         </div>
       </section>
 
-      <div className="h-6" />
+      <div className="h-8" />
     </PhoneShell>
   );
 }
+
