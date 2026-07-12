@@ -121,8 +121,8 @@ function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-0 md:py-6">
-      <div className="phone-shell overflow-hidden md:rounded-[36px] md:min-h-[900px] flex flex-col p-6">
+    <div className="bg-background py-0 md:py-6" style={{ minHeight: "100dvh" }}>
+      <div className="phone-shell overflow-hidden md:rounded-[36px] flex flex-col p-4 sm:p-6" style={{ minHeight: "100dvh", paddingTop: "calc(env(safe-area-inset-top) + 1rem)", paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}>
         <div className="flex items-center gap-3">
           <button onClick={() => step > 0 ? setStep(step - 1) : navigate({ to: "/" })} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
             <ArrowLeft className="h-4 w-4" />
@@ -133,9 +133,10 @@ function Onboarding() {
           <Link to="/home" className="text-xs text-muted-foreground">Skip</Link>
         </div>
 
-        <div className="mt-10 flex-1">
+        <div className="mt-6 sm:mt-8 flex-1">
           <span className="chip">{`Step ${step + 1} of ${steps.length}`}</span>
-          <h2 className="mt-4 font-display text-3xl leading-tight">{current.q}</h2>
+          <h2 className="mt-3 font-display text-2xl sm:text-3xl leading-tight">{current.q}</h2>
+
           {current.kind === "budget" && (
             <p className="mt-2 text-sm text-muted-foreground">
               {isFamily ? "Family-size suggestions" : "Personal-size suggestions"} — tap a quick amount or enter your own.
