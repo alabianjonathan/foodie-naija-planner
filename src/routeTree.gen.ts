@@ -19,11 +19,11 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PopularRouteImport } from './routes/popular'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as Jb12bzLoginRouteImport } from './routes/jb12bz-login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
@@ -89,6 +89,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Jb12bzLoginRoute = Jb12bzLoginRouteImport.update({
+  id: '/jb12bz-login',
+  path: '/jb12bz-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -107,11 +112,6 @@ const ChangePasswordRoute = ChangePasswordRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin-login',
-  path: '/admin-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
@@ -188,11 +188,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
+  '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
@@ -218,11 +218,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
+  '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
@@ -250,11 +250,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
+  '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
@@ -283,11 +283,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/admin-login'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
     | '/home'
+    | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
     | '/popular'
@@ -313,11 +313,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin-login'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
     | '/home'
+    | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
     | '/popular'
@@ -344,11 +344,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
-    | '/admin-login'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
     | '/home'
+    | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
     | '/popular'
@@ -376,11 +376,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
-  AdminLoginRoute: typeof AdminLoginRoute
   AuthRoute: typeof AuthRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HomeRoute: typeof HomeRoute
+  Jb12bzLoginRoute: typeof Jb12bzLoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PlannerRoute: typeof PlannerRoute
   PopularRoute: typeof PopularRoute
@@ -466,6 +466,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/jb12bz-login': {
+      id: '/jb12bz-login'
+      path: '/jb12bz-login'
+      fullPath: '/jb12bz-login'
+      preLoaderRoute: typeof Jb12bzLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -492,13 +499,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-login': {
-      id: '/admin-login'
-      path: '/admin-login'
-      fullPath: '/admin-login'
-      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -637,11 +637,11 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
-  AdminLoginRoute: AdminLoginRoute,
   AuthRoute: AuthRoute,
   ChangePasswordRoute: ChangePasswordRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   HomeRoute: HomeRoute,
+  Jb12bzLoginRoute: Jb12bzLoginRoute,
   OnboardingRoute: OnboardingRoute,
   PlannerRoute: PlannerRoute,
   PopularRoute: PopularRoute,
