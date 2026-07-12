@@ -55,7 +55,6 @@ export type CatalogRestaurant = {
   delivery: boolean;
   phone: string | null;
   whatsapp: string | null;
-  email: string | null;
   opening: string | null;
   tags: string[];
   mealSlugs: string[];
