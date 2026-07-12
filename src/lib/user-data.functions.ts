@@ -122,14 +122,16 @@ export const upsertMealPlan = createServerFn({ method: "POST" })
     total_calories: z.number().int().optional().nullable(),
   }).parse(d))
   .handler(async ({ data, context }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sb = context.supabase as any;
     const payload = { ...data, user_id: context.userId };
     if (data.id) {
       const { id, ...rest } = payload;
-      const { error } = await context.supabase.from("meal_plans").update(rest).eq("id", id).eq("user_id", context.userId);
+      const { error } = await sb.from("meal_plans").update(rest).eq("id", id).eq("user_id", context.userId);
       if (error) throw error;
       return { id };
     }
-    const { data: row, error } = await context.supabase.from("meal_plans").insert(payload).select("id").single();
+    const { data: row, error } = await sb.from("meal_plans").insert(payload).select("id").single();
     if (error) throw error;
     return { id: row.id };
   });
