@@ -88,7 +88,7 @@ function DashboardPage() {
                       <div className="font-medium text-sm">{m.name}</div>
                       <div className="text-xs text-muted-foreground">{m.category} · ₦{m.cook_min}–₦{m.cook_max}</div>
                     </div>
-                    <span className="text-xs text-muted-foreground">{m.cooking_time} min</span>
+                    <span className="text-xs text-muted-foreground">{m.cooking_time_min} min</span>
                   </li>
                 ))}
                 {data.popularMeals.length === 0 && <li className="py-3 text-xs text-muted-foreground">No meals yet.</li>}
