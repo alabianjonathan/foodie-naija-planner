@@ -121,6 +121,13 @@ export type Database = {
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "leads_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       meal_plans: {
@@ -451,7 +458,69 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      restaurants_public: {
+        Row: {
+          address: string | null
+          area: string | null
+          city: string | null
+          created_at: string | null
+          delivery: boolean | null
+          distance_km: number | null
+          id: string | null
+          meal_slugs: string[] | null
+          name: string | null
+          opening: string | null
+          phone: string | null
+          rating: number | null
+          slug: string | null
+          status: string | null
+          tags: string[] | null
+          updated_at: string | null
+          verified: boolean | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          area?: string | null
+          city?: string | null
+          created_at?: string | null
+          delivery?: boolean | null
+          distance_km?: number | null
+          id?: string | null
+          meal_slugs?: string[] | null
+          name?: string | null
+          opening?: string | null
+          phone?: string | null
+          rating?: number | null
+          slug?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          verified?: boolean | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          area?: string | null
+          city?: string | null
+          created_at?: string | null
+          delivery?: boolean | null
+          distance_km?: number | null
+          id?: string | null
+          meal_slugs?: string[] | null
+          name?: string | null
+          opening?: string | null
+          phone?: string | null
+          rating?: number | null
+          slug?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          verified?: boolean | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
