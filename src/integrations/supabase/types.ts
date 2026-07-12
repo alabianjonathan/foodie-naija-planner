@@ -14,6 +14,247 @@ export type Database = {
   }
   public: {
     Tables: {
+      areas: {
+        Row: {
+          active: boolean
+          city_id: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          city_id: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          city_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "areas_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cities: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          city: string | null
+          created_at: string
+          id: string
+          meal_slug: string | null
+          notes: string | null
+          request_type: string
+          restaurant_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          meal_slug?: string | null
+          notes?: string | null
+          request_type?: string
+          restaurant_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          meal_slug?: string | null
+          notes?: string | null
+          request_type?: string
+          restaurant_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_plans: {
+        Row: {
+          budget: string | null
+          city: string | null
+          created_at: string
+          data: Json
+          id: string
+          plan_type: string | null
+          total_calories: number
+          total_cost: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget?: string | null
+          city?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          plan_type?: string | null
+          total_calories?: number
+          total_cost?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget?: string | null
+          city?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          plan_type?: string | null
+          total_calories?: number
+          total_cost?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meals: {
+        Row: {
+          best_time: string[]
+          calories_max: number
+          calories_min: number
+          carbs: string | null
+          category: string
+          cook_max: number
+          cook_min: number
+          cooking_time_min: number
+          created_at: string
+          description: string | null
+          emoji: string | null
+          fat: string | null
+          fiber: string | null
+          goals: string[]
+          gradient: string | null
+          health_note: string | null
+          health_score: number | null
+          id: string
+          ingredients: Json
+          name: string
+          order_max: number
+          order_min: number
+          popular: boolean
+          portion: string | null
+          protein: string | null
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          best_time?: string[]
+          calories_max?: number
+          calories_min?: number
+          carbs?: string | null
+          category: string
+          cook_max?: number
+          cook_min?: number
+          cooking_time_min?: number
+          created_at?: string
+          description?: string | null
+          emoji?: string | null
+          fat?: string | null
+          fiber?: string | null
+          goals?: string[]
+          gradient?: string | null
+          health_note?: string | null
+          health_score?: number | null
+          id?: string
+          ingredients?: Json
+          name: string
+          order_max?: number
+          order_min?: number
+          popular?: boolean
+          portion?: string | null
+          protein?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          best_time?: string[]
+          calories_max?: number
+          calories_min?: number
+          carbs?: string | null
+          category?: string
+          cook_max?: number
+          cook_min?: number
+          cooking_time_min?: number
+          created_at?: string
+          description?: string | null
+          emoji?: string | null
+          fat?: string | null
+          fiber?: string | null
+          goals?: string[]
+          gradient?: string | null
+          health_note?: string | null
+          health_score?: number | null
+          id?: string
+          ingredients?: Json
+          name?: string
+          order_max?: number
+          order_min?: number
+          popular?: boolean
+          portion?: string | null
+          protein?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           area: string | null
@@ -65,6 +306,75 @@ export type Database = {
           planning_type?: string | null
           restriction?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      restaurants: {
+        Row: {
+          address: string | null
+          area: string | null
+          city: string
+          created_at: string
+          delivery: boolean
+          distance_km: number
+          email: string | null
+          id: string
+          meal_slugs: string[]
+          name: string
+          opening: string | null
+          owner_id: string | null
+          phone: string | null
+          rating: number
+          slug: string
+          status: string
+          tags: string[]
+          updated_at: string
+          verified: boolean
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          area?: string | null
+          city: string
+          created_at?: string
+          delivery?: boolean
+          distance_km?: number
+          email?: string | null
+          id?: string
+          meal_slugs?: string[]
+          name: string
+          opening?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number
+          slug: string
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          verified?: boolean
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          area?: string | null
+          city?: string
+          created_at?: string
+          delivery?: boolean
+          distance_km?: number
+          email?: string | null
+          id?: string
+          meal_slugs?: string[]
+          name?: string
+          opening?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number
+          slug?: string
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          verified?: boolean
+          whatsapp?: string | null
         }
         Relationships: []
       }

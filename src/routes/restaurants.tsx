@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { restaurants, getMeal, cityAreas, CITIES } from "@/data/meals";
 import { Phone, MessageCircle, Navigation, Star, Truck, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
+import { listCitiesWithAreas, listRestaurants, listMeals } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/restaurants")({ component: Restaurants });
 
@@ -20,16 +22,28 @@ function Restaurants() {
   const [picking, setPicking] = useState<"city" | "area" | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const fetchCities = useServerFn(listCitiesWithAreas);
+  const fetchRests = useServerFn(listRestaurants);
+  const fetchMeals = useServerFn(listMeals);
+  const { data: cityRows = [] } = useQuery({ queryKey: ["catalog", "cities"], queryFn: () => fetchCities() });
+  const { data: restRows = [] } = useQuery({ queryKey: ["catalog", "restaurants"], queryFn: () => fetchRests() });
+  const { data: mealRows = [] } = useQuery({ queryKey: ["catalog", "meals"], queryFn: () => fetchMeals() });
+
+  const CITIES = useMemo(() => cityRows.filter((c) => c.active).map((c) => c.name), [cityRows]);
+  const areas = useMemo(() => {
+    const c = cityRows.find((c) => c.name === city);
+    return (c?.areas ?? []).filter((a) => a.active).map((a) => a.name);
+  }, [cityRows, city]);
+  const mealByslug = useMemo(() => new Map(mealRows.map((m) => [m.slug, m])), [mealRows]);
+
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("city, area").eq("id", user.id).maybeSingle()
       .then(({ data }) => {
-        if (data?.city && (CITIES as readonly string[]).includes(data.city)) setCity(data.city);
+        if (data?.city && CITIES.includes(data.city)) setCity(data.city);
         if (data?.area) setArea(data.area);
       });
-  }, [user]);
-
-  const areas = useMemo(() => cityAreas[city] ?? [], [city]);
+  }, [user, CITIES]);
 
   const changeCity = async (next: string) => {
     setCity(next);
@@ -51,16 +65,17 @@ function Restaurants() {
   };
 
   const nearby = useMemo(() => {
-    return restaurants
-      .filter(r => r.city === city)
-      .filter(r => area === "All" || r.area === area)
-      .filter(r => {
+    return restRows
+      .filter((r) => r.city === city)
+      .filter((r) => area === "All" || r.area === area)
+      .filter((r) => {
         if (filter === "All") return true;
         if (filter === "Delivery") return r.delivery;
-        return r.tags.includes(filter as never);
+        return r.tags.includes(filter);
       })
       .sort((a, b) => b.rating - a.rating);
-  }, [city, area, filter]);
+  }, [restRows, city, area, filter]);
+
 
   return (
     <PhoneShell>
@@ -145,7 +160,8 @@ function Restaurants() {
             </div>
           )}
           {nearby.map(r => {
-            const featured = r.meals.slice(0, 3).map(id => getMeal(id)?.name).filter(Boolean);
+            const featured = r.mealSlugs.slice(0, 3).map((s) => mealByslug.get(s)?.name).filter(Boolean);
+            const phone = r.phone ?? "";
             return (
               <div key={r.id} className="card-soft !p-0 overflow-hidden">
                 <div className="h-24 bg-gradient-to-br from-brand via-warm to-leaf flex items-end justify-between p-3">
@@ -166,10 +182,10 @@ function Restaurants() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-2 line-clamp-1">Offers: {featured.join(" · ")}</p>
                   <div className="mt-3 grid grid-cols-3 gap-2">
-                    <a href={`tel:${r.phone}`} className="flex items-center justify-center gap-1.5 rounded-full bg-secondary py-2 text-xs font-medium">
+                    <a href={`tel:${phone}`} className="flex items-center justify-center gap-1.5 rounded-full bg-secondary py-2 text-xs font-medium">
                       <Phone className="h-3.5 w-3.5" /> Call
                     </a>
-                    <a href={`https://wa.me/${r.phone.replace(/\D/g,"")}`} className="flex items-center justify-center gap-1.5 rounded-full bg-leaf text-leaf-foreground py-2 text-xs font-medium">
+                    <a href={`https://wa.me/${phone.replace(/\D/g,"")}`} className="flex items-center justify-center gap-1.5 rounded-full bg-leaf text-leaf-foreground py-2 text-xs font-medium">
                       <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
                     </a>
                     <a
