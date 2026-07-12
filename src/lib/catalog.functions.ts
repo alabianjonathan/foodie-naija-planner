@@ -55,7 +55,6 @@ export type CatalogRestaurant = {
   delivery: boolean;
   phone: string | null;
   whatsapp: string | null;
-  email: string | null;
   opening: string | null;
   tags: string[];
   mealSlugs: string[];
@@ -99,11 +98,14 @@ export const listMeals = createServerFn({ method: "GET" }).handler(async (): Pro
 export const listRestaurants = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { city?: string } | undefined) => data ?? {})
-  .handler(async ({ context, data }): Promise<CatalogRestaurant[]> => {
+  .handler(async ({ data }): Promise<CatalogRestaurant[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const SAFE_COLS =
+      "id,slug,name,city,area,address,rating,distance_km,delivery,phone,whatsapp,opening,tags,meal_slugs,verified,status";
     const PAGE = 1000;
     const all: any[] = [];
     for (let from = 0; ; from += PAGE) {
-      let q = context.supabase.from("restaurants").select("*").eq("status", "active");
+      let q = supabaseAdmin.from("restaurants").select(SAFE_COLS).eq("status", "active");
       if (data.city) q = q.eq("city", data.city);
       const { data: rows, error } = await q.order("rating", { ascending: false }).range(from, from + PAGE - 1);
       if (error) throw error;
@@ -114,7 +116,7 @@ export const listRestaurants = createServerFn({ method: "GET" })
     return all.map((r) => ({
       id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area, address: r.address ?? null,
       rating: Number(r.rating), distanceKm: Number(r.distance_km), delivery: r.delivery,
-      phone: r.phone, whatsapp: r.whatsapp, email: r.email, opening: r.opening,
+      phone: r.phone, whatsapp: r.whatsapp, opening: r.opening,
       tags: r.tags ?? [], mealSlugs: r.meal_slugs ?? [], verified: r.verified, status: r.status,
     }));
   });
