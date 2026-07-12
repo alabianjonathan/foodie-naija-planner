@@ -31,16 +31,16 @@ type Step = {
   kind?: "budget" | "area";
 };
 
-const baseSteps: readonly Step[] = [
+const buildSteps = (cities: string[]): readonly Step[] => [
   { key: "planningType", q: "Who are you planning for?", opts: ["Just me", "Me + partner", "Family", "Roommates"] },
   { key: "people", q: "How many people are eating?", opts: ["1", "2", "3", "4", "5+"] },
-  { key: "city", q: "Which city are you in?", opts: [...CITIES, "Other"] },
+  { key: "city", q: "Which city are you in?", opts: [...cities, "Other"] },
   { key: "area", q: "Which area?", kind: "area" },
   { key: "budget", q: "What's your daily food budget?", kind: "budget" },
   { key: "cookOrder", q: "Do you prefer to cook or order?", opts: ["I love to cook", "I mostly order", "Both work for me"] },
   { key: "goal", q: "What's your health goal?", opts: ["Weight loss", "Weight gain", "Healthy eating", "Just normal meals", "High protein"] },
   { key: "restriction", q: "Any food restrictions?", opts: ["None", "Low oil", "Low sugar", "No pepper", "Vegetarian", "Diabetic-friendly"] },
-] as const;
+];
 
 const SOLO_BUDGETS = ["₦2,000", "₦5,000", "₦10,000", "₦20,000"];
 const FAMILY_BUDGETS = ["₦10,000", "₦20,000", "₦30,000", "₦50,000"];
@@ -53,11 +53,25 @@ function Onboarding() {
   const [showCustom, setShowCustom] = useState(false);
   const navigate = useNavigate();
 
+  const fetchCities = useServerFn(listCitiesWithAreas);
+  const { data: cityRows = [] } = useQuery({
+    queryKey: ["catalog", "cities"],
+    queryFn: () => fetchCities() as unknown as Promise<CatalogCity[]>,
+  });
+  const CITIES = useMemo(() => cityRows.filter((c) => c.active).map((c) => c.name), [cityRows]);
+  const cityAreas = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    for (const c of cityRows) map[c.name] = c.areas.filter((a) => a.active).map((a) => a.name);
+    return map;
+  }, [cityRows]);
+
   const steps = useMemo(() => {
+    const base = buildSteps(CITIES);
     const city = answers.city;
     const areas = city ? cityAreas[city] : undefined;
-    return baseSteps.filter(s => s.key !== "area" || (areas && areas.length > 0));
-  }, [answers.city]);
+    return base.filter(s => s.key !== "area" || (areas && areas.length > 0));
+  }, [answers.city, CITIES, cityAreas]);
+
 
   const current = steps[step];
   const progress = ((step + 1) / steps.length) * 100;
