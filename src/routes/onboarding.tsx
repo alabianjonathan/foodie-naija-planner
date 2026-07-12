@@ -122,7 +122,7 @@ function Onboarding() {
 
   return (
     <div className="bg-background py-0 md:py-6" style={{ minHeight: "100dvh" }}>
-      <div className="phone-shell overflow-hidden md:rounded-[36px] flex flex-col p-4 sm:p-6" style={{ minHeight: "100dvh", paddingTop: "calc(env(safe-area-inset-top) + 1rem)", paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}>
+      <div className="phone-shell overflow-hidden md:rounded-[36px] flex flex-col p-4 sm:p-6" style={{ paddingTop: "calc(env(safe-area-inset-top) + 1rem)", paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}>
         <div className="flex items-center gap-3">
           <button onClick={() => step > 0 ? setStep(step - 1) : navigate({ to: "/" })} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
             <ArrowLeft className="h-4 w-4" />
@@ -133,9 +133,9 @@ function Onboarding() {
           <Link to="/home" className="text-xs text-muted-foreground">Skip</Link>
         </div>
 
-        <div className="mt-6 sm:mt-8 flex-1">
+        <div className="mt-4 sm:mt-6 flex-1">
           <span className="chip">{`Step ${step + 1} of ${steps.length}`}</span>
-          <h2 className="mt-3 font-display text-2xl sm:text-3xl leading-tight">{current.q}</h2>
+          <h2 className="mt-2 sm:mt-3 font-display text-xl sm:text-2xl md:text-3xl leading-tight">{current.q}</h2>
 
           {current.kind === "budget" && (
             <p className="mt-2 text-sm text-muted-foreground">
@@ -144,7 +144,7 @@ function Onboarding() {
           )}
 
           {current.kind === "budget" ? (
-            <div className="mt-6 space-y-3">
+            <div className="mt-4 sm:mt-6 space-y-3">
 
               <div className="grid grid-cols-2 gap-3">
                 {budgetOpts.map(opt => {
@@ -153,7 +153,7 @@ function Onboarding() {
                     <button
                       key={opt}
                       onClick={() => select(opt)}
-                      className={`rounded-2xl border-2 px-4 py-4 font-display text-lg transition-all ${active ? "border-brand bg-brand/5 text-brand" : "border-border bg-card hover:border-brand/40"}`}
+                      className={`rounded-2xl border-2 px-4 py-3.5 md:py-4 font-display text-base md:text-lg transition-all ${active ? "border-brand bg-brand/5 text-brand" : "border-border bg-card hover:border-brand/40"}`}
                     >
                       {opt}
                     </button>
@@ -164,7 +164,7 @@ function Onboarding() {
               {!showCustom ? (
                 <button
                   onClick={() => setShowCustom(true)}
-                  className="w-full rounded-2xl border-2 border-dashed border-border bg-card px-5 py-4 text-left font-medium hover:border-brand/40"
+                  className="w-full rounded-2xl border-2 border-dashed border-border bg-card px-5 py-3.5 md:py-4 text-left font-medium hover:border-brand/40"
                 >
                   ✏️  Custom amount
                 </button>
@@ -192,14 +192,14 @@ function Onboarding() {
               )}
             </div>
           ) : (
-            <div className="mt-6 space-y-2.5">
+            <div className="mt-4 sm:mt-6 space-y-2 md:space-y-2.5">
               {(current.kind === "area" ? (answers.city ? cityAreas[answers.city] ?? [] : []) : (current.opts ?? [])).map(opt => {
                 const active = answers[current.key]?.toString() === opt;
                 return (
                   <button
                     key={opt}
                     onClick={() => select(opt)}
-                    className={`w-full flex items-center justify-between rounded-2xl border-2 px-5 py-4 text-left font-medium transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
+                    className={`w-full flex items-center justify-between rounded-2xl border-2 px-5 py-3.5 md:py-4 text-left font-medium transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
                   >
                     <span>{opt}</span>
                     {active ? <Check className="h-5 w-5 text-brand" /> : <span className="text-muted-foreground text-sm">→</span>}

@@ -137,7 +137,7 @@
 }
 
 @media (min-width: 768px) {
-  .phone-shell { min-height: 900px; }
+  .phone-shell { min-height: min(90dvh, 800px); }
 }
 
 
