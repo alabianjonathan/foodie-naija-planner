@@ -60,6 +60,20 @@ function Planner() {
     if (typeof window !== "undefined") window.localStorage.setItem(PLAN_KEY, JSON.stringify(plan));
   }, [plan]);
 
+  // Auto-fill an empty plan once meals arrive
+  useEffect(() => {
+    if (!meals.length) return;
+    const isEmpty = plan.every(d => d.slots.every(s => !s.mealId));
+    if (!isEmpty) return;
+    const pick = (slotName: string) => {
+      const pool = meals.filter(m => m.bestTime.some(b => b.toLowerCase() === slotName.toLowerCase()));
+      const src = pool.length ? pool : meals;
+      return src[Math.floor(Math.random() * src.length)].id;
+    };
+    setPlan(p => p.map(d => ({ ...d, slots: d.slots.map(s => ({ ...s, mealId: pick(s.name) })) })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meals.length]);
+
   const slotMeal = (s: Slot) => (s.mealId ? getMeal(s.mealId) : undefined);
 
 
