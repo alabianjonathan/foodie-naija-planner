@@ -58,12 +58,13 @@ function Splash() {
               <Sparkles className="h-3.5 w-3.5 text-warm" fill="currentColor" /> AI meal planner for Nigeria
             </span>
 
-            <h1 className="mt-4 font-display text-[clamp(2rem,9vw,2.75rem)] leading-[1.05] tracking-tight">
-              <span className="text-[oklch(0.35_0.08_145)]">Know wetin to</span>{" "}
+            <h1 className="mt-4 font-display text-[clamp(2rem,9.5vw,2.85rem)] leading-[1.05] tracking-tight">
+              <span className="text-[oklch(0.35_0.08_145)]">Know wetin</span><br />
+              <span className="text-[oklch(0.35_0.08_145)]">to </span>
               <span className="text-warm">chop.</span>
             </h1>
 
-            <p className="mt-3 text-muted-foreground text-[15px] leading-relaxed max-w-[360px]">
+            <p className="mt-3 text-muted-foreground text-[15px] leading-relaxed max-w-[340px]">
               Plan meals, compare prices, track calories, and find nearby food spots.
             </p>
 
