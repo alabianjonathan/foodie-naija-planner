@@ -39,8 +39,12 @@ function Today() {
   }, [user]);
 
   const picks = (rec?.picks ?? [])
-    .map((p) => ({ slot: p.slot, reason: p.reason, meal: getMeal(p.mealId) }))
-    .filter((p): p is { slot: string; reason: string; meal: UiMeal } => !!p.meal);
+    .map((p) => {
+      const meal = getMeal(p.mealId);
+      return meal ? { slot: p.slot as string, reason: p.reason, meal } : null;
+    })
+    .filter((p): p is { slot: string; reason: string; meal: UiMeal } => p !== null);
+
 
   const totalCal = picks.reduce((s, p) => s + (p.meal.caloriesMin + p.meal.caloriesMax) / 2, 0);
   const totalCost = picks.reduce((s, p) => s + p.meal.cookMin, 0);
