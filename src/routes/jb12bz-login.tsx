@@ -21,11 +21,10 @@ function AdminLoginPage() {
     setError(null); setLoading(true);
     const { data, error: signErr } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (signErr || !data.user) { setLoading(false); setError(signErr?.message ?? "Sign-in failed"); return; }
-    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: data.user.id, _role: "admin" });
-    const { data: isSuper } = await supabase.rpc("has_role", { _user_id: data.user.id, _role: "super_admin" });
-    const { data: isRest } = await supabase.rpc("has_role", { _user_id: data.user.id, _role: "restaurant" });
+    const { data: roleRows } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
+    const roles = new Set((roleRows ?? []).map((r) => r.role));
     setLoading(false);
-    if (!isAdmin && !isSuper && !isRest) {
+    if (!roles.has("admin") && !roles.has("super_admin") && !roles.has("restaurant")) {
       await supabase.auth.signOut();
       setError("This account does not have admin access.");
       return;
