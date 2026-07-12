@@ -29,7 +29,7 @@ function Splash() {
           </div>
         </div>
 
-        <div className="flex-1 px-5 pt-3 pb-5 md:px-6 md:pt-4 md:pb-6 flex flex-col justify-between">
+        <div className="flex-1 px-5 pt-3 pb-5 md:px-6 md:pt-4 md:pb-6 flex flex-col justify-start md:justify-between">
           <div>
             <span className="chip !bg-warm/20 !text-charcoal !py-1 !text-xs">
               <Sparkles className="h-3 w-3" /> AI meals for Nigeria
@@ -43,7 +43,7 @@ function Splash() {
             </p>
           </div>
 
-          <div className="space-y-2 md:space-y-3">
+          <div className="mt-4 md:mt-0 space-y-2 md:space-y-3">
             <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 md:py-3.5 text-brand-foreground font-semibold shadow-[var(--shadow-lift)]">
               Get started <ArrowRight className="h-4 w-4" />
             </Link>
