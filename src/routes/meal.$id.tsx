@@ -50,7 +50,7 @@ function MealPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent" />
           <TopBar title="" right={
             <div className="flex gap-2">
-              <button onClick={() => setSaved(s => !s)} className="h-10 w-10 rounded-full bg-white/90 flex items-center justify-center">
+              <button disabled={!dbMeal || toggle.isPending} onClick={() => dbMeal && toggle.mutate({ mealId: dbMeal.id, saved: !saved })} className="h-10 w-10 rounded-full bg-white/90 flex items-center justify-center disabled:opacity-60">
                 <Heart className={`h-4 w-4 ${saved ? "fill-brand text-brand" : "text-charcoal"}`} />
               </button>
               <button className="h-10 w-10 rounded-full bg-white/90 flex items-center justify-center">
