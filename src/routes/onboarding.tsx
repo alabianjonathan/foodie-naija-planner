@@ -4,11 +4,14 @@ import { ArrowLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { cityAreas, CITIES } from "@/data/meals";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { listCitiesWithAreas, type CatalogCity } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
+
 
 type Answers = {
   planningType?: string;
