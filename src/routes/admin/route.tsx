@@ -8,7 +8,7 @@ export const Route = createFileRoute("/admin")({
   ssr: false,
   beforeLoad: async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw redirect({ to: "/admin-login" });
+    if (!user) throw redirect({ to: "/jb12bz-login" });
 
     const [{ data: isSuper }, { data: isAdmin }, { data: isRest }] = await Promise.all([
       supabase.rpc("has_role", { _user_id: user.id, _role: "super_admin" }),

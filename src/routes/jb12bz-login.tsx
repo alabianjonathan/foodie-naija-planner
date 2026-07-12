@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Lock, Mail } from "lucide-react";
 
-export const Route = createFileRoute("/admin-login")({
+export const Route = createFileRoute("/jb12bz-login")({
   ssr: false,
   head: () => ({ meta: [{ title: "Admin Login — MealBeta" }, { name: "robots", content: "noindex" }] }),
   component: AdminLoginPage,

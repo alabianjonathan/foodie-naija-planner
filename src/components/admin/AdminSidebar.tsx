@@ -27,7 +27,7 @@ export function AdminSidebar({ role, email }: { role: string; email?: string }) 
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    navigate({ to: "/admin-login" });
+    navigate({ to: "/jb12bz-login" });
   };
 
   return (
