@@ -32,7 +32,8 @@ function RestaurantsPage() {
     rating?: number; distance_km?: number; delivery?: boolean;
     tags?: string[]; meal_slugs?: string[]; verified?: boolean; status?: string;
   };
-  const save = useMutation({ mutationFn: (v: SaveInput) => upsert({ data: v as unknown as Parameters<typeof upsert>[0]["data"] }), onSuccess: invalidate });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const save = useMutation({ mutationFn: (v: SaveInput) => (upsert as any)({ data: v }), onSuccess: invalidate });
   const remove = useMutation({ mutationFn: (v: { id: string }) => del({ data: v }), onSuccess: invalidate });
   const [showForm, setShowForm] = useState(false);
 
