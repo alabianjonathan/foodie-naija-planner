@@ -2,15 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
 import { popularGroups } from "@/data/popularGroups";
-import { getMeal } from "@/data/meals";
+import { useCatalogMeals } from "@/hooks/useCatalogMeals";
 import { useMemo, useState } from "react";
-import { ChevronRight, Search, ArrowLeft } from "lucide-react";
+import { ChevronRight, Search, ArrowLeft, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/popular")({ component: Popular });
 
 function Popular() {
   const [active, setActive] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const { getMeal, isLoading } = useCatalogMeals();
   const group = useMemo(() => popularGroups.find(g => g.key === active) ?? null, [active]);
 
   const filteredGroups = useMemo(() => {
@@ -75,6 +76,8 @@ function Popular() {
             className="w-full rounded-full bg-secondary px-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
           />
         </div>
+
+        {isLoading && <div className="mt-6 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
 
         <div className="mt-5 space-y-3 pb-8">
           {filteredGroups.map(g => (

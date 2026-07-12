@@ -2,20 +2,16 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { getMeal, restaurants, meals } from "@/data/meals";
-import { Flame, Clock, Wallet, Heart, Share2, ShoppingBasket, CalendarPlus, Store, ArrowRight, Minus, Plus } from "lucide-react";
+import { Flame, Clock, Wallet, Heart, Share2, ShoppingBasket, CalendarPlus, Store, ArrowRight, Minus, Plus, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getMealBySlug } from "@/lib/user-data.functions";
+import { listRestaurants } from "@/lib/catalog.functions";
 import { useSavedMealIds, useToggleSavedMeal } from "@/hooks/useSavedMeals";
-import type { CatalogMeal } from "@/lib/catalog.functions";
+import { toUiMeal } from "@/hooks/useCatalogMeals";
+import type { CatalogMeal, CatalogRestaurant } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/meal/$id")({
-  loader: ({ params }) => {
-    const meal = getMeal(params.id);
-    if (!meal) throw notFound();
-    return { meal };
-  },
   notFoundComponent: () => (
     <PhoneShell><TopBar title="Not found" /><div className="p-6">This meal doesn't exist. <Link to="/home" className="text-brand">Go home</Link></div></PhoneShell>
   ),
@@ -25,22 +21,30 @@ export const Route = createFileRoute("/meal/$id")({
 
 function MealPage() {
   const slug = Route.useParams().id;
-  const meal = getMeal(slug) ?? meals[0];
   const [servings, setServings] = useState(1);
   const getBySlug = useServerFn(getMealBySlug);
-  const { data: dbMeal } = useQuery({
+  const fetchRests = useServerFn(listRestaurants);
+  const { data: dbMeal, isLoading } = useQuery({
     queryKey: ["meal-by-slug", slug],
     queryFn: () => getBySlug({ data: { slug } }) as unknown as Promise<CatalogMeal | null>,
   });
+  const { data: rests = [] } = useQuery({
+    queryKey: ["catalog", "restaurants"],
+    queryFn: () => fetchRests() as unknown as Promise<CatalogRestaurant[]>,
+    enabled: !!dbMeal,
+  });
   const { data: savedIds = [] } = useSavedMealIds();
   const toggle = useToggleSavedMeal();
-  const saved = !!(dbMeal && savedIds.includes(dbMeal.id));
 
+  if (isLoading) return <PhoneShell><div className="flex-1 flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-brand" /></div></PhoneShell>;
+  if (!dbMeal) throw notFound();
+
+  const meal = toUiMeal(dbMeal);
+  const saved = savedIds.includes(dbMeal.id);
   const kcal = Math.round(((meal.caloriesMin + meal.caloriesMax) / 2) * servings);
   const cost = Math.round(((meal.cookMin + meal.cookMax) / 2) * servings);
   const orderPrice = Math.round(((meal.orderMin + meal.orderMax) / 2) * servings);
-
-  const nearbyRestaurants = restaurants.filter(r => r.meals.includes(meal.id));
+  const nearbyRestaurants = rests.filter((r) => r.mealSlugs.includes(meal.slug));
 
   return (
     <PhoneShell>
@@ -50,7 +54,7 @@ function MealPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent" />
           <TopBar title="" right={
             <div className="flex gap-2">
-              <button disabled={!dbMeal || toggle.isPending} onClick={() => dbMeal && toggle.mutate({ mealId: dbMeal.id, saved: !saved })} className="h-10 w-10 rounded-full bg-white/90 flex items-center justify-center disabled:opacity-60">
+              <button disabled={toggle.isPending} onClick={() => toggle.mutate({ mealId: dbMeal.id, saved: !saved })} className="h-10 w-10 rounded-full bg-white/90 flex items-center justify-center disabled:opacity-60">
                 <Heart className={`h-4 w-4 ${saved ? "fill-brand text-brand" : "text-charcoal"}`} />
               </button>
               <button className="h-10 w-10 rounded-full bg-white/90 flex items-center justify-center">
@@ -116,9 +120,9 @@ function MealPage() {
               </div>
             ))}
           </div>
-          <p className="mt-4 rounded-xl bg-leaf/10 text-leaf text-xs p-3 leading-relaxed">
-            💚 {meal.healthNote}
-          </p>
+          {meal.healthNote && (
+            <p className="mt-4 rounded-xl bg-leaf/10 text-leaf text-xs p-3 leading-relaxed">💚 {meal.healthNote}</p>
+          )}
         </div>
 
         <div className="mt-5 card-soft">
