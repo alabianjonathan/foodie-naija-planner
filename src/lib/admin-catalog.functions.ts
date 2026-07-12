@@ -213,11 +213,9 @@ export const adminDashboardStats = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await requireAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const count = (t: string, filter?: (q: ReturnType<typeof supabaseAdmin.from>) => ReturnType<typeof supabaseAdmin.from>) => {
+    const count = (t: string) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let q: any = supabaseAdmin.from(t).select("*", { count: "exact", head: true });
-      if (filter) q = filter(q);
-      return q;
+      return (supabaseAdmin.from(t as any) as any).select("*", { count: "exact", head: true });
     };
     const [
       users,
@@ -232,7 +230,7 @@ export const adminDashboardStats = createServerFn({ method: "GET" })
       recentRestaurants,
       popularMeals,
     ] = await Promise.all([
-      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1 }),
+      count("profiles"),
       count("restaurants"),
       count("meals"),
       count("cities"),
@@ -245,7 +243,8 @@ export const adminDashboardStats = createServerFn({ method: "GET" })
       supabaseAdmin.from("meals").select("id,name,category,cooking_time,cook_min,cook_max").order("name").limit(5),
     ]);
     return {
-      totalUsers: users.data?.total ?? users.data?.users?.length ?? 0,
+      totalUsers: users.count ?? 0,
+
       totalRestaurants: restaurants.count ?? 0,
       totalMeals: meals.count ?? 0,
       totalCities: cities.count ?? 0,
