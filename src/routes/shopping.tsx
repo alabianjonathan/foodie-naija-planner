@@ -12,7 +12,7 @@ type Item = { id: string; name: string; qty: string; price: number; mealId: stri
 
 
 function Shopping() {
-  const [items, setItems] = useState<Item[]>(() => seed());
+  const [items, setItems] = useState<Item[]>([]);
   const [newItem, setNewItem] = useState("");
 
   useEffect(() => {
