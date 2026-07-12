@@ -24,15 +24,12 @@ const SHOPPING_KEY = "mealbeta:shopping:v1";
 const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2));
 
 function seedPlan(): Plan {
-  return DAYS.map((_, di) => ({
+  return DAYS.map(() => ({
     note: "",
-    slots: DEFAULT_SLOTS.map((name, si) => {
-      const pool = meals.filter(m => m.bestTime.includes(name as Meal["bestTime"][number]));
-      const meal = pool[(di * 3 + si) % pool.length];
-      return { id: uid(), name, mealId: meal?.id ?? null };
-    }),
+    slots: DEFAULT_SLOTS.map((name) => ({ id: uid(), name, mealId: null })),
   }));
 }
+
 
 function loadPlan(): Plan {
   if (typeof window === "undefined") return seedPlan();
