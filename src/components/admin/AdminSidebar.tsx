@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Users, Store, UtensilsCrossed, Tags, Wheat,
-  HeartPulse, MapPin, CalendarRange, Inbox, Settings, LogOut,
+  LayoutDashboard, Users, Store, UtensilsCrossed,
+  MapPin, CalendarRange, Inbox, Settings, LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,9 +12,6 @@ const items: NavItem[] = [
   { to: "/jb12bz/users", label: "Users", icon: Users },
   { to: "/jb12bz/restaurants", label: "Restaurants", icon: Store },
   { to: "/jb12bz/meals", label: "Meals", icon: UtensilsCrossed },
-  { to: "/jb12bz/categories", label: "Categories", icon: Tags },
-  { to: "/jb12bz/ingredients", label: "Ingredients", icon: Wheat },
-  { to: "/jb12bz/nutrition", label: "Nutrition", icon: HeartPulse },
   { to: "/jb12bz/cities", label: "Cities & Areas", icon: MapPin },
   { to: "/jb12bz/meal-plans", label: "Meal Plans", icon: CalendarRange },
   { to: "/jb12bz/leads", label: "Leads", icon: Inbox },
