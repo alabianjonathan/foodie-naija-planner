@@ -34,8 +34,20 @@ function Home() {
   const [name, setName] = useState<string>("");
   const [profile, setProfile] = useState<{ restriction?: string | null; goal?: string | null } | null>(null);
   const [nonce, setNonce] = useState(0);
+  const [query, setQuery] = useState("");
   const slot = useMemo(() => currentSlot(), [nonce]);
   const { meals, isLoading: mealsLoading } = useCatalogMeals();
+
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return meals.filter(m =>
+      m.name.toLowerCase().includes(q) ||
+      m.category.toLowerCase().includes(q) ||
+      m.ingredients.some(i => i.name.toLowerCase().includes(q))
+    ).slice(0, 12);
+  }, [query, meals]);
+
 
   const { featured, quick } = useMemo(() => {
     const restriction = (profile?.restriction ?? "").toLowerCase();
