@@ -99,6 +99,7 @@ function Profile() {
 
   const links = [
     { icon: MapPin, label: `Location · ${cityLabel}`, to: "/settings" as const },
+    { icon: Lock, label: "Password & security", to: "/change-password" as const },
     { icon: Heart, label: "Saved meals & plans", to: "/saved" as const },
     { icon: Store, label: "Become a restaurant partner", to: "/home" as const },
     { icon: Bell, label: "Notifications", to: "/home" as const },
