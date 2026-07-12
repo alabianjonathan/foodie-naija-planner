@@ -26,7 +26,7 @@ function Restaurants() {
   const fetchRests = useServerFn(listRestaurants);
   const fetchMeals = useServerFn(listMeals);
   const { data: cityRows = [] } = useQuery({ queryKey: ["catalog", "cities"], queryFn: () => fetchCities() });
-  const { data: restRows = [] } = useQuery({ queryKey: ["catalog", "restaurants"], queryFn: () => fetchRests() });
+  const { data: restRows = [] } = useQuery({ queryKey: ["catalog", "restaurants", city], queryFn: () => fetchRests({ data: { city } }) });
   const { data: mealRows = [] } = useQuery({ queryKey: ["catalog", "meals"], queryFn: () => fetchMeals() });
 
   const CITIES = useMemo(() => cityRows.filter((c) => c.active).map((c) => c.name), [cityRows]);
