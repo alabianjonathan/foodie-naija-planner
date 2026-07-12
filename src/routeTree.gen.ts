@@ -23,8 +23,21 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as MealIdRouteImport } from './routes/meal.$id'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminRestaurantsRouteImport } from './routes/admin/restaurants'
+import { Route as AdminNutritionRouteImport } from './routes/admin/nutrition'
+import { Route as AdminMealsRouteImport } from './routes/admin/meals'
+import { Route as AdminMealPlansRouteImport } from './routes/admin/meal-plans'
+import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
+import { Route as AdminIngredientsRouteImport } from './routes/admin/ingredients'
+import { Route as AdminCitiesRouteImport } from './routes/admin/cities'
+import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
@@ -96,19 +109,86 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const MealIdRoute = MealIdRouteImport.update({
   id: '/meal/$id',
   path: '/meal/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminRestaurantsRoute = AdminRestaurantsRouteImport.update({
+  id: '/restaurants',
+  path: '/restaurants',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminNutritionRoute = AdminNutritionRouteImport.update({
+  id: '/nutrition',
+  path: '/nutrition',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMealsRoute = AdminMealsRouteImport.update({
+  id: '/meals',
+  path: '/meals',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMealPlansRoute = AdminMealPlansRouteImport.update({
+  id: '/meal-plans',
+  path: '/meal-plans',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminIngredientsRoute = AdminIngredientsRouteImport.update({
+  id: '/ingredients',
+  path: '/ingredients',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCitiesRoute = AdminCitiesRouteImport.update({
+  id: '/cities',
+  path: '/cities',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -123,10 +203,22 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/cities': typeof AdminCitiesRoute
+  '/admin/ingredients': typeof AdminIngredientsRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/meal-plans': typeof AdminMealPlansRoute
+  '/admin/meals': typeof AdminMealsRoute
+  '/admin/nutrition': typeof AdminNutritionRoute
+  '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/meal/$id': typeof MealIdRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -141,11 +233,24 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/cities': typeof AdminCitiesRoute
+  '/admin/ingredients': typeof AdminIngredientsRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/meal-plans': typeof AdminMealPlansRoute
+  '/admin/meals': typeof AdminMealsRoute
+  '/admin/nutrition': typeof AdminNutritionRoute
+  '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/meal/$id': typeof MealIdRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -160,12 +265,25 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/cities': typeof AdminCitiesRoute
+  '/admin/ingredients': typeof AdminIngredientsRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/meal-plans': typeof AdminMealPlansRoute
+  '/admin/meals': typeof AdminMealsRoute
+  '/admin/nutrition': typeof AdminNutritionRoute
+  '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/meal/$id': typeof MealIdRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
+    | '/admin-login'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
@@ -180,10 +298,22 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
+    | '/admin/categories'
+    | '/admin/cities'
+    | '/admin/ingredients'
+    | '/admin/leads'
+    | '/admin/meal-plans'
+    | '/admin/meals'
+    | '/admin/nutrition'
+    | '/admin/restaurants'
+    | '/admin/settings'
+    | '/admin/users'
     | '/meal/$id'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin-login'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
@@ -198,10 +328,23 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
+    | '/admin/categories'
+    | '/admin/cities'
+    | '/admin/ingredients'
+    | '/admin/leads'
+    | '/admin/meal-plans'
+    | '/admin/meals'
+    | '/admin/nutrition'
+    | '/admin/restaurants'
+    | '/admin/settings'
+    | '/admin/users'
     | '/meal/$id'
+    | '/admin'
   id:
     | '__root__'
     | '/'
+    | '/admin'
+    | '/admin-login'
     | '/auth'
     | '/change-password'
     | '/forgot-password'
@@ -216,11 +359,24 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
+    | '/admin/categories'
+    | '/admin/cities'
+    | '/admin/ingredients'
+    | '/admin/leads'
+    | '/admin/meal-plans'
+    | '/admin/meals'
+    | '/admin/nutrition'
+    | '/admin/restaurants'
+    | '/admin/settings'
+    | '/admin/users'
     | '/meal/$id'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
   AuthRoute: typeof AuthRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -338,12 +494,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/meal/$id': {
       id: '/meal/$id'
@@ -352,11 +529,115 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MealIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/restaurants': {
+      id: '/admin/restaurants'
+      path: '/restaurants'
+      fullPath: '/admin/restaurants'
+      preLoaderRoute: typeof AdminRestaurantsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/nutrition': {
+      id: '/admin/nutrition'
+      path: '/nutrition'
+      fullPath: '/admin/nutrition'
+      preLoaderRoute: typeof AdminNutritionRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/meals': {
+      id: '/admin/meals'
+      path: '/meals'
+      fullPath: '/admin/meals'
+      preLoaderRoute: typeof AdminMealsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/meal-plans': {
+      id: '/admin/meal-plans'
+      path: '/meal-plans'
+      fullPath: '/admin/meal-plans'
+      preLoaderRoute: typeof AdminMealPlansRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/ingredients': {
+      id: '/admin/ingredients'
+      path: '/ingredients'
+      fullPath: '/admin/ingredients'
+      preLoaderRoute: typeof AdminIngredientsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/cities': {
+      id: '/admin/cities'
+      path: '/cities'
+      fullPath: '/admin/cities'
+      preLoaderRoute: typeof AdminCitiesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminCitiesRoute: typeof AdminCitiesRoute
+  AdminIngredientsRoute: typeof AdminIngredientsRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminMealPlansRoute: typeof AdminMealPlansRoute
+  AdminMealsRoute: typeof AdminMealsRoute
+  AdminNutritionRoute: typeof AdminNutritionRoute
+  AdminRestaurantsRoute: typeof AdminRestaurantsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminCitiesRoute: AdminCitiesRoute,
+  AdminIngredientsRoute: AdminIngredientsRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
+  AdminMealPlansRoute: AdminMealPlansRoute,
+  AdminMealsRoute: AdminMealsRoute,
+  AdminNutritionRoute: AdminNutritionRoute,
+  AdminRestaurantsRoute: AdminRestaurantsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
   AuthRoute: AuthRoute,
   ChangePasswordRoute: ChangePasswordRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,

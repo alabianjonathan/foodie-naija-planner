@@ -5,7 +5,9 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const items = [
+type NavItem = { to: string; label: string; icon: React.ElementType; exact?: boolean; superOnly?: boolean };
+
+const items: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/users", label: "Users", icon: Users },
   { to: "/admin/restaurants", label: "Restaurants", icon: Store },
@@ -17,7 +19,7 @@ const items = [
   { to: "/admin/meal-plans", label: "Meal Plans", icon: CalendarRange },
   { to: "/admin/leads", label: "Leads", icon: Inbox },
   { to: "/admin/settings", label: "Settings", icon: Settings, superOnly: true },
-] as const;
+];
 
 export function AdminSidebar({ role, email }: { role: string; email?: string }) {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
