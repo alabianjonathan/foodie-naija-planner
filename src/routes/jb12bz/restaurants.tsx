@@ -26,7 +26,8 @@ function RestaurantsPage() {
   const del = useServerFn(adminDeleteRestaurant);
   const { data: rows = [], isLoading, error } = useQuery({ queryKey: ["admin", "restaurants"], queryFn: () => list() as unknown as Promise<Row[]> });
   const invalidate = () => qc.invalidateQueries({ queryKey: ["admin", "restaurants"] });
-  const save = useMutation({ mutationFn: (v: Parameters<typeof upsert>[0]["data"]) => upsert({ data: v }), onSuccess: invalidate });
+  type SaveInput = Parameters<typeof adminUpsertRestaurant>[0] extends { data: infer D } ? D : never;
+  const save = useMutation({ mutationFn: (v: SaveInput) => upsert({ data: v }), onSuccess: invalidate });
   const remove = useMutation({ mutationFn: (v: { id: string }) => del({ data: v }), onSuccess: invalidate });
   const [showForm, setShowForm] = useState(false);
 
