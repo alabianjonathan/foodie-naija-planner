@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, Flame } from "lucide-react";
-import type { Meal } from "@/data/meals";
+import type { UiMeal } from "@/hooks/useCatalogMeals";
 
-export function MealCard({ meal }: { meal: Meal }) {
+export function MealCard({ meal }: { meal: UiMeal }) {
+
   return (
     <Link
       to="/meal/$id"

@@ -2,11 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { meals, getMeal, type Meal } from "@/data/meals";
+import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
 import { Copy, Plus, RefreshCw, ShoppingBasket, Trash2, Utensils, X, Check, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/planner")({ component: Planner });
+type Meal = UiMeal;
+
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 const DEFAULT_SLOTS = ["Breakfast", "Lunch", "Dinner"] as const;
@@ -22,15 +24,12 @@ const SHOPPING_KEY = "mealbeta:shopping:v1";
 const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2));
 
 function seedPlan(): Plan {
-  return DAYS.map((_, di) => ({
+  return DAYS.map(() => ({
     note: "",
-    slots: DEFAULT_SLOTS.map((name, si) => {
-      const pool = meals.filter(m => m.bestTime.includes(name as Meal["bestTime"][number]));
-      const meal = pool[(di * 3 + si) % pool.length];
-      return { id: uid(), name, mealId: meal?.id ?? null };
-    }),
+    slots: DEFAULT_SLOTS.map((name) => ({ id: uid(), name, mealId: null })),
   }));
 }
+
 
 function loadPlan(): Plan {
   if (typeof window === "undefined") return seedPlan();
@@ -47,6 +46,7 @@ function loadPlan(): Plan {
 
 function Planner() {
   const navigate = useNavigate();
+  const { meals, getMeal } = useCatalogMeals();
   const [plan, setPlan] = useState<Plan>(() => seedPlan());
   const [activeDay, setActiveDay] = useState(0);
   const [picker, setPicker] = useState<{ dayIdx: number; slotId: string } | null>(null);
@@ -61,6 +61,7 @@ function Planner() {
   }, [plan]);
 
   const slotMeal = (s: Slot) => (s.mealId ? getMeal(s.mealId) : undefined);
+
 
   const dayCost = (i: number) => plan[i].slots.reduce((s, sl) => s + (slotMeal(sl)?.cookMin ?? 0), 0);
   const dayCal = (i: number) => plan[i].slots.reduce((s, sl) => {
@@ -143,7 +144,8 @@ function Planner() {
       if (fits) rec.push(m); else oth.push(m);
     });
     return { recommended: rec, other: oth };
-  }, [pickerSlotName, query]);
+  }, [pickerSlotName, query, meals]);
+
 
   const handlePickMeal = (meal: Meal) => {
     if (!picker) return;

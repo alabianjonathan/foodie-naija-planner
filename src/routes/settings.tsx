@@ -1,12 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { CITIES, cityAreas } from "@/data/meals";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Check, Loader2, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { listCitiesWithAreas, type CatalogCity } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/settings")({ component: Settings });
 
@@ -19,17 +21,30 @@ function Settings() {
   const [saving, setSaving] = useState(false);
   const [ready, setReady] = useState(false);
 
+  const fetchCities = useServerFn(listCitiesWithAreas);
+  const { data: cityRows = [] } = useQuery({
+    queryKey: ["catalog", "cities"],
+    queryFn: () => fetchCities() as unknown as Promise<CatalogCity[]>,
+  });
+  const CITIES = useMemo(() => cityRows.filter((c) => c.active).map((c) => c.name), [cityRows]);
+  const cityAreas = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    for (const c of cityRows) map[c.name] = c.areas.filter((a) => a.active).map((a) => a.name);
+    return map;
+  }, [cityRows]);
+
   useEffect(() => {
-    if (!user) return;
+    if (!user || cityRows.length === 0) return;
     supabase.from("profiles").select("city, area").eq("id", user.id).maybeSingle()
       .then(({ data }) => {
-        const c = data?.city && (CITIES as readonly string[]).includes(data.city) ? data.city : "Lagos";
+        const c = data?.city && CITIES.includes(data.city) ? data.city : (CITIES[0] ?? "Lagos");
         const a = data?.area ?? "";
         setCity(c); setArea(a); setInitial({ city: c, area: a }); setReady(true);
       });
-  }, [user]);
+  }, [user, cityRows, CITIES]);
 
-  const areas = useMemo(() => cityAreas[city] ?? [], [city]);
+  const areas = useMemo(() => cityAreas[city] ?? [], [city, cityAreas]);
+
   const dirty = city !== initial.city || area !== initial.area;
 
   const onPickCity = (c: string) => {

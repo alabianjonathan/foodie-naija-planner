@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
-import { meals, type Meal } from "@/data/meals";
 import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
+import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
 import logoAsset from "@/assets/mealbeta-logo.png.asset.json";
 
 
@@ -26,11 +26,12 @@ function Home() {
   const [profile, setProfile] = useState<{ restriction?: string | null; goal?: string | null } | null>(null);
   const [nonce, setNonce] = useState(0);
   const slot = useMemo(() => currentSlot(), [nonce]);
+  const { meals, isLoading: mealsLoading } = useCatalogMeals();
 
   const { featured, quick } = useMemo(() => {
     const restriction = (profile?.restriction ?? "").toLowerCase();
     const goal = (profile?.goal ?? "").toLowerCase();
-    const matchesPrefs = (m: Meal) => {
+    const matchesPrefs = (m: UiMeal) => {
       if (restriction.includes("vegetarian") && m.protein && /chicken|beef|fish|meat|suya|goat|turkey/i.test(m.protein)) return false;
       if (restriction.includes("no pork") && /pork/i.test(m.name)) return false;
       if (goal.includes("lose") && m.healthScore != null && m.healthScore < 6) return false;
@@ -44,7 +45,7 @@ function Home() {
       featured: featuredPool.slice(0, 4),
       quick: (quickPool.length >= 4 ? quickPool : popular.filter(matchesPrefs)).slice(0, 6),
     };
-  }, [nonce, profile, slot]);
+  }, [nonce, profile, slot, meals]);
 
   useEffect(() => {
     if (!user) return;
@@ -124,15 +125,19 @@ function Home() {
             <button onClick={() => setNonce(n => n + 1)} className="text-xs text-brand font-medium">Shuffle</button>
           </div>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          {featured.map((m: Meal) => <MealCard key={m.id} meal={m} />)}
-        </div>
+        {mealsLoading ? (
+          <div className="mt-4 flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>
+        ) : (
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            {featured.map((m) => <MealCard key={m.id} meal={m} />)}
+          </div>
+        )}
       </section>
 
       <section className="px-6 mt-8">
         <h2 className="font-display text-xl">Quick meals (under 40 min)</h2>
         <div className="mt-4 flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 snap-x">
-          {quick.map((m: Meal) => (
+          {quick.map((m) => (
             <Link key={m.id} to="/meal/$id" params={{ id: m.id }} className="min-w-[220px] snap-start card-soft">
               <div className={`aspect-video rounded-2xl bg-gradient-to-br ${m.gradient} flex items-center justify-center text-5xl mb-3`}>{m.emoji}</div>
               <h3 className="font-display text-base leading-tight">{m.name}</h3>

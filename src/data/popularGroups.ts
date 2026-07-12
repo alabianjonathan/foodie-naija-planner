@@ -1,6 +1,5 @@
-// Grouped list of most-popular Nigerian meals. Items map to a meal id in
-// src/data/meals.ts when a full detail page exists; otherwise it's an
-// informational entry.
+// Grouped list of most-popular Nigerian meals. Items map to a meal slug in
+// the meals DB when a full detail page exists; otherwise it's an informational entry.
 
 export type PopularItem = { name: string; mealId?: string };
 export type PopularGroup = { key: string; title: string; emoji: string; items: PopularItem[] };
