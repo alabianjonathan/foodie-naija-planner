@@ -32,7 +32,7 @@ function SettingsPage() {
   if (adminRole !== "super_admin") return <Navigate to="/jb12bz" />;
 
   const save = async (key: string, value: Record<string, unknown>) => {
-    const { error } = await supabase.from("platform_settings").upsert({ key, value }).eq("key", key);
+    const { error } = await supabase.from("platform_settings").upsert({ key, value: value as never }).eq("key", key);
     if (error) return toast.error(error.message);
     setSettings((s) => ({ ...s, [key]: value }));
     toast.success("Saved");
