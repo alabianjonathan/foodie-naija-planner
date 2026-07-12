@@ -32,7 +32,7 @@ export function DataTable<T extends { id: string }>({
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
-  useMemo(() => { setPage(1); }, [q, rows.length]);
+  useEffect(() => { setPage(1); }, [q, rows.length]);
   const start = (currentPage - 1) * pageSize;
   const paged = filtered.slice(start, start + pageSize);
 
