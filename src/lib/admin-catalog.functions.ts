@@ -152,6 +152,51 @@ export const adminListMeals = createServerFn({ method: "GET" })
     return data;
   });
 
+export const adminUpsertMeal = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({
+    id: z.string().uuid().optional(),
+    slug: z.string().min(1),
+    name: z.string().min(1),
+    category: z.string().min(1),
+    emoji: z.string().optional().nullable(),
+    gradient: z.string().optional().nullable(),
+    description: z.string().optional().nullable(),
+    best_time: z.array(z.string()).default([]),
+    cook_min: z.number().int().default(0),
+    cook_max: z.number().int().default(0),
+    order_min: z.number().int().default(0),
+    order_max: z.number().int().default(0),
+    cooking_time_min: z.number().int().default(0),
+    calories_min: z.number().int().default(0),
+    calories_max: z.number().int().default(0),
+    protein: z.string().optional().nullable(),
+    carbs: z.string().optional().nullable(),
+    fat: z.string().optional().nullable(),
+    fiber: z.string().optional().nullable(),
+    portion: z.string().optional().nullable(),
+    health_score: z.number().int().optional().nullable(),
+    health_note: z.string().optional().nullable(),
+    goals: z.array(z.string()).default([]),
+    ingredients: z.array(z.object({ name: z.string(), qty: z.string(), price: z.number() })).default([]),
+    popular: z.boolean().default(false),
+    status: z.string().default("active"),
+  }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sb = context.supabase as any;
+    if (data.id) {
+      const { id, ...rest } = data;
+      const { error } = await sb.from("meals").update(rest).eq("id", id);
+      if (error) throw error;
+    } else {
+      const { error } = await sb.from("meals").insert(data);
+      if (error) throw error;
+    }
+    return { ok: true };
+  });
+
 export const adminDeleteMeal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
