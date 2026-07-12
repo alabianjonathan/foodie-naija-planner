@@ -21,6 +21,7 @@ import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MealIdRouteImport } from './routes/meal.$id'
@@ -85,6 +86,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChangePasswordRoute = ChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -104,6 +110,7 @@ const MealIdRoute = MealIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/change-password'
     | '/forgot-password'
     | '/home'
     | '/onboarding'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/change-password'
     | '/forgot-password'
     | '/home'
     | '/onboarding'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/change-password'
     | '/forgot-password'
     | '/home'
     | '/onboarding'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ChangePasswordRoute: typeof ChangePasswordRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HomeRoute: typeof HomeRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -311,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/change-password': {
+      id: '/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof ChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -338,6 +358,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ChangePasswordRoute: ChangePasswordRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   HomeRoute: HomeRoute,
   OnboardingRoute: OnboardingRoute,
