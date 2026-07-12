@@ -48,7 +48,7 @@ function Restaurants() {
   const changeCity = async (next: string) => {
     setCity(next);
     setArea("All");
-    setPicking(null);
+    setPicking("area");
     if (!user) return;
     setSaving(true);
     await supabase.from("profiles").update({ city: next, area: null }).eq("id", user.id);
