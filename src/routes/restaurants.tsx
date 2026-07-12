@@ -103,15 +103,37 @@ function Restaurants() {
 
         {picking === "city" && (
           <div className="mb-4 card-soft !p-3">
-            <p className="text-[11px] text-muted-foreground mb-2">Choose your city</p>
-            <div className="flex flex-wrap gap-2">
-              {CITIES.map(c => (
-                <button key={c} onClick={() => changeCity(c)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${city === c ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}>
-                  {c}
-                </button>
-              ))}
-            </div>
+            <p className="text-[11px] text-muted-foreground mb-2">Type your city</p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const v = (new FormData(e.currentTarget).get("city") as string || "").trim();
+                if (v) changeCity(v);
+              }}
+              className="flex gap-2 mb-2"
+            >
+              <input
+                name="city"
+                defaultValue={city}
+                placeholder="e.g. Lagos"
+                maxLength={60}
+                className="flex-1 px-3 py-1.5 rounded-full border bg-background text-xs outline-none focus:border-brand"
+              />
+              <button type="submit" className="px-3 py-1.5 rounded-full bg-brand text-brand-foreground text-xs font-medium">Save</button>
+            </form>
+            {CITIES.length > 0 && (
+              <>
+                <p className="text-[11px] text-muted-foreground mb-1.5">Or pick a suggestion</p>
+                <div className="flex flex-wrap gap-2">
+                  {CITIES.map(c => (
+                    <button key={c} onClick={() => changeCity(c)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium ${city === c ? "bg-brand text-brand-foreground" : "bg-secondary text-charcoal"}`}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 
