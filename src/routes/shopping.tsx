@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { meals } from "@/data/meals";
 import { Share2, Plus, Trash2, Check } from "lucide-react";
 
 export const Route = createFileRoute("/shopping")({ component: Shopping });
@@ -11,11 +10,6 @@ const SHOPPING_KEY = "mealbeta:shopping:v1";
 
 type Item = { id: string; name: string; qty: string; price: number; mealId: string; checked: boolean };
 
-function seed(): Item[] {
-  return meals.slice(0, 4).flatMap(m => m.ingredients.slice(0, 3).map(i => ({
-    ...i, mealId: m.id, checked: false, id: `${m.id}-${i.name}`,
-  })));
-}
 
 function Shopping() {
   const [items, setItems] = useState<Item[]>(() => seed());
