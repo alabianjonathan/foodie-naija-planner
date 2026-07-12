@@ -1,4 +1,4 @@
-import { useState, useMemo, ReactNode } from "react";
+import { useState, useMemo, useEffect, ReactNode } from "react";
 import { Search } from "lucide-react";
 
 export type Column<T> = {
@@ -9,15 +9,17 @@ export type Column<T> = {
 };
 
 export function DataTable<T extends { id: string }>({
-  rows, columns, searchKeys, actions, empty,
+  rows, columns, searchKeys, actions, empty, pageSize = 25,
 }: {
   rows: T[];
   columns: Column<T>[];
   searchKeys?: (keyof T)[];
   actions?: (row: T) => ReactNode;
   empty?: string;
+  pageSize?: number;
 }) {
   const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
   const filtered = useMemo(() => {
     if (!q.trim()) return rows;
     const needle = q.toLowerCase();
@@ -27,6 +29,12 @@ export function DataTable<T extends { id: string }>({
       ),
     );
   }, [rows, q, searchKeys]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  useEffect(() => { setPage(1); }, [q, rows.length]);
+  const start = (currentPage - 1) * pageSize;
+  const paged = filtered.slice(start, start + pageSize);
 
   return (
     <div className="bg-card rounded-xl border overflow-hidden">
@@ -40,7 +48,10 @@ export function DataTable<T extends { id: string }>({
             className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted text-sm border border-transparent focus:border-brand outline-none"
           />
         </div>
-        <div className="text-xs text-muted-foreground">{filtered.length} of {rows.length}</div>
+        <div className="text-xs text-muted-foreground">
+          {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + pageSize, filtered.length)} of {filtered.length}
+          {filtered.length !== rows.length && <> (filtered from {rows.length})</>}
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -53,10 +64,10 @@ export function DataTable<T extends { id: string }>({
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 && (
+            {paged.length === 0 && (
               <tr><td colSpan={columns.length + (actions ? 1 : 0)} className="px-4 py-8 text-center text-muted-foreground">{empty ?? "No results"}</td></tr>
             )}
-            {filtered.map((row) => (
+            {paged.map((row) => (
               <tr key={row.id} className="border-t hover:bg-muted/30">
                 {columns.map((c) => (
                   <td key={c.key} className="px-4 py-3">
@@ -69,9 +80,21 @@ export function DataTable<T extends { id: string }>({
           </tbody>
         </table>
       </div>
+      {totalPages > 1 && (
+        <div className="p-3 border-t flex items-center justify-between text-xs">
+          <div className="text-muted-foreground">Page {currentPage} of {totalPages}</div>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setPage(1)} disabled={currentPage === 1} className="px-2 py-1 rounded border disabled:opacity-40 hover:bg-muted">« First</button>
+            <button onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} className="px-2 py-1 rounded border disabled:opacity-40 hover:bg-muted">‹ Prev</button>
+            <button onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages} className="px-2 py-1 rounded border disabled:opacity-40 hover:bg-muted">Next ›</button>
+            <button onClick={() => setPage(totalPages)} disabled={currentPage === totalPages} className="px-2 py-1 rounded border disabled:opacity-40 hover:bg-muted">Last »</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
 export function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
