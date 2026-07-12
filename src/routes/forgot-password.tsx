@@ -35,8 +35,8 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-0 md:py-6">
-      <div className="phone-shell overflow-hidden md:rounded-[36px] md:min-h-[900px] flex flex-col p-6">
+    <div className="min-h-dvh bg-background py-0 md:py-6">
+      <div className="phone-shell overflow-hidden md:rounded-[36px] flex flex-col p-6">
         <div className="flex items-center gap-3">
           <Link to="/auth" className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
             <ArrowLeft className="h-4 w-4" />
