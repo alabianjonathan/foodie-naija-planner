@@ -1,97 +1,70 @@
-# MealBeta Admin Dashboard — Build Plan
+## Production readiness audit — MealBeta
 
-A separate desktop-first web admin, mounted under `/admin/*`, completely visually distinct from the mobile customer app. Uses the same Lovable Cloud project but gated by a `user_roles` table so normal users can't access it.
+Scope: replace remaining static/sample data with Supabase-backed reads/writes, harden admin RBAC, make every admin table full CRUD + search/filter, and verify the mobile user flow end-to-end.
 
-## Scope for this build
+### 1. Current state (from a quick pass)
 
-Phase 1 (this plan): full UI + routing + role gate + sample data.
-Phase 2 (later, on request): wire each section to real Cloud tables + CRUD mutations.
+**Mobile app still uses static data**
+- `src/data/meals.ts` (757 lines) is imported by `home.tsx`, `today.tsx`, `popular.tsx`, `meal.$id.tsx`, `planner.tsx`, `shopping.tsx`, `saved.tsx`. The DB `meals` table exists and is seeded but the UI doesn't read it.
+- `src/data/popularGroups.ts` used by `popular.tsx` — static.
+- `src/data/admin-sample.ts` — leftover sample used by some admin pages.
+- `saved.tsx` doesn't persist to DB.
+- `planner.tsx` / `shopping.tsx` don't sync with `meal_plans` for the logged-in user.
+- `restaurants.tsx` calls the server fn (good) but requires the fn is wired end-to-end.
+- `profile.tsx` and `onboarding.tsx` — verify they write `profiles`.
 
-Sample data lets you click through every screen immediately; each page is structured so swapping to real queries is a localized change.
+**Admin panel gaps**
+- `/jb12bz` route gate exists (super_admin / admin / restaurant) — OK.
+- Pages like `categories.tsx`, `ingredients.tsx`, `nutrition.tsx`, `settings.tsx`, `users.tsx` are mostly stubs / read-only / sample-backed.
+- `cities.tsx`, `restaurants.tsx`, `meals.tsx`, `leads.tsx`, `meal-plans.tsx` have partial CRUD — need consistent search + filter + edit dialogs.
+- Meals admin: no create/edit form yet (only delete + status toggle).
+- Restaurant admin: has upsert fn but need edit dialog.
 
-## Architecture
+### 2. Plan of work
 
-- **Route group**: `src/routes/admin/*` — separate from the mobile shell. No `PhoneShell`, no `BottomNav`.
-- **Layout**: `src/routes/admin/route.tsx` — sidebar + top bar + `<Outlet />`. Dark sidebar, white content, MealBeta green/orange accents.
-- **Auth gate**: checks Supabase session + `has_role(uid, 'admin' | 'super_admin' | 'restaurant')` via a server function. Non-admins → redirect to `/`. Unauthenticated → `/admin/login`.
-- **Login**: `src/routes/admin/login.tsx` — email/password only (no Google), forgot-password link reuses existing `/forgot-password`.
-- **Design tokens**: extend `src/styles.css` with `--admin-sidebar`, `--admin-sidebar-fg`, `--admin-accent` so the admin theme is scoped and doesn't touch the mobile app.
+**A. DB / server functions**
+1. Add `saved_meals(user_id, meal_id)` table with RLS (own rows only) + GRANTs.
+2. Ensure `meal_plans` schema supports per-day slots (already there — verify columns).
+3. Add server fns:
+   - `listMealsPublic` (already: `listMeals`) — add `getMealBySlug`.
+   - `toggleSavedMeal`, `listSavedMeals`.
+   - `upsertMealPlan`, `getCurrentMealPlan`.
+   - `upsertProfile` for onboarding/profile.
+   - Admin: `adminUpsertMeal` (currently missing), plus keep existing admin fns.
 
-## Database (one migration)
+**B. Mobile app rewrite (data source swap)**
+- Introduce `src/hooks/useMeals.ts` using TanStack Query + `listMeals` server fn.
+- Refactor `home`, `today`, `popular`, `meal.$id`, `planner`, `shopping`, `saved` to consume DB meals.
+- Keep `Meal` type but map from `CatalogMeal`.
+- Persist `saved`, `planner` to DB.
+- Verify onboarding writes to `profiles`.
 
-Enum + roles table + helper function (standard secure pattern):
+**C. Admin CRUD polish**
+- Meals: add create/edit dialog (name, slug, category, times, nutrition, ingredients JSON, status).
+- Restaurants: add edit dialog (currently only add). Add search + city/status filter.
+- Cities: search.
+- Leads: status filter + search.
+- Meal plans: view detail, delete.
+- Users: promote/demote roles UI (uses existing admin-users fns).
+- Categories/Ingredients/Nutrition/Settings: either wire to real config tables or clearly mark placeholder — recommend removing until scoped.
 
-- `app_role` enum: `super_admin | admin | restaurant | user`
-- `public.user_roles (user_id, role)` with RLS + `has_role(uid, role)` SECURITY DEFINER
-- Grants: `authenticated` select, `service_role` all
-- Seed: no auto-seed — you promote your own account to `super_admin` after the migration runs (I'll give you the one-line SQL)
+**D. Verification**
+- Playwright: onboarding → home → today → meal detail → save → planner add → shopping list → restaurants → profile edit.
+- Admin: login as super_admin, CRUD on each entity.
 
-No other tables in phase 1; management pages use in-memory sample data so you can approve incrementally.
+### 3. Scope check for this turn
 
-## Sidebar sections (all built with sample data)
+This is 2–4 turns of work. I propose I execute in this order:
 
-1. Dashboard — 10 summary cards + "recent restaurants" + "popular meals" lists
-2. Users — searchable table, role change, ban/unban/delete (super_admin only for delete), detail drawer
-3. Restaurants — table + add/edit form with all fields you listed, approve/reject/verify/suspend
-4. Meals — table + add/edit form, tags multi-select, image upload placeholder
-5. Categories — simple CRUD list
-6. Ingredients — table with city-scoped prices
-7. Nutrition — per-meal nutrition editor (linked from Meals detail)
-8. Cities & Areas — State → City → Area nested management, activate/deactivate
-9. Meal Plans — read-only table of generated plans + delete
-10. Leads — table with status pipeline (pending/contacted/completed/cancelled) + CSV export button
-11. Settings — placeholder for platform settings (super_admin only)
+1. **Turn 1 (this):** Add `saved_meals` migration + new server fns (`getMealBySlug`, saved, meal-plan upsert, profile upsert, `adminUpsertMeal`). Wait for migration approval.
+2. **Turn 2:** Swap mobile routes to DB-backed queries; wire saved + planner + shopping persistence.
+3. **Turn 3:** Admin edit dialogs + search/filter across tables; role management UI.
+4. **Turn 4:** Playwright verification and fixes.
 
-Every table shares one reusable `<DataTable>` with search, filter, pagination, and row actions.
+### 4. Open decisions for you
 
-## Role behavior in UI
+- **Categories / Ingredients / Nutrition / Settings admin pages** — should I (a) build real tables + CRUD for these, or (b) remove them from the sidebar until scoped? They aren't in the "sync scope" you set earlier.
+- **Saved meals** — do you want per-user favorites persisted server-side (recommended), or keep local-only?
+- **Restaurant role** — should the `restaurant` role see a limited dashboard (their own venue only), or is this out of scope for now?
 
-- `super_admin`: sees all sections including Settings + destructive actions
-- `admin`: all sections except Settings; no permanent delete
-- `restaurant`: only sees "My Restaurant" + "My Meals" + "My Leads" (scoped views of Restaurants/Meals/Leads)
-- `user`: bounced from `/admin` entirely
-
-## Files to create
-
-```
-src/routes/admin/
-  route.tsx                 # layout + auth gate
-  login.tsx
-  index.tsx                 # dashboard
-  users.tsx
-  restaurants.tsx
-  restaurants.$id.tsx       # add/edit
-  meals.tsx
-  meals.$id.tsx
-  categories.tsx
-  ingredients.tsx
-  nutrition.tsx
-  cities.tsx
-  meal-plans.tsx
-  leads.tsx
-  settings.tsx
-src/components/admin/
-  AdminSidebar.tsx
-  AdminTopbar.tsx
-  DataTable.tsx
-  StatCard.tsx
-  RoleGate.tsx
-src/data/admin-sample.ts    # sample users, restaurants, meals, leads, etc.
-src/lib/admin-auth.functions.ts   # requireAdmin server fn
-```
-
-Plus: one migration for `app_role` + `user_roles` + `has_role`, and a small `styles.css` addition for admin theme tokens.
-
-## What I won't do in phase 1 (confirm if you want any of these included)
-
-- Real CRUD wired to Supabase tables for restaurants/meals/cities/ingredients/nutrition/leads (big surface — better as phase 2, one section at a time)
-- Image uploads to Storage (UI placeholder only)
-- CSV export actually generating a file (button present, wired later)
-- Email notifications to restaurants on lead assignment
-
-## After you approve
-
-1. I run the `user_roles` migration
-2. I give you the SQL to promote yourself to `super_admin`
-3. I build all the routes + components + sample data in one pass
-4. You click through `/admin/login` → dashboard and tell me which section to wire to real data first
+Reply with your picks and I'll start executing.
