@@ -3,7 +3,7 @@ import { generateText, NoObjectGeneratedError, Output } from "ai";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
-import { meals } from "@/data/meals";
+
 
 const PickSchema = z.object({
   slot: z.enum(["Breakfast", "Lunch", "Dinner"]),
