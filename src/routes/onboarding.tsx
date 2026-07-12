@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-// import { useRequireAuth } from "@/hooks/useAuth";
+import { useRequireAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -46,8 +46,7 @@ const SOLO_BUDGETS = ["₦2,000", "₦5,000", "₦10,000", "₦20,000"];
 const FAMILY_BUDGETS = ["₦10,000", "₦20,000", "₦30,000", "₦50,000"];
 
 function Onboarding() {
-  // TEMP: mock user for layout screenshots
-  const user = { id: "test-user" } as { id: string };
+  const { user } = useRequireAuth();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [customBudget, setCustomBudget] = useState("");
