@@ -96,7 +96,7 @@ Respond ONLY with JSON in this exact shape (no extra keys, no markdown):
     const normalize = (raw: unknown): DailyRecommendation | null => {
       if (!raw || typeof raw !== "object") return null;
       const r = raw as Record<string, unknown>;
-      const validIds = new Set(meals.map((m) => m.id));
+      const validIds = new Set(allMeals.map((m) => m.id));
       let picks: { slot: "Breakfast" | "Lunch" | "Dinner"; mealId: string; reason: string }[] = [];
 
       if (Array.isArray(r.picks)) {
