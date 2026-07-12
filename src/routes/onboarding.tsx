@@ -192,14 +192,14 @@ function Onboarding() {
               )}
             </div>
           ) : (
-            <div className="mt-6 space-y-2.5">
+            <div className="mt-4 sm:mt-6 space-y-2 md:space-y-2.5">
               {(current.kind === "area" ? (answers.city ? cityAreas[answers.city] ?? [] : []) : (current.opts ?? [])).map(opt => {
                 const active = answers[current.key]?.toString() === opt;
                 return (
                   <button
                     key={opt}
                     onClick={() => select(opt)}
-                    className={`w-full flex items-center justify-between rounded-2xl border-2 px-5 py-4 text-left font-medium transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
+                    className={`w-full flex items-center justify-between rounded-2xl border-2 px-5 py-3.5 md:py-4 text-left font-medium transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
                   >
                     <span>{opt}</span>
                     {active ? <Check className="h-5 w-5 text-brand" /> : <span className="text-muted-foreground text-sm">→</span>}
