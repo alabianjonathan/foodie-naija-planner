@@ -29,25 +29,25 @@ function Splash() {
           </div>
         </div>
 
-        <div className="flex-1 px-6 pt-4 pb-8 flex flex-col justify-between">
+        <div className="flex-1 px-6 pt-5 pb-6 flex flex-col justify-between">
           <div>
             <span className="chip !bg-warm/20 !text-charcoal">
-              <Sparkles className="h-3.5 w-3.5" /> AI meal assistant for Nigeria
+              <Sparkles className="h-3.5 w-3.5" /> AI meals for Nigeria
             </span>
-            <h1 className="mt-4 font-display text-[2.6rem] leading-[1.05] text-foreground">
-              Know wetin to eat<br/>
-              <span className="text-brand">before hunger confuse you.</span>
+            <h1 className="mt-3 font-display text-[2.4rem] leading-[1.05] text-foreground">
+              Know wetin<br/>
+              <span className="text-brand">to chop.</span>
             </h1>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              MealBeta plans your meals, estimates cost & calories, builds shopping lists and finds restaurants near you — all tuned to Nigerian food.
+            <p className="mt-3 text-muted-foreground text-[15px] leading-snug">
+              Plans, prices, shopping lists & nearby spots — tuned to Naija food.
             </p>
           </div>
 
-          <div className="mt-8 space-y-3">
-            <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-4 text-brand-foreground font-semibold shadow-[var(--shadow-lift)]">
+          <div className="mt-6 space-y-2">
+            <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-brand-foreground font-semibold shadow-[var(--shadow-lift)]">
               Get started <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-secondary px-6 py-4 text-secondary-foreground font-medium">
+            <Link to="/auth" className="w-full flex items-center justify-center rounded-full px-6 py-2.5 text-sm text-muted-foreground font-medium">
               I already have an account
             </Link>
           </div>
