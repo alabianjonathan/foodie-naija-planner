@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { restaurants, getMeal, cityAreas, CITIES } from "@/data/meals";
 import { Phone, MessageCircle, Navigation, Star, Truck, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
+import { listCitiesWithAreas, listRestaurants, listMeals } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/restaurants")({ component: Restaurants });
 
