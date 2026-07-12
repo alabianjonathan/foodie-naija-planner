@@ -206,3 +206,56 @@ export const adminListMealPlans = createServerFn({ method: "GET" })
     if (error) throw error;
     return data;
   });
+
+// ============ DASHBOARD ============
+export const adminDashboardStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const count = (t: string, filter?: (q: ReturnType<typeof supabaseAdmin.from>) => ReturnType<typeof supabaseAdmin.from>) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let q: any = supabaseAdmin.from(t).select("*", { count: "exact", head: true });
+      if (filter) q = filter(q);
+      return q;
+    };
+    const [
+      users,
+      restaurants,
+      meals,
+      cities,
+      areas,
+      mealPlans,
+      leads,
+      pendingRestaurants,
+      pendingLeads,
+      recentRestaurants,
+      popularMeals,
+    ] = await Promise.all([
+      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1 }),
+      count("restaurants"),
+      count("meals"),
+      count("cities"),
+      count("areas"),
+      count("meal_plans"),
+      count("leads"),
+      supabaseAdmin.from("restaurants").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("leads").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("restaurants").select("id,name,city,area,status,created_at").order("created_at", { ascending: false }).limit(5),
+      supabaseAdmin.from("meals").select("id,name,category,cooking_time,cook_min,cook_max").order("name").limit(5),
+    ]);
+    return {
+      totalUsers: users.data?.total ?? users.data?.users?.length ?? 0,
+      totalRestaurants: restaurants.count ?? 0,
+      totalMeals: meals.count ?? 0,
+      totalCities: cities.count ?? 0,
+      totalAreas: areas.count ?? 0,
+      totalMealPlans: mealPlans.count ?? 0,
+      totalLeads: leads.count ?? 0,
+      pendingRestaurants: pendingRestaurants.count ?? 0,
+      pendingLeads: pendingLeads.count ?? 0,
+      recentRestaurants: recentRestaurants.data ?? [],
+      popularMeals: popularMeals.data ?? [],
+    };
+  });
+
