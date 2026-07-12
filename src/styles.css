@@ -123,10 +123,15 @@
   * { border-color: var(--color-border); }
   html, body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+
+  /* Native-mobile scale: shrink the root rem on phones so every rem-based
+     size (text-*, spacing, radius) tracks a real device instead of desktop. */
+  html { font-size: 15px; }
+  @media (min-width: 768px) { html { font-size: 16px; } }
 }
 
 @utility phone-shell {
-  @apply mx-auto w-full max-w-[430px] min-h-screen bg-background relative;
+  @apply mx-auto w-full max-w-none md:max-w-[430px] min-h-screen bg-background relative;
   box-shadow: var(--shadow-soft);
 }
 
