@@ -131,14 +131,10 @@
 }
 
 @utility phone-shell {
-  @apply mx-auto w-full max-w-[430px] bg-background relative;
+  @apply mx-auto w-full max-w-[480px] bg-background relative;
   min-height: 100dvh;
-  box-shadow: var(--shadow-soft);
 }
 
-@media (min-width: 768px) {
-  .phone-shell { min-height: min(90dvh, 800px); }
-}
 
 
 @utility chip {
