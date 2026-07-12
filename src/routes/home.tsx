@@ -110,9 +110,43 @@ function Home() {
       <section className="px-5">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input placeholder="Search jollof, egusi, moi moi…" className="w-full rounded-2xl bg-secondary/60 border border-border/60 px-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search jollof, egusi, moi moi…"
+            className="w-full rounded-2xl bg-secondary/60 border border-border/60 pl-11 pr-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 flex items-center justify-center"
+            >
+              <X className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          )}
         </div>
       </section>
+
+      {query.trim() && (
+        <section className="px-5 mt-4">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-3">
+            {searchResults.length} result{searchResults.length === 1 ? "" : "s"} for "{query}"
+          </p>
+          {searchResults.length === 0 ? (
+            <div className="text-sm text-muted-foreground text-center py-8">
+              No meals match. Try "rice", "soup" or "beans".
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {searchResults.map((m) => <MealCard key={m.id} meal={m} />)}
+            </div>
+          )}
+        </section>
+      )}
+
+      {!query.trim() && (<>
+
 
       {/* Bento grid */}
       <section className="px-5 mt-5 grid grid-cols-6 gap-3">
