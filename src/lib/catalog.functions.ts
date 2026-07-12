@@ -98,7 +98,7 @@ export const listMeals = createServerFn({ method: "GET" }).handler(async (): Pro
 
 export const listRestaurants = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .validator((data: { city?: string } | undefined) => data ?? {})
+  .inputValidator((data: { city?: string } | undefined) => data ?? {})
   .handler(async ({ context, data }): Promise<CatalogRestaurant[]> => {
     const PAGE = 1000;
     const all: any[] = [];
