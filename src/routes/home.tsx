@@ -102,7 +102,7 @@ function Home() {
         <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{greeting}</p>
         <h1 className="mt-1 font-display text-[2rem] leading-[1.05] tracking-tight">
           {name || "Welcome"},<br/>
-          <span className="italic text-brand">wetin dey your mind?</span>
+          <span className="italic text-brand">what would you like to eat?</span>
         </h1>
       </section>
 
@@ -157,7 +157,7 @@ function Home() {
             <div className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/25 backdrop-blur rounded-full px-2.5 py-1">
               <Sparkles className="h-3 w-3" /> Today's AI pick
             </div>
-            <h2 className="mt-3 font-display text-[1.5rem] leading-[1.1]">What to chop this {mealPeriod()}</h2>
+            <h2 className="mt-3 font-display text-[1.5rem] leading-[1.1]">What to eat this {mealPeriod()}</h2>
             <p className="mt-1 text-sm text-white/85 max-w-[75%]">3 meals tuned to your budget & goal.</p>
           </div>
         </Link>
@@ -192,7 +192,7 @@ function Home() {
           </div>
           <div className="min-w-0">
             <h3 className="font-display text-sm leading-tight truncate">Nearby</h3>
-            <p className="text-[11px] text-muted-foreground truncate">Buka & spots</p>
+              <p className="text-[11px] text-muted-foreground truncate">Restaurants nearby</p>
           </div>
         </Link>
 
@@ -203,7 +203,7 @@ function Home() {
               <Flame className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-display text-sm leading-tight">Popular in Naija</h3>
+              <h3 className="font-display text-sm leading-tight">Popular in Nigeria</h3>
               <p className="text-[11px] text-muted-foreground">Trending this week</p>
             </div>
           </div>
