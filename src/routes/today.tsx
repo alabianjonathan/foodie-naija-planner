@@ -2,11 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { meals, type Meal } from "@/data/meals";
 import { RefreshCw, Sparkles, Flame, Clock, Wallet, Loader2, Leaf, ArrowRight } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateDailyRecommendation, type DailyRecommendation } from "@/lib/recommendations.functions";
 import { useRequireAuth } from "@/hooks/useAuth";
+import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -14,10 +14,11 @@ export const Route = createFileRoute("/today")({ component: Today });
 
 function Today() {
   const { user, loading: authLoading } = useRequireAuth();
+  const { getMeal } = useCatalogMeals();
   const generate = useServerFn(generateDailyRecommendation);
   const [rec, setRec] = useState<DailyRecommendation | null>(null);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState<{ meal: Meal; slot: string; reason: string } | null>(null);
+  const [open, setOpen] = useState<{ meal: UiMeal; slot: string; reason: string } | null>(null);
 
   const run = async (avoidCurrent = false) => {
     setLoading(true);
@@ -38,11 +39,11 @@ function Today() {
   }, [user]);
 
   const picks = (rec?.picks ?? [])
-    .map((p) => ({ slot: p.slot, reason: p.reason, meal: meals.find((m) => m.id === p.mealId) as Meal | undefined }))
-    .filter((p) => p.meal);
+    .map((p) => ({ slot: p.slot, reason: p.reason, meal: getMeal(p.mealId) }))
+    .filter((p): p is { slot: string; reason: string; meal: UiMeal } => !!p.meal);
 
-  const totalCal = picks.reduce((s, p) => s + (p.meal!.caloriesMin + p.meal!.caloriesMax) / 2, 0);
-  const totalCost = picks.reduce((s, p) => s + p.meal!.cookMin, 0);
+  const totalCal = picks.reduce((s, p) => s + (p.meal.caloriesMin + p.meal.caloriesMax) / 2, 0);
+  const totalCost = picks.reduce((s, p) => s + p.meal.cookMin, 0);
 
   return (
     <PhoneShell>
@@ -68,24 +69,24 @@ function Today() {
           )}
           {picks.map(({ slot, meal, reason }) => (
             <button
-              key={slot + meal!.id}
-              onClick={() => setOpen({ meal: meal!, slot, reason })}
+              key={slot + meal.id}
+              onClick={() => setOpen({ meal, slot, reason })}
               className="w-full text-left flex items-start gap-4 card-soft !p-4 hover:border-brand/40 transition-colors"
             >
-              <div className={`h-16 w-16 flex-shrink-0 rounded-2xl bg-gradient-to-br ${meal!.gradient} flex items-center justify-center text-3xl`}>{meal!.emoji}</div>
+              <div className={`h-16 w-16 flex-shrink-0 rounded-2xl bg-gradient-to-br ${meal.gradient} flex items-center justify-center text-3xl`}>{meal.emoji}</div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-brand font-semibold">{slot}</p>
-                <h3 className="font-display text-base leading-tight truncate">{meal!.name}</h3>
+                <h3 className="font-display text-base leading-tight truncate">{meal.name}</h3>
                 <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3" />{meal!.caloriesMin}–{meal!.caloriesMax} kcal</span>
-                  <span className="inline-flex items-center gap-1"><Wallet className="h-3 w-3" />₦{meal!.cookMin.toLocaleString()}</span>
-                  <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{meal!.cookingTimeMin}m</span>
+                  <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3" />{meal.caloriesMin}–{meal.caloriesMax} kcal</span>
+                  <span className="inline-flex items-center gap-1"><Wallet className="h-3 w-3" />₦{meal.cookMin.toLocaleString()}</span>
+                  <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{meal.cookingTimeMin}m</span>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">Protein: {meal!.protein}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">Carbs: {meal!.carbs}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">Fat: {meal!.fat}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fiber: {meal!.fiber}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">Protein: {meal.protein}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">Carbs: {meal.carbs}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">Fat: {meal.fat}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fiber: {meal.fiber}</span>
                 </div>
                 {reason && <p className="mt-1.5 text-xs text-charcoal/70 leading-snug">{reason}</p>}
                 <p className="mt-1.5 text-[11px] text-brand font-medium">Tap for full nutrition →</p>
