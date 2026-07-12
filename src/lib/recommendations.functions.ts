@@ -36,18 +36,19 @@ export const generateDailyRecommendation = createServerFn({ method: "POST" })
       .eq("id", context.userId)
       .maybeSingle();
 
-    const mealCatalog = meals.filter((m) => m.popular).map((m) => ({
-      id: m.id,
-      name: m.name,
-      category: m.category,
-      bestTime: m.bestTime,
-      cookCost: m.cookMin,
-      calories: Math.round((m.caloriesMin + m.caloriesMax) / 2),
-      healthScore: m.healthScore,
-      goals: m.goals,
-      protein: m.protein,
-      description: m.description,
+    const { data: dbMeals } = await context.supabase
+      .from("meals")
+      .select("slug, name, category, best_time, cook_min, calories_min, calories_max, health_score, goals, protein, description, popular, status")
+      .eq("status", "active");
+
+    const allMeals = (dbMeals ?? []).map((m) => ({
+      id: m.slug, name: m.name, category: m.category, bestTime: m.best_time ?? [],
+      cookCost: m.cook_min, calories: Math.round((m.calories_min + m.calories_max) / 2),
+      healthScore: m.health_score, goals: m.goals ?? [], protein: m.protein, description: m.description,
+      popular: m.popular,
     }));
+    const mealCatalog = allMeals.filter((m) => m.popular);
+
 
     // Shuffle catalog so the model doesn't anchor on the first items every call.
     for (let i = mealCatalog.length - 1; i > 0; i--) {
