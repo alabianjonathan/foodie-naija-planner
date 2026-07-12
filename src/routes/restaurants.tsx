@@ -22,16 +22,28 @@ function Restaurants() {
   const [picking, setPicking] = useState<"city" | "area" | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const fetchCities = useServerFn(listCitiesWithAreas);
+  const fetchRests = useServerFn(listRestaurants);
+  const fetchMeals = useServerFn(listMeals);
+  const { data: cityRows = [] } = useQuery({ queryKey: ["catalog", "cities"], queryFn: () => fetchCities() });
+  const { data: restRows = [] } = useQuery({ queryKey: ["catalog", "restaurants"], queryFn: () => fetchRests() });
+  const { data: mealRows = [] } = useQuery({ queryKey: ["catalog", "meals"], queryFn: () => fetchMeals() });
+
+  const CITIES = useMemo(() => cityRows.filter((c) => c.active).map((c) => c.name), [cityRows]);
+  const areas = useMemo(() => {
+    const c = cityRows.find((c) => c.name === city);
+    return (c?.areas ?? []).filter((a) => a.active).map((a) => a.name);
+  }, [cityRows, city]);
+  const mealByslug = useMemo(() => new Map(mealRows.map((m) => [m.slug, m])), [mealRows]);
+
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("city, area").eq("id", user.id).maybeSingle()
       .then(({ data }) => {
-        if (data?.city && (CITIES as readonly string[]).includes(data.city)) setCity(data.city);
+        if (data?.city && CITIES.includes(data.city)) setCity(data.city);
         if (data?.area) setArea(data.area);
       });
-  }, [user]);
-
-  const areas = useMemo(() => cityAreas[city] ?? [], [city]);
+  }, [user, CITIES]);
 
   const changeCity = async (next: string) => {
     setCity(next);
@@ -53,16 +65,17 @@ function Restaurants() {
   };
 
   const nearby = useMemo(() => {
-    return restaurants
-      .filter(r => r.city === city)
-      .filter(r => area === "All" || r.area === area)
-      .filter(r => {
+    return restRows
+      .filter((r) => r.city === city)
+      .filter((r) => area === "All" || r.area === area)
+      .filter((r) => {
         if (filter === "All") return true;
         if (filter === "Delivery") return r.delivery;
-        return r.tags.includes(filter as never);
+        return r.tags.includes(filter);
       })
       .sort((a, b) => b.rating - a.rating);
-  }, [city, area, filter]);
+  }, [restRows, city, area, filter]);
+
 
   return (
     <PhoneShell>
