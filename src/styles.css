@@ -131,7 +131,7 @@
 }
 
 @utility phone-shell {
-  @apply mx-auto w-full max-w-[430px] min-h-screen bg-background relative;
+  @apply mx-auto w-full max-w-none md:max-w-[430px] min-h-screen bg-background relative;
   box-shadow: var(--shadow-soft);
 }
 
