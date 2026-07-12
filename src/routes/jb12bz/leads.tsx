@@ -5,7 +5,7 @@ import { DataTable, StatusPill } from "@/components/admin/DataTable";
 import { sampleLeads, type AdminLead } from "@/data/admin-sample";
 import { Download } from "lucide-react";
 
-export const Route = createFileRoute("/admin/leads")({
+export const Route = createFileRoute("/jb12bz/leads")({
   head: () => ({ meta: [{ title: "Leads — MealBeta Admin" }] }),
   component: LeadsPage,
 });

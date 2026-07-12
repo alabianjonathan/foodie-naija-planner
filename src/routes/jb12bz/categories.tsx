@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { sampleCategories } from "@/data/admin-sample";
 import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
 
-export const Route = createFileRoute("/admin/categories")({
+export const Route = createFileRoute("/jb12bz/categories")({
   head: () => ({ meta: [{ title: "Categories — MealBeta Admin" }] }),
   component: CategoriesPage,
 });

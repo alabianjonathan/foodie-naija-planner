@@ -4,7 +4,7 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 export type AdminRole = "super_admin" | "admin" | "restaurant";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/jb12bz")({
   ssr: false,
   beforeLoad: async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
-  const { adminRole, adminEmail } = useRouteContext({ from: "/admin" });
+  const { adminRole, adminEmail } = useRouteContext({ from: "/jb12bz" });
   return (
     <div className="min-h-screen flex bg-background">
       <AdminSidebar role={adminRole} email={adminEmail} />

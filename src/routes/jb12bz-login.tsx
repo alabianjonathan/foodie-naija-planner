@@ -30,7 +30,7 @@ function AdminLoginPage() {
       setError("This account does not have admin access.");
       return;
     }
-    navigate({ to: "/admin" });
+    navigate({ to: "/jb12bz" });
   }
 
   return (

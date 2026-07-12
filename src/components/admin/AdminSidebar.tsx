@@ -8,17 +8,17 @@ import { supabase } from "@/integrations/supabase/client";
 type NavItem = { to: string; label: string; icon: React.ElementType; exact?: boolean; superOnly?: boolean };
 
 const items: NavItem[] = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/users", label: "Users", icon: Users },
-  { to: "/admin/restaurants", label: "Restaurants", icon: Store },
-  { to: "/admin/meals", label: "Meals", icon: UtensilsCrossed },
-  { to: "/admin/categories", label: "Categories", icon: Tags },
-  { to: "/admin/ingredients", label: "Ingredients", icon: Wheat },
-  { to: "/admin/nutrition", label: "Nutrition", icon: HeartPulse },
-  { to: "/admin/cities", label: "Cities & Areas", icon: MapPin },
-  { to: "/admin/meal-plans", label: "Meal Plans", icon: CalendarRange },
-  { to: "/admin/leads", label: "Leads", icon: Inbox },
-  { to: "/admin/settings", label: "Settings", icon: Settings, superOnly: true },
+  { to: "/jb12bz", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/jb12bz/users", label: "Users", icon: Users },
+  { to: "/jb12bz/restaurants", label: "Restaurants", icon: Store },
+  { to: "/jb12bz/meals", label: "Meals", icon: UtensilsCrossed },
+  { to: "/jb12bz/categories", label: "Categories", icon: Tags },
+  { to: "/jb12bz/ingredients", label: "Ingredients", icon: Wheat },
+  { to: "/jb12bz/nutrition", label: "Nutrition", icon: HeartPulse },
+  { to: "/jb12bz/cities", label: "Cities & Areas", icon: MapPin },
+  { to: "/jb12bz/meal-plans", label: "Meal Plans", icon: CalendarRange },
+  { to: "/jb12bz/leads", label: "Leads", icon: Inbox },
+  { to: "/jb12bz/settings", label: "Settings", icon: Settings, superOnly: true },
 ];
 
 export function AdminSidebar({ role, email }: { role: string; email?: string }) {

@@ -8,7 +8,7 @@ import {
   Users, Store, UtensilsCrossed, MapPin, CalendarRange, Inbox, ShieldAlert, UserX,
 } from "lucide-react";
 
-export const Route = createFileRoute("/admin/")({
+export const Route = createFileRoute("/jb12bz/")({
   head: () => ({ meta: [{ title: "Dashboard — MealBeta Admin" }] }),
   component: DashboardPage,
 });
