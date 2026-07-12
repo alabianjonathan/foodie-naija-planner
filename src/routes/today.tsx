@@ -12,6 +12,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 export const Route = createFileRoute("/today")({ component: Today });
 
+function mealPeriod(): string {
+  const h = new Date().getHours();
+  if (h < 11) return "morning";
+  if (h < 16) return "afternoon";
+  if (h < 21) return "evening";
+  return "night";
+}
+
 function Today() {
   const { user, loading: authLoading } = useRequireAuth();
   const { getMeal } = useCatalogMeals();
