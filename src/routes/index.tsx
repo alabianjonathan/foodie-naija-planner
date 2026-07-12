@@ -41,7 +41,7 @@ function Splash() {
             Plans, prices, shopping lists & nearby spots — tuned to Naija food.
           </p>
 
-          <div className="mt-auto pt-6 space-y-2">
+          <div className="mt-3 space-y-2">
             <Link to="/auth" className="w-full flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-brand-foreground font-semibold shadow-[var(--shadow-lift)]">
               Get started <ArrowRight className="h-4 w-4" />
             </Link>
