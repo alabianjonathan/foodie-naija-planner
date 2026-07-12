@@ -144,7 +144,8 @@ function Planner() {
       if (fits) rec.push(m); else oth.push(m);
     });
     return { recommended: rec, other: oth };
-  }, [pickerSlotName, query]);
+  }, [pickerSlotName, query, meals]);
+
 
   const handlePickMeal = (meal: Meal) => {
     if (!picker) return;
