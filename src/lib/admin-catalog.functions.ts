@@ -4,11 +4,14 @@ import { z } from "zod";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function requireAdmin(context: any): Promise<void> {
-  const [{ data: isAdmin }, { data: isSuper }] = await Promise.all([
-    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
-    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "super_admin" }),
-  ]);
-  if (!isAdmin && !isSuper) throw new Response("Forbidden", { status: 403 });
+  const { data: roleRows } = await context.supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", context.userId);
+  const roles = new Set(((roleRows ?? []) as { role: string }[]).map((r) => r.role));
+  if (!roles.has("admin") && !roles.has("super_admin")) {
+    throw new Response("Forbidden", { status: 403 });
+  }
 }
 
 // ============ CITIES ============

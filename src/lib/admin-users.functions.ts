@@ -16,15 +16,12 @@ export const listAllUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     // Require admin or super_admin
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
-    const { data: isSuper } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "super_admin",
-    });
-    if (!isAdmin && !isSuper) {
+    const { data: roleRows } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+    const callerRoles = new Set((roleRows ?? []).map((r) => r.role));
+    if (!callerRoles.has("admin") && !callerRoles.has("super_admin")) {
       throw new Response("Forbidden", { status: 403 });
     }
 

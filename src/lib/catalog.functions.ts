@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 
 type Ing = { name: string; qty: string; price: number };
@@ -93,13 +94,14 @@ export const listMeals = createServerFn({ method: "GET" }).handler(async (): Pro
   }));
 });
 
-export const listRestaurants = createServerFn({ method: "GET" }).handler(async (): Promise<CatalogRestaurant[]> => {
-  const sb = publicClient();
-  const { data } = await sb.from("restaurants").select("*").eq("status", "active").order("rating", { ascending: false });
-  return (data ?? []).map((r) => ({
-    id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area,
-    rating: Number(r.rating), distanceKm: Number(r.distance_km), delivery: r.delivery,
-    phone: r.phone, whatsapp: r.whatsapp, email: r.email, opening: r.opening,
-    tags: r.tags ?? [], mealSlugs: r.meal_slugs ?? [], verified: r.verified, status: r.status,
-  }));
-});
+export const listRestaurants = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<CatalogRestaurant[]> => {
+    const { data } = await context.supabase.from("restaurants").select("*").eq("status", "active").order("rating", { ascending: false });
+    return (data ?? []).map((r) => ({
+      id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area,
+      rating: Number(r.rating), distanceKm: Number(r.distance_km), delivery: r.delivery,
+      phone: r.phone, whatsapp: r.whatsapp, email: r.email, opening: r.opening,
+      tags: r.tags ?? [], mealSlugs: r.meal_slugs ?? [], verified: r.verified, status: r.status,
+    }));
+  });

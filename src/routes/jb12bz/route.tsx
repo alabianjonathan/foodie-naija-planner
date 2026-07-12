@@ -10,13 +10,18 @@ export const Route = createFileRoute("/jb12bz")({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw redirect({ to: "/jb12bz-login" });
 
-    const [{ data: isSuper }, { data: isAdmin }, { data: isRest }] = await Promise.all([
-      supabase.rpc("has_role", { _user_id: user.id, _role: "super_admin" }),
-      supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }),
-      supabase.rpc("has_role", { _user_id: user.id, _role: "restaurant" }),
-    ]);
-
-    const role: AdminRole | null = isSuper ? "super_admin" : isAdmin ? "admin" : isRest ? "restaurant" : null;
+    const { data: roleRows } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+    const roles = new Set((roleRows ?? []).map((r) => r.role));
+    const role: AdminRole | null = roles.has("super_admin")
+      ? "super_admin"
+      : roles.has("admin")
+        ? "admin"
+        : roles.has("restaurant")
+          ? "restaurant"
+          : null;
     if (!role) throw redirect({ to: "/" });
     return { adminRole: role, adminEmail: user.email ?? "" };
   },
