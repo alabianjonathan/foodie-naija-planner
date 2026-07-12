@@ -160,7 +160,8 @@ function Restaurants() {
             </div>
           )}
           {nearby.map(r => {
-            const featured = r.meals.slice(0, 3).map(id => getMeal(id)?.name).filter(Boolean);
+            const featured = r.mealSlugs.slice(0, 3).map((s) => mealByslug.get(s)?.name).filter(Boolean);
+            const phone = r.phone ?? "";
             return (
               <div key={r.id} className="card-soft !p-0 overflow-hidden">
                 <div className="h-24 bg-gradient-to-br from-brand via-warm to-leaf flex items-end justify-between p-3">
@@ -181,10 +182,10 @@ function Restaurants() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-2 line-clamp-1">Offers: {featured.join(" · ")}</p>
                   <div className="mt-3 grid grid-cols-3 gap-2">
-                    <a href={`tel:${r.phone}`} className="flex items-center justify-center gap-1.5 rounded-full bg-secondary py-2 text-xs font-medium">
+                    <a href={`tel:${phone}`} className="flex items-center justify-center gap-1.5 rounded-full bg-secondary py-2 text-xs font-medium">
                       <Phone className="h-3.5 w-3.5" /> Call
                     </a>
-                    <a href={`https://wa.me/${r.phone.replace(/\D/g,"")}`} className="flex items-center justify-center gap-1.5 rounded-full bg-leaf text-leaf-foreground py-2 text-xs font-medium">
+                    <a href={`https://wa.me/${phone.replace(/\D/g,"")}`} className="flex items-center justify-center gap-1.5 rounded-full bg-leaf text-leaf-foreground py-2 text-xs font-medium">
                       <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
                     </a>
                     <a
