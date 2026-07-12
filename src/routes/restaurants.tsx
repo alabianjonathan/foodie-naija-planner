@@ -183,7 +183,6 @@ function Restaurants() {
           )}
           {nearby.map(r => {
             const featured = r.mealSlugs.slice(0, 3).map((s) => mealByslug.get(s)?.name).filter(Boolean);
-            const phone = r.phone ?? "";
             return (
               <div key={r.id} className="card-soft !p-0 overflow-hidden">
                 <div className="h-24 bg-gradient-to-br from-brand via-warm to-leaf flex items-end justify-between p-3">
