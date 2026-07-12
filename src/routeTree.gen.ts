@@ -31,13 +31,10 @@ import { Route as MealIdRouteImport } from './routes/meal.$id'
 import { Route as Jb12bzUsersRouteImport } from './routes/jb12bz/users'
 import { Route as Jb12bzSettingsRouteImport } from './routes/jb12bz/settings'
 import { Route as Jb12bzRestaurantsRouteImport } from './routes/jb12bz/restaurants'
-import { Route as Jb12bzNutritionRouteImport } from './routes/jb12bz/nutrition'
 import { Route as Jb12bzMealsRouteImport } from './routes/jb12bz/meals'
 import { Route as Jb12bzMealPlansRouteImport } from './routes/jb12bz/meal-plans'
 import { Route as Jb12bzLeadsRouteImport } from './routes/jb12bz/leads'
-import { Route as Jb12bzIngredientsRouteImport } from './routes/jb12bz/ingredients'
 import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
-import { Route as Jb12bzCategoriesRouteImport } from './routes/jb12bz/categories'
 
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
@@ -149,11 +146,6 @@ const Jb12bzRestaurantsRoute = Jb12bzRestaurantsRouteImport.update({
   path: '/restaurants',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const Jb12bzNutritionRoute = Jb12bzNutritionRouteImport.update({
-  id: '/nutrition',
-  path: '/nutrition',
-  getParentRoute: () => Jb12bzRouteRoute,
-} as any)
 const Jb12bzMealsRoute = Jb12bzMealsRouteImport.update({
   id: '/meals',
   path: '/meals',
@@ -169,19 +161,9 @@ const Jb12bzLeadsRoute = Jb12bzLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const Jb12bzIngredientsRoute = Jb12bzIngredientsRouteImport.update({
-  id: '/ingredients',
-  path: '/ingredients',
-  getParentRoute: () => Jb12bzRouteRoute,
-} as any)
 const Jb12bzCitiesRoute = Jb12bzCitiesRouteImport.update({
   id: '/cities',
   path: '/cities',
-  getParentRoute: () => Jb12bzRouteRoute,
-} as any)
-const Jb12bzCategoriesRoute = Jb12bzCategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
 
@@ -203,13 +185,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
-  '/jb12bz/categories': typeof Jb12bzCategoriesRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
-  '/jb12bz/ingredients': typeof Jb12bzIngredientsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
   '/jb12bz/meals': typeof Jb12bzMealsRoute
-  '/jb12bz/nutrition': typeof Jb12bzNutritionRoute
   '/jb12bz/restaurants': typeof Jb12bzRestaurantsRoute
   '/jb12bz/settings': typeof Jb12bzSettingsRoute
   '/jb12bz/users': typeof Jb12bzUsersRoute
@@ -233,13 +212,10 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
-  '/jb12bz/categories': typeof Jb12bzCategoriesRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
-  '/jb12bz/ingredients': typeof Jb12bzIngredientsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
   '/jb12bz/meals': typeof Jb12bzMealsRoute
-  '/jb12bz/nutrition': typeof Jb12bzNutritionRoute
   '/jb12bz/restaurants': typeof Jb12bzRestaurantsRoute
   '/jb12bz/settings': typeof Jb12bzSettingsRoute
   '/jb12bz/users': typeof Jb12bzUsersRoute
@@ -265,13 +241,10 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
-  '/jb12bz/categories': typeof Jb12bzCategoriesRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
-  '/jb12bz/ingredients': typeof Jb12bzIngredientsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
   '/jb12bz/meals': typeof Jb12bzMealsRoute
-  '/jb12bz/nutrition': typeof Jb12bzNutritionRoute
   '/jb12bz/restaurants': typeof Jb12bzRestaurantsRoute
   '/jb12bz/settings': typeof Jb12bzSettingsRoute
   '/jb12bz/users': typeof Jb12bzUsersRoute
@@ -298,13 +271,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
-    | '/jb12bz/categories'
     | '/jb12bz/cities'
-    | '/jb12bz/ingredients'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
     | '/jb12bz/meals'
-    | '/jb12bz/nutrition'
     | '/jb12bz/restaurants'
     | '/jb12bz/settings'
     | '/jb12bz/users'
@@ -328,13 +298,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
-    | '/jb12bz/categories'
     | '/jb12bz/cities'
-    | '/jb12bz/ingredients'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
     | '/jb12bz/meals'
-    | '/jb12bz/nutrition'
     | '/jb12bz/restaurants'
     | '/jb12bz/settings'
     | '/jb12bz/users'
@@ -359,13 +326,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
-    | '/jb12bz/categories'
     | '/jb12bz/cities'
-    | '/jb12bz/ingredients'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
     | '/jb12bz/meals'
-    | '/jb12bz/nutrition'
     | '/jb12bz/restaurants'
     | '/jb12bz/settings'
     | '/jb12bz/users'
@@ -550,13 +514,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzRestaurantsRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
-    '/jb12bz/nutrition': {
-      id: '/jb12bz/nutrition'
-      path: '/nutrition'
-      fullPath: '/jb12bz/nutrition'
-      preLoaderRoute: typeof Jb12bzNutritionRouteImport
-      parentRoute: typeof Jb12bzRouteRoute
-    }
     '/jb12bz/meals': {
       id: '/jb12bz/meals'
       path: '/meals'
@@ -578,13 +535,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzLeadsRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
-    '/jb12bz/ingredients': {
-      id: '/jb12bz/ingredients'
-      path: '/ingredients'
-      fullPath: '/jb12bz/ingredients'
-      preLoaderRoute: typeof Jb12bzIngredientsRouteImport
-      parentRoute: typeof Jb12bzRouteRoute
-    }
     '/jb12bz/cities': {
       id: '/jb12bz/cities'
       path: '/cities'
@@ -592,24 +542,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzCitiesRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
-    '/jb12bz/categories': {
-      id: '/jb12bz/categories'
-      path: '/categories'
-      fullPath: '/jb12bz/categories'
-      preLoaderRoute: typeof Jb12bzCategoriesRouteImport
-      parentRoute: typeof Jb12bzRouteRoute
-    }
   }
 }
 
 interface Jb12bzRouteRouteChildren {
-  Jb12bzCategoriesRoute: typeof Jb12bzCategoriesRoute
   Jb12bzCitiesRoute: typeof Jb12bzCitiesRoute
-  Jb12bzIngredientsRoute: typeof Jb12bzIngredientsRoute
   Jb12bzLeadsRoute: typeof Jb12bzLeadsRoute
   Jb12bzMealPlansRoute: typeof Jb12bzMealPlansRoute
   Jb12bzMealsRoute: typeof Jb12bzMealsRoute
-  Jb12bzNutritionRoute: typeof Jb12bzNutritionRoute
   Jb12bzRestaurantsRoute: typeof Jb12bzRestaurantsRoute
   Jb12bzSettingsRoute: typeof Jb12bzSettingsRoute
   Jb12bzUsersRoute: typeof Jb12bzUsersRoute
@@ -617,13 +557,10 @@ interface Jb12bzRouteRouteChildren {
 }
 
 const Jb12bzRouteRouteChildren: Jb12bzRouteRouteChildren = {
-  Jb12bzCategoriesRoute: Jb12bzCategoriesRoute,
   Jb12bzCitiesRoute: Jb12bzCitiesRoute,
-  Jb12bzIngredientsRoute: Jb12bzIngredientsRoute,
   Jb12bzLeadsRoute: Jb12bzLeadsRoute,
   Jb12bzMealPlansRoute: Jb12bzMealPlansRoute,
   Jb12bzMealsRoute: Jb12bzMealsRoute,
-  Jb12bzNutritionRoute: Jb12bzNutritionRoute,
   Jb12bzRestaurantsRoute: Jb12bzRestaurantsRoute,
   Jb12bzSettingsRoute: Jb12bzSettingsRoute,
   Jb12bzUsersRoute: Jb12bzUsersRoute,
