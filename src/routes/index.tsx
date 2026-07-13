@@ -59,9 +59,9 @@ function Splash() {
             </span>
 
             <h1 className="mt-4 font-display text-[clamp(2rem,9.5vw,2.85rem)] leading-[1.05] tracking-tight">
-              <span className="text-[oklch(0.35_0.08_145)]">Know what</span><br />
-              <span className="text-[oklch(0.35_0.08_145)]">to </span>
-              <span className="text-warm">eat.</span>
+              <span className="text-[oklch(0.35_0.08_145)]">Plan your</span><br />
+              <span className="text-warm">NEXT</span>
+              <span className="text-[oklch(0.35_0.08_145)]"> meals</span>
             </h1>
 
             <p className="mt-3 text-muted-foreground text-[15px] leading-relaxed max-w-[340px]">
