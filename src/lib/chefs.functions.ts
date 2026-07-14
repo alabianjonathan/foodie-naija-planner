@@ -191,20 +191,11 @@ function slugify(s: string) {
 }
 
 export const applyAsChef = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => ApplySchema.parse(data))
-  .handler(async ({ data }) => {
-    // Requires signed-in user. Read bearer from injected header (auth-attacher).
-    const { getRequestHeader } = await import("@tanstack/react-start/server");
-    const authHeader = getRequestHeader("authorization") || getRequestHeader("Authorization");
-    if (!authHeader) throw new Error("You must be signed in to apply.");
-    const token = authHeader.replace(/^Bearer\s+/i, "");
-    const sb = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
-      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
-    const { data: userRes, error: userErr } = await sb.auth.getUser(token);
-    if (userErr || !userRes?.user) throw new Error("Session invalid. Please sign in again.");
-    const userId = userRes.user.id;
+  .handler(async ({ data, context }) => {
+    const userId = context.userId;
+    const sb = context.supabase;
 
     // Build a unique slug
     const base = slugify(data.businessName) || slugify(data.fullName) || "chef";
@@ -215,8 +206,7 @@ export const applyAsChef = createServerFn({ method: "POST" })
       slug = `${base}-${Math.floor(Math.random() * 9000 + 1000)}`;
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error: insErr } = await supabaseAdmin.from("chefs").insert({
+    const { error: insErr } = await sb.from("chefs").insert({
       user_id: userId,
       slug,
       full_name: data.fullName,
@@ -239,3 +229,4 @@ export const applyAsChef = createServerFn({ method: "POST" })
     if (insErr) throw insErr;
     return { ok: true as const, slug };
   });
+
