@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/api/public/_tmp-reset")({
+export const Route = createFileRoute("/api/public/tmp-reset-8fk2")({
   server: {
     handlers: {
       POST: async ({ request }) => {
