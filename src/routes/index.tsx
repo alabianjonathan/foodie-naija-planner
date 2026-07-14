@@ -1,4 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { countCities } from "@/lib/catalog.functions";
 import { useEffect } from "react";
 import {
   ArrowRight,
@@ -44,6 +47,12 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const navigate = useNavigate();
+  const fetchCityCount = useServerFn(countCities);
+  const { data: cityCount = 0 } = useQuery({
+    queryKey: ["catalog", "city-count"],
+    queryFn: () => fetchCityCount(),
+  });
+
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) return;
@@ -60,7 +69,7 @@ function Landing() {
     <div className="min-h-dvh bg-background text-foreground">
       <Nav />
       <Hero />
-      <TrustStrip />
+      <TrustStrip cityCount={cityCount} />
       <Features />
       <HowItWorks />
       <Showcase />
@@ -197,11 +206,11 @@ function Hero() {
 }
 
 /* ---------------- Trust strip ---------------- */
-function TrustStrip() {
+function TrustStrip({ cityCount }: { cityCount: number }) {
   const stats = [
     { k: "20,000+", v: "meals planned" },
     { k: "150+", v: "Nigerian dishes" },
-    { k: "Many", v: "neighborhoods" },
+    { k: String(cityCount || 0), v: "cities added" },
     { k: "4.8★", v: "user rating" },
   ];
   return (
