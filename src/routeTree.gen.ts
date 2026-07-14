@@ -35,7 +35,6 @@ import { Route as Jb12bzMealsRouteImport } from './routes/jb12bz/meals'
 import { Route as Jb12bzMealPlansRouteImport } from './routes/jb12bz/meal-plans'
 import { Route as Jb12bzLeadsRouteImport } from './routes/jb12bz/leads'
 import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
-import { Route as ApiPublicTmpReset8fk2RouteImport } from './routes/api/public/tmp-reset-8fk2'
 
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
@@ -167,11 +166,6 @@ const Jb12bzCitiesRoute = Jb12bzCitiesRouteImport.update({
   path: '/cities',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
-const ApiPublicTmpReset8fk2Route = ApiPublicTmpReset8fk2RouteImport.update({
-  id: '/api/public/tmp-reset-8fk2',
-  path: '/api/public/tmp-reset-8fk2',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -200,7 +194,6 @@ export interface FileRoutesByFullPath {
   '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
   '/jb12bz/': typeof Jb12bzIndexRoute
-  '/api/public/tmp-reset-8fk2': typeof ApiPublicTmpReset8fk2Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -228,7 +221,6 @@ export interface FileRoutesByTo {
   '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
   '/jb12bz': typeof Jb12bzIndexRoute
-  '/api/public/tmp-reset-8fk2': typeof ApiPublicTmpReset8fk2Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -258,7 +250,6 @@ export interface FileRoutesById {
   '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
   '/jb12bz/': typeof Jb12bzIndexRoute
-  '/api/public/tmp-reset-8fk2': typeof ApiPublicTmpReset8fk2Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -289,7 +280,6 @@ export interface FileRouteTypes {
     | '/jb12bz/users'
     | '/meal/$id'
     | '/jb12bz/'
-    | '/api/public/tmp-reset-8fk2'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -317,7 +307,6 @@ export interface FileRouteTypes {
     | '/jb12bz/users'
     | '/meal/$id'
     | '/jb12bz'
-    | '/api/public/tmp-reset-8fk2'
   id:
     | '__root__'
     | '/'
@@ -346,7 +335,6 @@ export interface FileRouteTypes {
     | '/jb12bz/users'
     | '/meal/$id'
     | '/jb12bz/'
-    | '/api/public/tmp-reset-8fk2'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -368,7 +356,6 @@ export interface RootRouteChildren {
   ShoppingRoute: typeof ShoppingRoute
   TodayRoute: typeof TodayRoute
   MealIdRoute: typeof MealIdRoute
-  ApiPublicTmpReset8fk2Route: typeof ApiPublicTmpReset8fk2Route
 }
 
 declare module '@tanstack/react-router' {
@@ -555,13 +542,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzCitiesRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
-    '/api/public/tmp-reset-8fk2': {
-      id: '/api/public/tmp-reset-8fk2'
-      path: '/api/public/tmp-reset-8fk2'
-      fullPath: '/api/public/tmp-reset-8fk2'
-      preLoaderRoute: typeof ApiPublicTmpReset8fk2RouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -610,7 +590,6 @@ const rootRouteChildren: RootRouteChildren = {
   ShoppingRoute: ShoppingRoute,
   TodayRoute: TodayRoute,
   MealIdRoute: MealIdRoute,
-  ApiPublicTmpReset8fk2Route: ApiPublicTmpReset8fk2Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
