@@ -520,7 +520,6 @@ function FinalCTA() {
               I already have an account
             </Link>
           </div>
-          <AppBadges />
         </div>
       </div>
     </section>
