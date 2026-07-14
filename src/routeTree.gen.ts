@@ -16,6 +16,7 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as RestaurantsRouteImport } from './routes/restaurants'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PrivateChefsRouteImport } from './routes/private-chefs'
 import { Route as PopularRouteImport } from './routes/popular'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -73,6 +74,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivateChefsRoute = PrivateChefsRouteImport.update({
+  id: '/private-chefs',
+  path: '/private-chefs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PopularRoute = PopularRouteImport.update({
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
+  '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/restaurants': typeof RestaurantsRoute
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
+  '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/restaurants': typeof RestaurantsRoute
@@ -269,6 +277,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
+  '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/restaurants': typeof RestaurantsRoute
@@ -303,6 +312,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/planner'
     | '/popular'
+    | '/private-chefs'
     | '/profile'
     | '/reset-password'
     | '/restaurants'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/planner'
     | '/popular'
+    | '/private-chefs'
     | '/profile'
     | '/reset-password'
     | '/restaurants'
@@ -366,6 +377,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/planner'
     | '/popular'
+    | '/private-chefs'
     | '/profile'
     | '/reset-password'
     | '/restaurants'
@@ -399,6 +411,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PlannerRoute: typeof PlannerRoute
   PopularRoute: typeof PopularRoute
+  PrivateChefsRoute: typeof PrivateChefsRoute
   ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RestaurantsRoute: typeof RestaurantsRoute
@@ -458,6 +471,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/private-chefs': {
+      id: '/private-chefs'
+      path: '/private-chefs'
+      fullPath: '/private-chefs'
+      preLoaderRoute: typeof PrivateChefsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/popular': {
@@ -674,6 +694,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PlannerRoute: PlannerRoute,
   PopularRoute: PopularRoute,
+  PrivateChefsRoute: PrivateChefsRoute,
   ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RestaurantsRoute: RestaurantsRoute,
