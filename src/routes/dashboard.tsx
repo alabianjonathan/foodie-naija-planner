@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
-import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2, X, Clock } from "lucide-react";
+import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2, X, Clock, ChefHat } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";

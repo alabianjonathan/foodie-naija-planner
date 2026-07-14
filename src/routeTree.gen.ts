@@ -25,6 +25,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ChefsRouteImport } from './routes/chefs'
 import { Route as ChefPlansRouteImport } from './routes/chef-plans'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
+import { Route as BecomeAChefRouteImport } from './routes/become-a-chef'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as Jb12bzRouteRouteImport } from './routes/jb12bz/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -119,6 +120,11 @@ const ChangePasswordRoute = ChangePasswordRouteImport.update({
   path: '/change-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BecomeAChefRoute = BecomeAChefRouteImport.update({
+  id: '/become-a-chef',
+  path: '/become-a-chef',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/become-a-chef': typeof BecomeAChefRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/become-a-chef': typeof BecomeAChefRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/become-a-chef': typeof BecomeAChefRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/'
     | '/jb12bz'
     | '/auth'
+    | '/become-a-chef'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/become-a-chef'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/'
     | '/jb12bz'
     | '/auth'
+    | '/become-a-chef'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
@@ -377,6 +389,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Jb12bzRouteRoute: typeof Jb12bzRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BecomeAChefRoute: typeof BecomeAChefRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
   ChefPlansRoute: typeof ChefPlansRoute
   ChefsRoute: typeof ChefsRouteWithChildren
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       path: '/change-password'
       fullPath: '/change-password'
       preLoaderRoute: typeof ChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/become-a-chef': {
+      id: '/become-a-chef'
+      path: '/become-a-chef'
+      fullPath: '/become-a-chef'
+      preLoaderRoute: typeof BecomeAChefRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -644,6 +664,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Jb12bzRouteRoute: Jb12bzRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  BecomeAChefRoute: BecomeAChefRoute,
   ChangePasswordRoute: ChangePasswordRoute,
   ChefPlansRoute: ChefPlansRoute,
   ChefsRoute: ChefsRouteWithChildren,
