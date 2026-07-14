@@ -154,6 +154,8 @@ function Hero() {
             </a>
           </div>
 
+          <AppBadges />
+
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <li className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-brand" /> Free to start</li>
             <li className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-brand" /> Built for Naira budgets</li>
@@ -518,7 +520,6 @@ function FinalCTA() {
               I already have an account
             </Link>
           </div>
-          <AppBadges />
         </div>
       </div>
     </section>
@@ -528,9 +529,9 @@ function FinalCTA() {
 /* ---------------- App Download Badges ---------------- */
 function AppBadges() {
   return (
-    <div className="mt-10">
-      <div className="text-xs font-semibold uppercase tracking-wider text-white/70">Get the app</div>
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
+    <div className="mt-8">
+      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Get the app</div>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           type="button"
           disabled
