@@ -39,7 +39,7 @@ function AuthPage() {
           email: emailP.data,
           password: passP.data,
           options: {
-            emailRedirectTo: `${window.location.origin}/home`,
+            emailRedirectTo: `${window.location.origin}/dashboard`,
             data: { full_name: name.trim() || emailP.data.split("@")[0] },
           },
         });
