@@ -1,13 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
 import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
-import { Copy, Plus, RefreshCw, ShoppingBasket, Trash2, Utensils, X, Check, Search } from "lucide-react";
+import { ChefHat, Copy, Plus, RefreshCw, ShoppingBasket, Trash2, Utensils, X, Check, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/planner")({ component: Planner });
 type Meal = UiMeal;
+
 
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
@@ -126,23 +127,34 @@ function Planner() {
 
   const generateShoppingList = () => {
     const items = new Map<string, { name: string; qty: string; price: number; count: number; mealIds: Set<string> }>();
+    let plannedCount = 0;
     plan.forEach(d => d.slots.forEach(s => {
       const m = slotMeal(s); if (!m) return;
-      m.ingredients.forEach(ing => {
+      plannedCount += 1;
+      (m.ingredients ?? []).forEach(ing => {
         const key = ing.name.toLowerCase();
         const existing = items.get(key);
         if (existing) { existing.count += 1; existing.price += ing.price; existing.mealIds.add(m.id); }
         else items.set(key, { name: ing.name, qty: ing.qty, price: ing.price, count: 1, mealIds: new Set([m.id]) });
       });
     }));
+    if (plannedCount === 0) {
+      toast.error("No meals planned yet — pick meals first.");
+      return;
+    }
     const shoppingItems = Array.from(items.values()).map(i => ({
       id: uid(), name: i.name, qty: i.count > 1 ? `${i.count} × ${i.qty}` : i.qty,
       price: i.price, mealId: Array.from(i.mealIds)[0] ?? "planner", checked: false,
     }));
+    if (shoppingItems.length === 0) {
+      toast.error("Your planned meals don't have ingredients yet.");
+      return;
+    }
     if (typeof window !== "undefined") window.localStorage.setItem(SHOPPING_KEY, JSON.stringify(shoppingItems));
     toast.success(`Shopping list ready — ${shoppingItems.length} items`);
     navigate({ to: "/shopping" });
   };
+
 
   const pickerSlotName = picker ? plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.name ?? "" : "";
 
@@ -295,10 +307,16 @@ function Planner() {
           <span>~{Math.round(dayCal(activeDay))} kcal · ₦{dayCost(activeDay).toLocaleString()}</span>
         </div>
 
+        <Link to="/chefs"
+          className="mt-4 w-full flex items-center justify-center gap-2 rounded-full bg-warm text-warm-foreground py-3.5 text-sm font-semibold shadow-[var(--shadow-soft)]">
+          <ChefHat className="h-4 w-4" /> Book a chef
+        </Link>
+
         <button onClick={generateShoppingList} disabled={totalMeals === 0}
-          className="mt-4 w-full flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground py-3.5 text-sm font-medium disabled:opacity-40 shadow-[var(--shadow-soft)]">
+          className="mt-3 w-full flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground py-3.5 text-sm font-medium disabled:opacity-40 shadow-[var(--shadow-soft)]">
           <ShoppingBasket className="h-4 w-4" /> Generate shopping list
         </button>
+
       </div>
 
       <div className="h-6" />

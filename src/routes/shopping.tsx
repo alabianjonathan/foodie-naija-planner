@@ -13,6 +13,7 @@ type Item = { id: string; name: string; qty: string; price: number; mealId: stri
 
 function Shopping() {
   const [items, setItems] = useState<Item[]>([]);
+  const [hydrated, setHydrated] = useState(false);
   const [newItem, setNewItem] = useState("");
 
   useEffect(() => {
@@ -24,11 +25,14 @@ function Shopping() {
         if (Array.isArray(parsed)) setItems(parsed);
       }
     } catch { /* ignore */ }
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     if (typeof window !== "undefined") window.localStorage.setItem(SHOPPING_KEY, JSON.stringify(items));
-  }, [items]);
+  }, [items, hydrated]);
+
 
   const toggle = (id: string) => setItems(items => items.map(i => i.id === id ? { ...i, checked: !i.checked } : i));
   const remove = (id: string) => setItems(items => items.filter(i => i.id !== id));
