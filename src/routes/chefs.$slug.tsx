@@ -5,8 +5,11 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { getChefBySlug, submitChefLead } from "@/lib/chefs.functions";
+import { getChefBySlug, submitChefLead, submitChefReview } from "@/lib/chefs.functions";
 import { Star, MapPin, MessageCircle, ShieldCheck, Phone, ChefHat, X, Calendar } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/chefs/$slug")({
   head: ({ params }) => ({
@@ -172,10 +175,15 @@ function ChefDetail() {
           </section>
         )}
 
-        {reviews.length > 0 && (
-          <section className="mt-6">
-            <h2 className="font-display text-lg mb-3">Reviews</h2>
-            <div className="space-y-3">
+        <section className="mt-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-display text-lg">Reviews</h2>
+            {avgRating != null && (
+              <span className="text-xs text-muted-foreground">{reviews.length} review{reviews.length === 1 ? "" : "s"}</span>
+            )}
+          </div>
+          {reviews.length > 0 && (
+            <div className="space-y-3 mb-4">
               {reviews.slice(0, 5).map((r) => (
                 <div key={r.id} className="card-soft">
                   <div className="flex items-center gap-1 text-sm font-semibold">
@@ -185,8 +193,9 @@ function ChefDetail() {
                 </div>
               ))}
             </div>
-          </section>
-        )}
+          )}
+          <ReviewForm chefId={chef.id} slug={slug} />
+        </section>
       </div>
       <div className="h-6" />
 

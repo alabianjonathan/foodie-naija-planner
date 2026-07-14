@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TodayRouteImport } from './routes/today'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShoppingRouteImport } from './routes/shopping'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SavedRouteImport } from './routes/saved'
@@ -17,17 +18,21 @@ import { Route as RestaurantsRouteImport } from './routes/restaurants'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PrivateChefsRouteImport } from './routes/private-chefs'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PopularRouteImport } from './routes/popular'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as Jb12bzLoginRouteImport } from './routes/jb12bz-login'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ChefsRouteImport } from './routes/chefs'
 import { Route as ChefPlansRouteImport } from './routes/chef-plans'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as BecomeAChefRouteImport } from './routes/become-a-chef'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as Jb12bzRouteRouteImport } from './routes/jb12bz/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Jb12bzIndexRouteImport } from './routes/jb12bz/index'
@@ -44,6 +49,11 @@ import { Route as ChefsSlugRouteImport } from './routes/chefs.$slug'
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
   path: '/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShoppingRoute = ShoppingRouteImport.update({
@@ -81,6 +91,11 @@ const PrivateChefsRoute = PrivateChefsRouteImport.update({
   path: '/private-chefs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PopularRoute = PopularRouteImport.update({
   id: '/popular',
   path: '/popular',
@@ -101,6 +116,11 @@ const Jb12bzLoginRoute = Jb12bzLoginRouteImport.update({
   path: '/jb12bz-login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
@@ -109,6 +129,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChefsRoute = ChefsRouteImport.update({
@@ -134,6 +159,11 @@ const BecomeAChefRoute = BecomeAChefRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Jb12bzRouteRoute = Jb12bzRouteRouteImport.update({
@@ -200,17 +230,21 @@ const ChefsSlugRoute = ChefsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/become-a-chef': typeof BecomeAChefRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
+  '/privacy': typeof PrivacyRoute
   '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -218,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
+  '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -232,17 +267,21 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/become-a-chef': typeof BecomeAChefRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
+  '/privacy': typeof PrivacyRoute
   '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -250,6 +289,7 @@ export interface FileRoutesByTo {
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
+  '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -266,17 +306,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/become-a-chef': typeof BecomeAChefRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
   '/popular': typeof PopularRoute
+  '/privacy': typeof PrivacyRoute
   '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -284,6 +328,7 @@ export interface FileRoutesById {
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
+  '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -301,17 +346,21 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/jb12bz'
+    | '/about'
     | '/auth'
     | '/become-a-chef'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
+    | '/contact'
     | '/dashboard'
     | '/forgot-password'
+    | '/help'
     | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
     | '/popular'
+    | '/privacy'
     | '/private-chefs'
     | '/profile'
     | '/reset-password'
@@ -319,6 +368,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/shopping'
+    | '/terms'
     | '/today'
     | '/chefs/$slug'
     | '/jb12bz/cities'
@@ -333,17 +383,21 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/auth'
     | '/become-a-chef'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
+    | '/contact'
     | '/dashboard'
     | '/forgot-password'
+    | '/help'
     | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
     | '/popular'
+    | '/privacy'
     | '/private-chefs'
     | '/profile'
     | '/reset-password'
@@ -351,6 +405,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/shopping'
+    | '/terms'
     | '/today'
     | '/chefs/$slug'
     | '/jb12bz/cities'
@@ -366,17 +421,21 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/jb12bz'
+    | '/about'
     | '/auth'
     | '/become-a-chef'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
+    | '/contact'
     | '/dashboard'
     | '/forgot-password'
+    | '/help'
     | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
     | '/popular'
+    | '/privacy'
     | '/private-chefs'
     | '/profile'
     | '/reset-password'
@@ -384,6 +443,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/shopping'
+    | '/terms'
     | '/today'
     | '/chefs/$slug'
     | '/jb12bz/cities'
@@ -400,17 +460,21 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Jb12bzRouteRoute: typeof Jb12bzRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   BecomeAChefRoute: typeof BecomeAChefRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
   ChefPlansRoute: typeof ChefPlansRoute
   ChefsRoute: typeof ChefsRouteWithChildren
+  ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  HelpRoute: typeof HelpRoute
   Jb12bzLoginRoute: typeof Jb12bzLoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PlannerRoute: typeof PlannerRoute
   PopularRoute: typeof PopularRoute
+  PrivacyRoute: typeof PrivacyRoute
   PrivateChefsRoute: typeof PrivateChefsRoute
   ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -418,6 +482,7 @@ export interface RootRouteChildren {
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
   ShoppingRoute: typeof ShoppingRoute
+  TermsRoute: typeof TermsRoute
   TodayRoute: typeof TodayRoute
   MealIdRoute: typeof MealIdRoute
 }
@@ -429,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/today'
       fullPath: '/today'
       preLoaderRoute: typeof TodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shopping': {
@@ -480,6 +552,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateChefsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/popular': {
       id: '/popular'
       path: '/popular'
@@ -508,6 +587,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forgot-password': {
       id: '/forgot-password'
       path: '/forgot-password'
@@ -520,6 +606,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chefs': {
@@ -555,6 +648,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jb12bz': {
@@ -683,17 +783,21 @@ const ChefsRouteWithChildren = ChefsRoute._addFileChildren(ChefsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Jb12bzRouteRoute: Jb12bzRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   BecomeAChefRoute: BecomeAChefRoute,
   ChangePasswordRoute: ChangePasswordRoute,
   ChefPlansRoute: ChefPlansRoute,
   ChefsRoute: ChefsRouteWithChildren,
+  ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  HelpRoute: HelpRoute,
   Jb12bzLoginRoute: Jb12bzLoginRoute,
   OnboardingRoute: OnboardingRoute,
   PlannerRoute: PlannerRoute,
   PopularRoute: PopularRoute,
+  PrivacyRoute: PrivacyRoute,
   PrivateChefsRoute: PrivateChefsRoute,
   ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -701,6 +805,7 @@ const rootRouteChildren: RootRouteChildren = {
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
   ShoppingRoute: ShoppingRoute,
+  TermsRoute: TermsRoute,
   TodayRoute: TodayRoute,
   MealIdRoute: MealIdRoute,
 }
