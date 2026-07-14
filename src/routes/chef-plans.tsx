@@ -13,7 +13,8 @@ export const Route = createFileRoute("/chef-plans")({
   component: ChefPlans,
 });
 
-const PLANS = [
+type Plan = { key: string; name: string; price: string; per?: string; tagline: string; highlight?: boolean; features: string[]; cta: string };
+const PLANS: Plan[] = [
   {
     key: "basic",
     name: "Basic",
