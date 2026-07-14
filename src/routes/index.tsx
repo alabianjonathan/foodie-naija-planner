@@ -95,6 +95,7 @@ function Nav() {
           <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground">Features</a>
           <a href="#how" className="text-sm font-medium text-muted-foreground hover:text-foreground">How it works</a>
           <a href="#restaurants" className="text-sm font-medium text-muted-foreground hover:text-foreground">Restaurants</a>
+          <Link to="/private-chefs" className="text-sm font-medium text-muted-foreground hover:text-foreground">Private Chefs</Link>
           <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-foreground">Reviews</a>
         </nav>
         <div className="flex items-center gap-2">
