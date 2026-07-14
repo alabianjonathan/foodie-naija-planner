@@ -227,7 +227,7 @@ function WhySection() {
             More than a <span className="text-warm">delivery app.</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Chowdeck and Glovo bring restaurant food. MealBeta helps you plan meals, then choose how to get them.
+            MealBeta helps you plan meals, then choose how to get them — home-cooked, chef-prepared, or restaurant-made.
           </p>
         </div>
         <div className="mt-10 grid gap-4 md:mt-14 md:grid-cols-3 md:gap-5">
