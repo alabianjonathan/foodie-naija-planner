@@ -59,7 +59,7 @@ const PLANS: Plan[] = [
     ],
     cta: "Go Premium",
   },
-] as const;
+] as const satisfies readonly Plan[] as Plan[];
 
 function ChefPlans() {
   return (
