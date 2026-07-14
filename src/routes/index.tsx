@@ -154,6 +154,8 @@ function Hero() {
             </a>
           </div>
 
+          <AppBadges />
+
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <li className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-brand" /> Free to start</li>
             <li className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-brand" /> Built for Naira budgets</li>
