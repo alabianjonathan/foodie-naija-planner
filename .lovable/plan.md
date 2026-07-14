@@ -1,70 +1,82 @@
-## Production readiness audit — MealBeta
 
-Scope: replace remaining static/sample data with Supabase-backed reads/writes, harden admin RBAC, make every admin table full CRUD + search/filter, and verify the mobile user flow end-to-end.
+# MealBeta Chefs — Plan
 
-### 1. Current state (from a quick pass)
+A new pillar of MealBeta so users don't only see restaurants. After planning a meal, users choose: **Cook Myself · Order from Restaurant · Contact a Chef**. Restaurants and meal planner stay untouched.
 
-**Mobile app still uses static data**
-- `src/data/meals.ts` (757 lines) is imported by `home.tsx`, `today.tsx`, `popular.tsx`, `meal.$id.tsx`, `planner.tsx`, `shopping.tsx`, `saved.tsx`. The DB `meals` table exists and is seeded but the UI doesn't read it.
-- `src/data/popularGroups.ts` used by `popular.tsx` — static.
-- `src/data/admin-sample.ts` — leftover sample used by some admin pages.
-- `saved.tsx` doesn't persist to DB.
-- `planner.tsx` / `shopping.tsx` don't sync with `meal_plans` for the logged-in user.
-- `restaurants.tsx` calls the server fn (good) but requires the fn is wired end-to-end.
-- `profile.tsx` and `onboarding.tsx` — verify they write `profiles`.
+Payments: **Paystack subscriptions** (chefs only — no per-booking commission).
 
-**Admin panel gaps**
-- `/jb12bz` route gate exists (super_admin / admin / restaurant) — OK.
-- Pages like `categories.tsx`, `ingredients.tsx`, `nutrition.tsx`, `settings.tsx`, `users.tsx` are mostly stubs / read-only / sample-backed.
-- `cities.tsx`, `restaurants.tsx`, `meals.tsx`, `leads.tsx`, `meal-plans.tsx` have partial CRUD — need consistent search + filter + edit dialogs.
-- Meals admin: no create/edit form yet (only delete + status toggle).
-- Restaurant admin: has upsert fn but need edit dialog.
+## 1. Database (Lovable Cloud)
 
-### 2. Plan of work
+New tables (all with RLS + GRANTs):
 
-**A. DB / server functions**
-1. Add `saved_meals(user_id, meal_id)` table with RLS (own rows only) + GRANTs.
-2. Ensure `meal_plans` schema supports per-day slots (already there — verify columns).
-3. Add server fns:
-   - `listMealsPublic` (already: `listMeals`) — add `getMealBySlug`.
-   - `toggleSavedMeal`, `listSavedMeals`.
-   - `upsertMealPlan`, `getCurrentMealPlan`.
-   - `upsertProfile` for onboarding/profile.
-   - Admin: `adminUpsertMeal` (currently missing), plus keep existing admin fns.
+- `chefs` — profile: user_id, full_name, business_name, slug, bio, phone, whatsapp, email, city, area, areas_covered[], categories[] (from the 10 chef categories), years_experience, photo_url, id_document_url, price_min, price_max, availability, rating, verified, featured, status (pending/active/suspended), plan (basic/featured/premium), plan_expires_at.
+- `chef_listings` — chef_id, name, type (food|service), description, price_min, price_max, photos[], available_days[], service_area, status.
+- `chef_leads` — chef_id, user_id (nullable), name, phone, whatsapp, message, requested_date, status (new/contacted/closed).
+- `chef_reviews` — chef_id, user_id, rating, comment.
+- `chef_profile_views` — chef_id, viewer_id (nullable), viewed_at (for analytics counts).
+- `chef_subscriptions` — chef_id, plan, status (active/expired/canceled), paystack_customer_code, paystack_subscription_code, current_period_end.
+- Extend `user_roles` app_role enum with `chef`.
 
-**B. Mobile app rewrite (data source swap)**
-- Introduce `src/hooks/useMeals.ts` using TanStack Query + `listMeals` server fn.
-- Refactor `home`, `today`, `popular`, `meal.$id`, `planner`, `shopping`, `saved` to consume DB meals.
-- Keep `Meal` type but map from `CatalogMeal`.
-- Persist `saved`, `planner` to DB.
-- Verify onboarding writes to `profiles`.
+RLS highlights:
+- Anyone (anon+auth): SELECT active chefs & their active listings & aggregated reviews.
+- Chef: manage own row, own listings, view own leads / views.
+- Authenticated users: INSERT leads, reviews for a chef.
+- Admin (`has_role admin/super_admin`): full manage.
 
-**C. Admin CRUD polish**
-- Meals: add create/edit dialog (name, slug, category, times, nutrition, ingredients JSON, status).
-- Restaurants: add edit dialog (currently only add). Add search + city/status filter.
-- Cities: search.
-- Leads: status filter + search.
-- Meal plans: view detail, delete.
-- Users: promote/demote roles UI (uses existing admin-users fns).
-- Categories/Ingredients/Nutrition/Settings: either wire to real config tables or clearly mark placeholder — recommend removing until scoped.
+Listing-limit enforcement via a `BEFORE INSERT` trigger on `chef_listings`: basic=1, featured=10, premium=unlimited.
 
-**D. Verification**
-- Playwright: onboarding → home → today → meal detail → save → planner add → shopping list → restaurants → profile edit.
-- Admin: login as super_admin, CRUD on each entity.
+Storage bucket `chef-uploads` (private) for photos & ID docs; signed URLs served to public where needed (photos are public via a policy on a `chef-photos` public bucket; IDs stay private).
 
-### 3. Scope check for this turn
+## 2. Customer-facing routes
 
-This is 2–4 turns of work. I propose I execute in this order:
+- `/chefs` — MealBeta Chefs discovery. Filters: city, area, category, plan, verified. Chef cards (name, business, location, areas, specialty, starting price, plan badge, rating, verified, WhatsApp, Request booking).
+- `/chefs/$slug` — Chef details: photo, bio, areas covered, listings grid, price range, availability, reviews, verification badge, WhatsApp & Request booking buttons (booking = modal → inserts `chef_leads`).
+- `/chef-plans` — pricing table (Basic Free / Featured ₦15k / Premium ₦30k) with the exact rows listed in the brief.
+- `/become-a-chef` — public chef registration form (creates auth account if needed, inserts `chefs` with status=pending, grants `chef` role on approval).
 
-1. **Turn 1 (this):** Add `saved_meals` migration + new server fns (`getMealBySlug`, saved, meal-plan upsert, profile upsert, `adminUpsertMeal`). Wait for migration approval.
-2. **Turn 2:** Swap mobile routes to DB-backed queries; wire saved + planner + shopping persistence.
-3. **Turn 3:** Admin edit dialogs + search/filter across tables; role management UI.
-4. **Turn 4:** Playwright verification and fixes.
+Wire into existing flow:
+- On `/dashboard` and after `/planner` cost/calorie result → add a **"Contact a Chef"** card next to Cook Myself / Order from Restaurant.
+- Add "MealBeta Chefs" entry in `BottomNav`.
 
-### 4. Open decisions for you
+## 3. Chef dashboard (`/chef/*`, gated by `chef` role)
 
-- **Categories / Ingredients / Nutrition / Settings admin pages** — should I (a) build real tables + CRUD for these, or (b) remove them from the sidebar until scoped? They aren't in the "sync scope" you set earlier.
-- **Saved meals** — do you want per-user favorites persisted server-side (recommended), or keep local-only?
-- **Restaurant role** — should the `restaurant` role see a limited dashboard (their own venue only), or is this out of scope for now?
+- `/chef` — overview: current plan, listing usage (used/limit), profile views (last 30d), leads count, upgrade CTA.
+- `/chef/listings` — CRUD for listings; blocks add when limit hit with the exact upgrade prompt text.
+- `/chef/leads` — inbox of `chef_leads`, mark contacted/closed, WhatsApp deep-link.
+- `/chef/profile` — edit profile, photos, areas covered.
+- `/chef/billing` — plan status, upgrade/downgrade → Paystack.
 
-Reply with your picks and I'll start executing.
+## 4. Payments (Paystack subscriptions)
+
+- Secret `PAYSTACK_SECRET_KEY` (add_secret).
+- Create Paystack Plans (Featured ₦15,000/mo, Premium ₦30,000/mo) — one-time script/migration.
+- Server fn `initializeChefSubscription({ plan })` → returns Paystack authorization URL.
+- Public server route `/api/public/webhooks/paystack` verifying `x-paystack-signature` (HMAC-SHA512 with secret) → updates `chef_subscriptions` and `chefs.plan` / `plan_expires_at` on `subscription.create`, `charge.success`, `subscription.disable`, `invoice.payment_failed`.
+- Downgrade to Basic automatically when subscription expires.
+
+## 5. Admin (`/jb12bz/chefs`)
+
+Table with actions: approve, reject, verify toggle, suspend, feature toggle, assign/upgrade/downgrade plan manually, view active/expired subscriptions, listing count per chef, view chef leads, edit profile.
+
+Add sidebar item "Chefs" in `AdminSidebar`.
+
+## 6. Technical notes
+
+- Server fns in `src/lib/chefs.functions.ts` (public listing) and `src/lib/chef-owner.functions.ts` (chef-auth) and `src/lib/admin-chefs.functions.ts` (admin).
+- Paystack webhook in `src/routes/api/public/webhooks/paystack.ts`.
+- Reuse existing `PhoneShell`, `TopBar`, `card-soft`, `chip`, brand tokens — no new design language.
+- Landing page (`/`) gets one extra section "Meet MealBeta Chefs" linking to `/chefs` and `/become-a-chef`.
+
+## 7. Rollout order
+
+1. Migration (tables, enum, RLS, GRANTs, trigger, buckets).
+2. Server fns + Paystack secret + webhook route.
+3. Customer routes (`/chefs`, `/chefs/$slug`, `/chef-plans`, `/become-a-chef`).
+4. Chef dashboard.
+5. Admin chef management.
+6. Wire into `/dashboard` and `/planner` result screens + BottomNav + landing section.
+
+## Out of scope (explicit)
+
+- No changes to restaurants, meal planner logic, or existing meal recommendations.
+- No per-booking commission or in-app checkout for chef bookings — leads go via WhatsApp/booking request only.
