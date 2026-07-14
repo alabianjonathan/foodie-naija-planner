@@ -10,7 +10,7 @@ import logoAsset from "@/assets/mealbeta-logo.png.asset.json";
 
 
 
-export const Route = createFileRoute("/home")({
+export const Route = createFileRoute("/dashboard")({
   component: Home,
 });
 

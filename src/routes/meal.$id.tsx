@@ -13,7 +13,7 @@ import type { CatalogMeal, CatalogRestaurant } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/meal/$id")({
   notFoundComponent: () => (
-    <PhoneShell><TopBar title="Not found" /><div className="p-6">This meal doesn't exist. <Link to="/home" className="text-brand">Go home</Link></div></PhoneShell>
+    <PhoneShell><TopBar title="Not found" /><div className="p-6">This meal doesn't exist. <Link to="/dashboard" className="text-brand">Go home</Link></div></PhoneShell>
   ),
   errorComponent: () => <PhoneShell><TopBar title="Error" /><div className="p-6">Couldn't load meal.</div></PhoneShell>,
   component: MealPage,

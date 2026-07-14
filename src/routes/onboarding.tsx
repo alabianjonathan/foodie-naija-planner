@@ -108,7 +108,7 @@ function Onboarding() {
       onboarded: true,
     }).eq("id", user.id);
     if (error) toast.error("Couldn't save preferences");
-    navigate({ to: "/home" });
+    navigate({ to: "/dashboard" });
   };
 
   const select = (val: string) => commit({ ...answers, [current.key]: val });
@@ -130,7 +130,7 @@ function Onboarding() {
           <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
             <div className="h-full bg-brand transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
-          <Link to="/home" className="text-xs text-muted-foreground">Skip</Link>
+          <Link to="/dashboard" className="text-xs text-muted-foreground">Skip</Link>
         </div>
 
         <div className="mt-4 sm:mt-6 flex-1">
