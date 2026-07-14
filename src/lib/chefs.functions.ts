@@ -175,15 +175,16 @@ const ApplySchema = z.object({
   bio: z.string().trim().max(1000).optional().or(z.literal("")),
   phone: z.string().trim().min(6).max(30),
   whatsapp: z.string().trim().min(6).max(30).optional().or(z.literal("")),
-  email: z.string().trim().email().max(200).optional().or(z.literal("")),
-  city: z.string().trim().min(2).max(60),
-  area: z.string().trim().max(60).optional().or(z.literal("")),
-  areasCovered: z.array(z.string().min(1).max(60)).max(30).default([]),
-  categories: z.array(z.string().min(1).max(60)).min(1).max(10),
+  email: z.string().trim().email().max(200),
+  city: z.string().trim().min(2).max(60), // state
+  area: z.string().trim().max(200).optional().or(z.literal("")), // specific areas/streets (free text)
+  areasCovered: z.array(z.string().min(1).max(60)).min(1).max(30), // cities covered
+  categories: z.array(z.string().min(1).max(60)).min(1).max(20),
   yearsExperience: z.number().int().min(0).max(80).optional(),
   priceMin: z.number().min(0).max(10_000_000).optional(),
   priceMax: z.number().min(0).max(10_000_000).optional(),
   availability: z.string().trim().max(200).optional().or(z.literal("")),
+  plan: z.enum(["basic", "featured", "premium"]).default("basic"),
 });
 
 function slugify(s: string) {
@@ -197,7 +198,6 @@ export const applyAsChef = createServerFn({ method: "POST" })
     const userId = context.userId;
     const sb = context.supabase;
 
-    // Build a unique slug
     const base = slugify(data.businessName) || slugify(data.fullName) || "chef";
     let slug = base;
     for (let i = 0; i < 20; i++) {
@@ -214,7 +214,7 @@ export const applyAsChef = createServerFn({ method: "POST" })
       bio: data.bio || null,
       phone: data.phone,
       whatsapp: data.whatsapp || null,
-      email: data.email || null,
+      email: data.email,
       city: data.city,
       area: data.area || null,
       areas_covered: data.areasCovered ?? [],
@@ -224,9 +224,10 @@ export const applyAsChef = createServerFn({ method: "POST" })
       price_max: data.priceMax ?? null,
       availability: data.availability || null,
       status: "pending",
-      plan: "basic",
+      plan: data.plan ?? "basic",
     });
     if (insErr) throw insErr;
-    return { ok: true as const, slug };
+    return { ok: true as const, slug, plan: data.plan ?? "basic" };
   });
+
 
