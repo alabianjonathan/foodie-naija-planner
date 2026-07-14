@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
-import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2, X, Clock } from "lucide-react";
+import { Sparkles, Search, CalendarDays, ShoppingBasket, Store, Flame, Loader2, X, Clock, ChefHat } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
@@ -196,6 +196,20 @@ function Home() {
           </div>
         </Link>
 
+        {/* MealBeta Chefs full width strip */}
+        <Link to="/chefs" className="col-span-6 rounded-3xl bg-gradient-to-r from-leaf/15 to-brand/10 p-4 shadow-[var(--shadow-soft)] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-2xl bg-leaf/20 text-leaf flex items-center justify-center">
+              <ChefHat className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-display text-sm leading-tight">MealBeta Chefs</h3>
+              <p className="text-[11px] text-muted-foreground">Private chefs, meal prep &amp; event vendors</p>
+            </div>
+          </div>
+          <span className="text-xs text-brand font-medium">Discover →</span>
+        </Link>
+
         {/* Popular full width strip */}
         <Link to="/popular" className="col-span-6 rounded-3xl bg-brand/8 p-4 shadow-[var(--shadow-soft)] flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -209,6 +223,7 @@ function Home() {
           </div>
           <span className="text-xs text-brand font-medium">Browse →</span>
         </Link>
+
       </section>
 
       {/* Quick picks — editorial */}
