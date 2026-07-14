@@ -92,6 +92,17 @@ function Shopping() {
         </ul>
       </div>
 
+        <Link
+          to="/chefs"
+          className="mt-5 w-full flex items-center justify-center gap-2 rounded-full bg-warm text-warm-foreground py-3.5 text-sm font-semibold shadow-[var(--shadow-soft)]"
+        >
+          <ChefHat className="h-4 w-4" /> Book a chef instead
+        </Link>
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Skip the shopping — get a private chef, meal prep or home cook to make it for you.
+        </p>
+      </div>
+
       <div className="h-6" />
     </PhoneShell>
   );
