@@ -47,6 +47,12 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const navigate = useNavigate();
+  const fetchCityCount = useServerFn(countCities);
+  const { data: cityCount = 0 } = useQuery({
+    queryKey: ["catalog", "city-count"],
+    queryFn: () => fetchCityCount(),
+  });
+
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) return;
@@ -63,7 +69,7 @@ function Landing() {
     <div className="min-h-dvh bg-background text-foreground">
       <Nav />
       <Hero />
-      <TrustStrip />
+      <TrustStrip cityCount={cityCount} />
       <Features />
       <HowItWorks />
       <Showcase />
