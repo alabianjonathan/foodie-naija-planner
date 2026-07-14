@@ -568,11 +568,6 @@ function AppBadges() {
     </div>
   );
 }
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ---------------- Footer ---------------- */
 function Footer() {
