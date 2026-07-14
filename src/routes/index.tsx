@@ -529,9 +529,9 @@ function FinalCTA() {
 /* ---------------- App Download Badges ---------------- */
 function AppBadges() {
   return (
-    <div className="mt-10">
-      <div className="text-xs font-semibold uppercase tracking-wider text-white/70">Get the app</div>
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
+    <div className="mt-8">
+      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Get the app</div>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           type="button"
           disabled
