@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /jb12bz
+Disallow: /jb12bz-login
+Disallow: /reset-password
+Disallow: /change-password
+
+Sitemap: https://mealbeta.app/sitemap.xml
