@@ -127,23 +127,34 @@ function Planner() {
 
   const generateShoppingList = () => {
     const items = new Map<string, { name: string; qty: string; price: number; count: number; mealIds: Set<string> }>();
+    let plannedCount = 0;
     plan.forEach(d => d.slots.forEach(s => {
       const m = slotMeal(s); if (!m) return;
-      m.ingredients.forEach(ing => {
+      plannedCount += 1;
+      (m.ingredients ?? []).forEach(ing => {
         const key = ing.name.toLowerCase();
         const existing = items.get(key);
         if (existing) { existing.count += 1; existing.price += ing.price; existing.mealIds.add(m.id); }
         else items.set(key, { name: ing.name, qty: ing.qty, price: ing.price, count: 1, mealIds: new Set([m.id]) });
       });
     }));
+    if (plannedCount === 0) {
+      toast.error("No meals planned yet — pick meals first.");
+      return;
+    }
     const shoppingItems = Array.from(items.values()).map(i => ({
       id: uid(), name: i.name, qty: i.count > 1 ? `${i.count} × ${i.qty}` : i.qty,
       price: i.price, mealId: Array.from(i.mealIds)[0] ?? "planner", checked: false,
     }));
+    if (shoppingItems.length === 0) {
+      toast.error("Your planned meals don't have ingredients yet.");
+      return;
+    }
     if (typeof window !== "undefined") window.localStorage.setItem(SHOPPING_KEY, JSON.stringify(shoppingItems));
     toast.success(`Shopping list ready — ${shoppingItems.length} items`);
     navigate({ to: "/shopping" });
   };
+
 
   const pickerSlotName = picker ? plan[picker.dayIdx].slots.find(s => s.id === picker.slotId)?.name ?? "" : "";
 
