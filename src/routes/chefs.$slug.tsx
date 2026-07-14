@@ -268,3 +268,70 @@ function BookingModal({ chefId, chefName, onClose }: { chefId: string; chefName:
     </div>
   );
 }
+
+function ReviewForm({ chefId, slug }: { chefId: string; slug: string }) {
+  const submit = useServerFn(submitChefReview);
+  const qc = useQueryClient();
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+  }, []);
+
+  if (signedIn === false) {
+    return (
+      <div className="card-soft text-center">
+        <p className="text-sm text-charcoal mb-3">Sign in to leave a review.</p>
+        <Link to="/auth" className="inline-flex rounded-full bg-brand text-brand-foreground px-4 py-2 text-xs font-semibold">
+          Sign in
+        </Link>
+      </div>
+    );
+  }
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rating < 1) return toast.error("Pick a rating.");
+    setSaving(true);
+    try {
+      await submit({ data: { chefId, rating, comment } });
+      toast.success("Thanks for the review!");
+      setRating(0); setComment("");
+      qc.invalidateQueries({ queryKey: ["chefs", "slug", slug] });
+    } catch (err: any) {
+      toast.error(err?.message ?? "Could not submit review.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="card-soft space-y-3">
+      <div>
+        <p className="text-xs font-semibold text-charcoal mb-2">Leave a review</p>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button key={n} type="button" onClick={() => setRating(n)} aria-label={`${n} stars`}>
+              <Star className={`h-6 w-6 ${n <= rating ? "fill-warm text-warm" : "text-muted-foreground"}`} />
+            </button>
+          ))}
+        </div>
+      </div>
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Share your experience (optional)"
+        maxLength={1000}
+        rows={3}
+        className="w-full rounded-2xl bg-secondary/60 border border-border/60 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
+      />
+      <button type="submit" disabled={saving || rating < 1}
+        className="w-full rounded-full bg-brand text-brand-foreground py-2.5 text-xs font-semibold disabled:opacity-60">
+        {saving ? "Submitting…" : "Submit review"}
+      </button>
+    </form>
+  );
+}
