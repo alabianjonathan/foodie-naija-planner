@@ -518,6 +518,56 @@ function FinalCTA() {
               I already have an account
             </Link>
           </div>
+          <AppBadges />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- App Download Badges ---------------- */
+function AppBadges() {
+  return (
+    <div className="mt-10">
+      <div className="text-xs font-semibold uppercase tracking-wider text-white/70">Get the app</div>
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          disabled
+          aria-label="Download on Google Play — coming soon"
+          className="group relative inline-flex items-center gap-3 rounded-2xl bg-black px-4 py-2.5 text-left text-white shadow-lift ring-1 ring-white/10 hover:bg-black/90 disabled:cursor-not-allowed"
+        >
+          <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden>
+            <path fill="#00D4FF" d="M3.6 2.3C3.2 2.6 3 3.1 3 3.8v16.4c0 .7.2 1.2.6 1.5l.1.1L13 12.1v-.2L3.6 2.3z"/>
+            <path fill="#FFCE00" d="M16.3 15.3L13 12.1v-.2l3.3-3.2.1.1 3.9 2.2c1.1.6 1.1 1.7 0 2.3l-3.9 2.2-.1-.2z"/>
+            <path fill="#FF3A44" d="M16.4 15.2L13 12 3.6 21.7c.4.4 1 .4 1.7.1l11.1-6.6"/>
+            <path fill="#00F076" d="M16.4 8.8L5.3 2.2c-.7-.4-1.3-.3-1.7.1L13 12l3.4-3.2z"/>
+          </svg>
+          <div className="leading-tight">
+            <div className="text-[10px] uppercase tracking-wide text-white/70">Get it on</div>
+            <div className="text-sm font-semibold">Google Play</div>
+          </div>
+          <span className="absolute -top-2 -right-2 rounded-full bg-warm px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black">Soon</span>
+        </button>
+        <button
+          type="button"
+          disabled
+          aria-label="Download on the App Store — coming soon"
+          className="group relative inline-flex items-center gap-3 rounded-2xl bg-black px-4 py-2.5 text-left text-white shadow-lift ring-1 ring-white/10 hover:bg-black/90 disabled:cursor-not-allowed"
+        >
+          <svg viewBox="0 0 24 24" className="h-7 w-7" fill="currentColor" aria-hidden>
+            <path d="M17.05 12.54c-.02-2.06 1.68-3.05 1.76-3.1-.96-1.4-2.46-1.6-2.99-1.62-1.27-.13-2.48.75-3.13.75-.64 0-1.64-.73-2.7-.71-1.39.02-2.67.81-3.39 2.05-1.45 2.51-.37 6.22 1.03 8.26.69.99 1.51 2.11 2.58 2.07 1.04-.04 1.43-.67 2.68-.67s1.6.67 2.7.65c1.11-.02 1.82-1.01 2.5-2.01.79-1.15 1.11-2.27 1.13-2.33-.03-.01-2.16-.83-2.18-3.29zm-2.06-6.05c.57-.7.96-1.66.85-2.62-.83.04-1.83.55-2.42 1.24-.53.61-1 1.59-.87 2.53.92.07 1.87-.47 2.44-1.15z"/>
+          </svg>
+          <div className="leading-tight">
+            <div className="text-[10px] uppercase tracking-wide text-white/70">Download on the</div>
+            <div className="text-sm font-semibold">App Store</div>
+          </div>
+          <span className="absolute -top-2 -right-2 rounded-full bg-warm px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black">Soon</span>
+        </button>
+      </div>
+    </div>
+  );
+}
         </div>
       </div>
     </section>
