@@ -89,6 +89,13 @@ export const countCities = createServerFn({ method: "GET" }).handler(async (): P
   return data?.length ?? 0;
 });
 
+export const countAreas = createServerFn({ method: "GET" }).handler(async (): Promise<number> => {
+  const sb = publicClient();
+  const { data, error } = await sb.from("areas").select("id", { count: "exact", head: true }).eq("active", true);
+  if (error) throw error;
+  return data?.length ?? 0;
+});
+
 export const listMeals = createServerFn({ method: "GET" }).handler(async (): Promise<CatalogMeal[]> => {
   const sb = publicClient();
   const { data } = await sb.from("meals").select("*").eq("status", "active").order("name");
