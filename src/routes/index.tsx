@@ -74,6 +74,8 @@ function Landing() {
       <HowItWorks />
       <Showcase />
       <Restaurants />
+      <PrivateChefsSection />
+
       <Testimonials />
       <FinalCTA />
       <Footer />
@@ -410,6 +412,37 @@ function Restaurants() {
     </section>
   );
 }
+
+/* ---------------- Private Chefs ---------------- */
+function PrivateChefsSection() {
+  return (
+    <section id="private-chefs" className="relative overflow-hidden bg-gradient-to-br from-[oklch(0.98_0.02_130)] to-[oklch(0.95_0.05_100)]">
+      <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="chip bg-brand/10 text-brand"><Leaf className="h-3.5 w-3.5" /> New on MealBeta</span>
+          <h2 className="mt-4 font-display text-4xl leading-tight text-charcoal md:text-5xl">
+            Need someone to cook for you?
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            MealBeta helps you find private chefs, home cooks, meal prep vendors, soup bowl vendors, and event food vendors near you.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link to="/chefs" className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:opacity-90">
+              Find a Chef <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link to="/become-a-chef" className="inline-flex items-center gap-2 rounded-full border border-charcoal/20 bg-white px-5 py-3 text-sm font-semibold text-charcoal hover:bg-charcoal/5">
+              Become a Chef
+            </Link>
+          </div>
+          <Link to="/private-chefs" className="mt-4 inline-block text-xs font-medium text-brand underline">
+            Learn how it works
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 /* ---------------- Testimonials ---------------- */
 function Testimonials() {

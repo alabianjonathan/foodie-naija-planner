@@ -53,19 +53,26 @@ function ChefsIndex() {
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [stateFilter, setStateFilter] = useState<string>("all");
+
+  const availableStates = useMemo(() => {
+    return Array.from(new Set(chefs.map((c) => c.city).filter(Boolean))).sort();
+  }, [chefs]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return chefs.filter((c) => {
       if (category !== "all" && !c.categories.includes(category)) return false;
       if (verifiedOnly && !c.verified) return false;
+      if (stateFilter !== "all" && c.city !== stateFilter) return false;
       if (q) {
         const hay = `${c.fullName} ${c.businessName} ${c.city} ${c.area ?? ""} ${(c.areasCovered ?? []).join(" ")}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
-  }, [chefs, category, query, verifiedOnly]);
+  }, [chefs, category, query, verifiedOnly, stateFilter]);
+
 
   return (
     <PhoneShell>
@@ -107,13 +114,22 @@ function ChefsIndex() {
           })}
         </div>
 
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <select
+            value={stateFilter}
+            onChange={(e) => setStateFilter(e.target.value)}
+            className="rounded-full bg-secondary/60 border border-border/60 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand/40"
+          >
+            <option value="all">All states</option>
+            {availableStates.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
           <label className="flex items-center gap-2 text-xs text-charcoal">
             <input type="checkbox" checked={verifiedOnly} onChange={(e) => setVerifiedOnly(e.target.checked)} />
             Verified only
           </label>
           <span className="text-[11px] text-muted-foreground">{filtered.length} chef{filtered.length === 1 ? "" : "s"}</span>
         </div>
+
 
         <div className="mt-4 space-y-4">
           {isLoading && (
