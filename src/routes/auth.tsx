@@ -10,6 +10,7 @@ export const Route = createFileRoute("/auth")({ component: AuthPage });
 
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(72);
+const phoneSchema = z.string().trim().min(7, "Enter a valid phone number").max(20).regex(/^[+\d\s\-()]+$/, "Enter a valid phone number");
 
 function AuthPage() {
   const navigate = useNavigate();
