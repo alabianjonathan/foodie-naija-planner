@@ -59,7 +59,7 @@ function Today() {
 
   return (
     <PhoneShell>
-      <TopBar title={`What should I eat this ${mealPeriod()}?`} back="/home" />
+      <TopBar title={`What should I eat this ${mealPeriod()}?`} back="/dashboard" />
 
       <div className="px-6 pt-5">
         <div className="rounded-3xl bg-gradient-to-br from-leaf to-[oklch(0.45_0.15_150)] p-5 text-leaf-foreground">

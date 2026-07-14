@@ -101,13 +101,13 @@ function Profile() {
     { icon: MapPin, label: `Location · ${cityLabel}`, to: "/settings" as const },
     { icon: Lock, label: "Password & security", to: "/change-password" as const },
     { icon: Heart, label: "Saved meals & plans", to: "/saved" as const },
-    { icon: Store, label: "Become a restaurant partner", to: "/home" as const },
-    { icon: Bell, label: "Notifications", to: "/home" as const },
+    { icon: Store, label: "Become a restaurant partner", to: "/dashboard" as const },
+    { icon: Bell, label: "Notifications", to: "/dashboard" as const },
   ];
 
   return (
     <PhoneShell>
-      <TopBar title="Profile" back="/home" right={
+      <TopBar title="Profile" back="/dashboard" right={
         <button onClick={() => editing ? save() : setEditing(true)} disabled={saving} className="text-sm font-medium text-brand">
           {editing ? (saving ? "Saving…" : "Save") : "Edit"}
         </button>

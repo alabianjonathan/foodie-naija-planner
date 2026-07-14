@@ -64,7 +64,7 @@ function Popular() {
 
   return (
     <PhoneShell>
-      <TopBar title="Popular in Nigeria" back="/home" />
+      <TopBar title="Popular in Nigeria" back="/dashboard" />
       <div className="px-6 pt-2">
         <p className="text-xs text-muted-foreground">Browse the most-loved Nigerian meals by category.</p>
         <div className="relative mt-4">

@@ -21,7 +21,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/home" });
+      if (data.session) navigate({ to: "/dashboard" });
     });
   }, [navigate]);
 
@@ -53,7 +53,7 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Welcome back!");
-        navigate({ to: "/home" });
+        navigate({ to: "/dashboard" });
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
@@ -74,7 +74,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/home" });
+    navigate({ to: "/dashboard" });
   };
 
   return (

@@ -29,7 +29,7 @@ function Saved() {
 
   return (
     <PhoneShell>
-      <TopBar title="Saved" back="/home" />
+      <TopBar title="Saved" back="/dashboard" />
       <div className="px-6 pt-4">
         <div className="flex gap-2 rounded-full bg-secondary p-1">
           {(["meals", "plans"] as const).map(t => (

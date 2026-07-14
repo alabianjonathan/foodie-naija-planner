@@ -79,7 +79,7 @@ function Restaurants() {
 
   return (
     <PhoneShell>
-      <TopBar title="Restaurants near you" back="/home" />
+      <TopBar title="Restaurants near you" back="/dashboard" />
       <div className="px-6 pt-2">
         <div className="flex items-center justify-between mb-3 gap-2">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">

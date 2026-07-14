@@ -52,7 +52,7 @@ function Landing() {
         .select("onboarded")
         .eq("id", data.session.user.id)
         .maybeSingle();
-      navigate({ to: p?.onboarded ? "/home" : "/onboarding" });
+      navigate({ to: p?.onboarded ? "/dashboard" : "/onboarding" });
     });
   }, [navigate]);
 

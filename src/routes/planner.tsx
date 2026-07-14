@@ -180,7 +180,7 @@ function Planner() {
 
   return (
     <PhoneShell>
-      <TopBar title="Meal planner" back="/home" right={
+      <TopBar title="Meal planner" back="/dashboard" right={
         <button onClick={clearWeek} title="Reset week" className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
           <RefreshCw className="h-4 w-4" />
         </button>
