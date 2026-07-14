@@ -74,6 +74,8 @@ function Landing() {
       <HowItWorks />
       <Showcase />
       <Restaurants />
+      <PrivateChefsSection />
+
       <Testimonials />
       <FinalCTA />
       <Footer />
