@@ -36,6 +36,7 @@ import { Route as Jb12bzMealsRouteImport } from './routes/jb12bz/meals'
 import { Route as Jb12bzMealPlansRouteImport } from './routes/jb12bz/meal-plans'
 import { Route as Jb12bzLeadsRouteImport } from './routes/jb12bz/leads'
 import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
+import { Route as ChefsSlugRouteImport } from './routes/chefs.$slug'
 
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
@@ -172,13 +173,18 @@ const Jb12bzCitiesRoute = Jb12bzCitiesRouteImport.update({
   path: '/cities',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
+const ChefsSlugRoute = ChefsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ChefsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
-  '/chefs': typeof ChefsRoute
+  '/chefs': typeof ChefsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -206,7 +213,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
-  '/chefs': typeof ChefsRoute
+  '/chefs': typeof ChefsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
@@ -220,6 +227,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -236,7 +244,7 @@ export interface FileRoutesById {
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
-  '/chefs': typeof ChefsRoute
+  '/chefs': typeof ChefsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
   '/today': typeof TodayRoute
+  '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
+    | '/chefs/$slug'
     | '/jb12bz/cities'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
+    | '/chefs/$slug'
     | '/jb12bz/cities'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shopping'
     | '/today'
+    | '/chefs/$slug'
     | '/jb12bz/cities'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -354,7 +366,7 @@ export interface RootRouteChildren {
   Jb12bzRouteRoute: typeof Jb12bzRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
-  ChefsRoute: typeof ChefsRoute
+  ChefsRoute: typeof ChefsRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   Jb12bzLoginRoute: typeof Jb12bzLoginRoute
@@ -562,6 +574,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzCitiesRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
+    '/chefs/$slug': {
+      id: '/chefs/$slug'
+      path: '/$slug'
+      fullPath: '/chefs/$slug'
+      preLoaderRoute: typeof ChefsSlugRouteImport
+      parentRoute: typeof ChefsRoute
+    }
   }
 }
 
@@ -591,12 +610,22 @@ const Jb12bzRouteRouteWithChildren = Jb12bzRouteRoute._addFileChildren(
   Jb12bzRouteRouteChildren,
 )
 
+interface ChefsRouteChildren {
+  ChefsSlugRoute: typeof ChefsSlugRoute
+}
+
+const ChefsRouteChildren: ChefsRouteChildren = {
+  ChefsSlugRoute: ChefsSlugRoute,
+}
+
+const ChefsRouteWithChildren = ChefsRoute._addFileChildren(ChefsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Jb12bzRouteRoute: Jb12bzRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ChangePasswordRoute: ChangePasswordRoute,
-  ChefsRoute: ChefsRoute,
+  ChefsRoute: ChefsRouteWithChildren,
   DashboardRoute: DashboardRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   Jb12bzLoginRoute: Jb12bzLoginRoute,
