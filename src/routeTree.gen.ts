@@ -20,8 +20,8 @@ import { Route as PopularRouteImport } from './routes/popular'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as Jb12bzLoginRouteImport } from './routes/jb12bz-login'
-import { Route as HomeRouteImport } from './routes/home'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as Jb12bzRouteRouteImport } from './routes/jb12bz/route'
@@ -91,14 +91,14 @@ const Jb12bzLoginRoute = Jb12bzLoginRouteImport.update({
   path: '/jb12bz-login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangePasswordRoute = ChangePasswordRouteImport.update({
@@ -172,8 +172,8 @@ export interface FileRoutesByFullPath {
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
+  '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/home': typeof HomeRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
@@ -199,8 +199,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
+  '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/home': typeof HomeRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
@@ -228,8 +228,8 @@ export interface FileRoutesById {
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
+  '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/home': typeof HomeRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
   '/onboarding': typeof OnboardingRoute
   '/planner': typeof PlannerRoute
@@ -258,8 +258,8 @@ export interface FileRouteTypes {
     | '/jb12bz'
     | '/auth'
     | '/change-password'
+    | '/dashboard'
     | '/forgot-password'
-    | '/home'
     | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
@@ -285,8 +285,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/change-password'
+    | '/dashboard'
     | '/forgot-password'
-    | '/home'
     | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
@@ -313,8 +313,8 @@ export interface FileRouteTypes {
     | '/jb12bz'
     | '/auth'
     | '/change-password'
+    | '/dashboard'
     | '/forgot-password'
-    | '/home'
     | '/jb12bz-login'
     | '/onboarding'
     | '/planner'
@@ -342,8 +342,8 @@ export interface RootRouteChildren {
   Jb12bzRouteRoute: typeof Jb12bzRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
+  DashboardRoute: typeof DashboardRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
-  HomeRoute: typeof HomeRoute
   Jb12bzLoginRoute: typeof Jb12bzLoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PlannerRoute: typeof PlannerRoute
@@ -437,18 +437,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/forgot-password': {
       id: '/forgot-password'
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/change-password': {
@@ -576,8 +576,8 @@ const rootRouteChildren: RootRouteChildren = {
   Jb12bzRouteRoute: Jb12bzRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ChangePasswordRoute: ChangePasswordRoute,
+  DashboardRoute: DashboardRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
-  HomeRoute: HomeRoute,
   Jb12bzLoginRoute: Jb12bzLoginRoute,
   OnboardingRoute: OnboardingRoute,
   PlannerRoute: PlannerRoute,
