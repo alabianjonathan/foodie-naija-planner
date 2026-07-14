@@ -90,7 +90,6 @@ function Shopping() {
             </li>
           ))}
         </ul>
-      </div>
 
         <Link
           to="/chefs"
