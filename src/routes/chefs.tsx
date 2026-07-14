@@ -53,19 +53,26 @@ function ChefsIndex() {
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [stateFilter, setStateFilter] = useState<string>("all");
+
+  const availableStates = useMemo(() => {
+    return Array.from(new Set(chefs.map((c) => c.city).filter(Boolean))).sort();
+  }, [chefs]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return chefs.filter((c) => {
       if (category !== "all" && !c.categories.includes(category)) return false;
       if (verifiedOnly && !c.verified) return false;
+      if (stateFilter !== "all" && c.city !== stateFilter) return false;
       if (q) {
         const hay = `${c.fullName} ${c.businessName} ${c.city} ${c.area ?? ""} ${(c.areasCovered ?? []).join(" ")}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
-  }, [chefs, category, query, verifiedOnly]);
+  }, [chefs, category, query, verifiedOnly, stateFilter]);
+
 
   return (
     <PhoneShell>
