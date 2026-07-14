@@ -37,12 +37,17 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        const phoneP = phoneSchema.safeParse(phone);
+        if (!phoneP.success) { setLoading(false); return toast.error(phoneP.error.issues[0].message); }
         const { error } = await supabase.auth.signUp({
           email: emailP.data,
           password: passP.data,
           options: {
             emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { full_name: name.trim() || emailP.data.split("@")[0] },
+            data: {
+              full_name: name.trim() || emailP.data.split("@")[0],
+              phone: phoneP.data,
+            },
           },
         });
         if (error) throw error;
