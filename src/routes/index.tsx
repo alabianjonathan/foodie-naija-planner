@@ -206,11 +206,11 @@ function Hero() {
 }
 
 /* ---------------- Trust strip ---------------- */
-function TrustStrip() {
+function TrustStrip({ cityCount }: { cityCount: number }) {
   const stats = [
     { k: "20,000+", v: "meals planned" },
     { k: "150+", v: "Nigerian dishes" },
-    { k: "Many", v: "neighborhoods" },
+    { k: String(cityCount || 0), v: "cities added" },
     { k: "4.8★", v: "user rating" },
   ];
   return (
