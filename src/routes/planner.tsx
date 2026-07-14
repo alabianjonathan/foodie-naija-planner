@@ -307,10 +307,16 @@ function Planner() {
           <span>~{Math.round(dayCal(activeDay))} kcal · ₦{dayCost(activeDay).toLocaleString()}</span>
         </div>
 
+        <Link to="/chefs"
+          className="mt-4 w-full flex items-center justify-center gap-2 rounded-full bg-warm text-warm-foreground py-3.5 text-sm font-semibold shadow-[var(--shadow-soft)]">
+          <ChefHat className="h-4 w-4" /> Book a chef
+        </Link>
+
         <button onClick={generateShoppingList} disabled={totalMeals === 0}
-          className="mt-4 w-full flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground py-3.5 text-sm font-medium disabled:opacity-40 shadow-[var(--shadow-soft)]">
+          className="mt-3 w-full flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground py-3.5 text-sm font-medium disabled:opacity-40 shadow-[var(--shadow-soft)]">
           <ShoppingBasket className="h-4 w-4" /> Generate shopping list
         </button>
+
       </div>
 
       <div className="h-6" />
