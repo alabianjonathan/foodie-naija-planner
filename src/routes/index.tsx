@@ -201,7 +201,7 @@ function TrustStrip() {
   const stats = [
     { k: "20,000+", v: "meals planned" },
     { k: "150+", v: "Nigerian dishes" },
-    { k: "Neighborhood-level", v: "coverage" },
+    { k: "Many", v: "neighborhoods" },
     { k: "4.8★", v: "user rating" },
   ];
   return (
