@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Leaf, Sparkles, Users } from "lucide-react";
-import { PhoneShell } from "@/components/PhoneShell";
+import { ArrowRight, Leaf, Sparkles, Users } from "lucide-react";
+import { SiteShell } from "@/components/SiteShell";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -18,44 +18,46 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   return (
-    <PhoneShell>
-      <div className="px-5 pt-6 pb-16">
-        <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4">
-          <ArrowLeft className="h-4 w-4" /> Back
-        </Link>
-        <h1 className="font-display text-3xl mb-3">About MealBeta</h1>
-        <p className="text-sm text-charcoal leading-relaxed">
+    <SiteShell>
+      <section className="mx-auto max-w-4xl px-5 py-16 md:py-24">
+        <span className="chip w-fit bg-brand/10 text-brand">About us</span>
+        <h1 className="mt-4 font-display text-4xl leading-tight text-charcoal md:text-6xl">
+          Meal planning, built for Nigerian kitchens.
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
           MealBeta is a Nigerian meal planning assistant. We help you decide what to eat, plan the week, estimate cost and calories, generate shopping lists, and find restaurants and chefs near you.
         </p>
-        <div className="mt-8 space-y-4">
-          <div className="card-soft flex gap-3">
-            <Sparkles className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-sm">Smart suggestions</h3>
-              <p className="text-xs text-muted-foreground mt-1">Recommendations tuned to your budget, preferences, and Nigerian kitchens.</p>
+
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <div className="rounded-3xl bg-card p-6 shadow-soft ring-1 ring-border/60">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+              <Sparkles className="h-5 w-5" />
             </div>
+            <h3 className="mt-4 font-semibold text-charcoal">Smart suggestions</h3>
+            <p className="mt-2 text-sm text-muted-foreground">Recommendations tuned to your budget, preferences, and Nigerian kitchens.</p>
           </div>
-          <div className="card-soft flex gap-3">
-            <Leaf className="h-5 w-5 text-leaf shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-sm">Better choices</h3>
-              <p className="text-xs text-muted-foreground mt-1">Track calories and cost so you eat and spend well.</p>
+          <div className="rounded-3xl bg-card p-6 shadow-soft ring-1 ring-border/60">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[oklch(0.94_0.04_145/0.6)] text-[oklch(0.4_0.12_145)]">
+              <Leaf className="h-5 w-5" />
             </div>
+            <h3 className="mt-4 font-semibold text-charcoal">Better choices</h3>
+            <p className="mt-2 text-sm text-muted-foreground">Track calories and cost so you eat and spend well.</p>
           </div>
-          <div className="card-soft flex gap-3">
-            <Users className="h-5 w-5 text-warm shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-sm">Local network</h3>
-              <p className="text-xs text-muted-foreground mt-1">Discover restaurants and book verified private chefs across Nigeria.</p>
+          <div className="rounded-3xl bg-card p-6 shadow-soft ring-1 ring-border/60">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[oklch(0.94_0.04_80/0.6)] text-warm">
+              <Users className="h-5 w-5" />
             </div>
+            <h3 className="mt-4 font-semibold text-charcoal">Local network</h3>
+            <p className="mt-2 text-sm text-muted-foreground">Discover restaurants and book verified private chefs across Nigeria.</p>
           </div>
         </div>
-        <div className="mt-10 text-center">
-          <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground">
-            Get started
+
+        <div className="mt-14">
+          <Link to="/auth" className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3.5 text-base font-semibold text-brand-foreground shadow-lift hover:opacity-95">
+            Get started <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-      </div>
-    </PhoneShell>
+      </section>
+    </SiteShell>
   );
 }
