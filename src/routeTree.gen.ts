@@ -22,6 +22,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as Jb12bzLoginRouteImport } from './routes/jb12bz-login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ChefsRouteImport } from './routes/chefs'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as Jb12bzRouteRouteImport } from './routes/jb12bz/route'
@@ -101,6 +102,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChefsRoute = ChefsRouteImport.update({
+  id: '/chefs',
+  path: '/chefs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChangePasswordRoute = ChangePasswordRouteImport.update({
   id: '/change-password',
   path: '/change-password',
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
+  '/chefs': typeof ChefsRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
@@ -199,6 +206,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
+  '/chefs': typeof ChefsRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/jb12bz': typeof Jb12bzRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/change-password': typeof ChangePasswordRoute
+  '/chefs': typeof ChefsRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/jb12bz-login': typeof Jb12bzLoginRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/jb12bz'
     | '/auth'
     | '/change-password'
+    | '/chefs'
     | '/dashboard'
     | '/forgot-password'
     | '/jb12bz-login'
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/change-password'
+    | '/chefs'
     | '/dashboard'
     | '/forgot-password'
     | '/jb12bz-login'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/jb12bz'
     | '/auth'
     | '/change-password'
+    | '/chefs'
     | '/dashboard'
     | '/forgot-password'
     | '/jb12bz-login'
@@ -342,6 +354,7 @@ export interface RootRouteChildren {
   Jb12bzRouteRoute: typeof Jb12bzRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
+  ChefsRoute: typeof ChefsRoute
   DashboardRoute: typeof DashboardRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   Jb12bzLoginRoute: typeof Jb12bzLoginRoute
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chefs': {
+      id: '/chefs'
+      path: '/chefs'
+      fullPath: '/chefs'
+      preLoaderRoute: typeof ChefsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/change-password': {
@@ -576,6 +596,7 @@ const rootRouteChildren: RootRouteChildren = {
   Jb12bzRouteRoute: Jb12bzRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ChangePasswordRoute: ChangePasswordRoute,
+  ChefsRoute: ChefsRoute,
   DashboardRoute: DashboardRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   Jb12bzLoginRoute: Jb12bzLoginRoute,
