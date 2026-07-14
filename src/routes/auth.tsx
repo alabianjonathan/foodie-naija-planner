@@ -128,6 +128,17 @@ function AuthPage() {
               className="w-full rounded-2xl border-2 border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-brand"
             />
           )}
+          {mode === "signup" && (
+            <input
+              type="tel"
+              placeholder="Phone number (e.g. +234 801 234 5678)"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              maxLength={20}
+              required
+              className="w-full rounded-2xl border-2 border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-brand"
+            />
+          )}
           <input
             type="email"
             placeholder="Email address"
