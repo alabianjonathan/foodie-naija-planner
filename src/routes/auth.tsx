@@ -10,6 +10,7 @@ export const Route = createFileRoute("/auth")({ component: AuthPage });
 
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(72);
+const phoneSchema = z.string().trim().min(7, "Enter a valid phone number").max(20).regex(/^[+\d\s\-()]+$/, "Enter a valid phone number");
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,12 +37,17 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        const phoneP = phoneSchema.safeParse(phone);
+        if (!phoneP.success) { setLoading(false); return toast.error(phoneP.error.issues[0].message); }
         const { error } = await supabase.auth.signUp({
           email: emailP.data,
           password: passP.data,
           options: {
             emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { full_name: name.trim() || emailP.data.split("@")[0] },
+            data: {
+              full_name: name.trim() || emailP.data.split("@")[0],
+              phone: phoneP.data,
+            },
           },
         });
         if (error) throw error;
@@ -118,6 +125,17 @@ function AuthPage() {
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={80}
+              className="w-full rounded-2xl border-2 border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-brand"
+            />
+          )}
+          {mode === "signup" && (
+            <input
+              type="tel"
+              placeholder="Phone number (e.g. +234 801 234 5678)"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              maxLength={20}
+              required
               className="w-full rounded-2xl border-2 border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-brand"
             />
           )}

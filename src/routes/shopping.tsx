@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
-import { Share2, Plus, Trash2, Check } from "lucide-react";
+import { Share2, Plus, Trash2, Check, ChefHat } from "lucide-react";
 
 export const Route = createFileRoute("/shopping")({ component: Shopping });
 
@@ -90,6 +90,16 @@ function Shopping() {
             </li>
           ))}
         </ul>
+
+        <Link
+          to="/chefs"
+          className="mt-5 w-full flex items-center justify-center gap-2 rounded-full bg-warm text-warm-foreground py-3.5 text-sm font-semibold shadow-[var(--shadow-soft)]"
+        >
+          <ChefHat className="h-4 w-4" /> Book a chef instead
+        </Link>
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Skip the shopping — get a private chef, meal prep or home cook to make it for you.
+        </p>
       </div>
 
       <div className="h-6" />
