@@ -579,9 +579,13 @@ function Footer() {
           <img src={logoAsset.url} alt="MealBeta" className="h-6 w-auto" />
           <span>© {new Date().getFullYear()} MealBeta. Made in Nigeria.</span>
         </div>
-        <div className="flex items-center gap-6">
-          <a href="#features" className="hover:text-foreground">Features</a>
-          <a href="#how" className="hover:text-foreground">How it works</a>
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          <Link to="/about" className="hover:text-foreground">About</Link>
+          <Link to="/chefs" className="hover:text-foreground">Chefs</Link>
+          <Link to="/help" className="hover:text-foreground">Help</Link>
+          <Link to="/contact" className="hover:text-foreground">Contact</Link>
+          <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
+          <Link to="/terms" className="hover:text-foreground">Terms</Link>
           <Link to="/auth" className="hover:text-foreground">Sign in</Link>
         </div>
       </div>
