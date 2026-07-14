@@ -169,6 +169,26 @@ export const submitChefLead = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+const ReviewSchema = z.object({
+  chefId: z.string().uuid(),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().trim().max(1000).optional().or(z.literal("")),
+});
+
+export const submitChefReview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => ReviewSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.from("chef_reviews").insert({
+      chef_id: data.chefId,
+      user_id: context.userId,
+      rating: data.rating,
+      comment: data.comment || null,
+    });
+    if (error) throw error;
+    return { ok: true as const };
+  });
+
 const ApplySchema = z.object({
   fullName: z.string().trim().min(2).max(100),
   businessName: z.string().trim().min(2).max(120),
