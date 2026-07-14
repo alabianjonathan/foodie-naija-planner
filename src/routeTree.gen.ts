@@ -44,6 +44,7 @@ import { Route as Jb12bzMealsRouteImport } from './routes/jb12bz/meals'
 import { Route as Jb12bzMealPlansRouteImport } from './routes/jb12bz/meal-plans'
 import { Route as Jb12bzLeadsRouteImport } from './routes/jb12bz/leads'
 import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
+import { Route as Jb12bzChefsRouteImport } from './routes/jb12bz/chefs'
 import { Route as ChefsSlugRouteImport } from './routes/chefs.$slug'
 
 const TodayRoute = TodayRouteImport.update({
@@ -221,6 +222,11 @@ const Jb12bzCitiesRoute = Jb12bzCitiesRouteImport.update({
   path: '/cities',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
+const Jb12bzChefsRoute = Jb12bzChefsRouteImport.update({
+  id: '/chefs',
+  path: '/chefs',
+  getParentRoute: () => Jb12bzRouteRoute,
+} as any)
 const ChefsSlugRoute = ChefsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
   '/chefs/$slug': typeof ChefsSlugRoute
+  '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
   '/chefs/$slug': typeof ChefsSlugRoute
+  '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
   '/chefs/$slug': typeof ChefsSlugRoute
+  '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/today'
     | '/chefs/$slug'
+    | '/jb12bz/chefs'
     | '/jb12bz/cities'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -408,6 +418,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/today'
     | '/chefs/$slug'
+    | '/jb12bz/chefs'
     | '/jb12bz/cities'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -446,6 +457,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/today'
     | '/chefs/$slug'
+    | '/jb12bz/chefs'
     | '/jb12bz/cities'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -734,6 +746,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzCitiesRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
+    '/jb12bz/chefs': {
+      id: '/jb12bz/chefs'
+      path: '/chefs'
+      fullPath: '/jb12bz/chefs'
+      preLoaderRoute: typeof Jb12bzChefsRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
+    }
     '/chefs/$slug': {
       id: '/chefs/$slug'
       path: '/$slug'
@@ -745,6 +764,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface Jb12bzRouteRouteChildren {
+  Jb12bzChefsRoute: typeof Jb12bzChefsRoute
   Jb12bzCitiesRoute: typeof Jb12bzCitiesRoute
   Jb12bzLeadsRoute: typeof Jb12bzLeadsRoute
   Jb12bzMealPlansRoute: typeof Jb12bzMealPlansRoute
@@ -756,6 +776,7 @@ interface Jb12bzRouteRouteChildren {
 }
 
 const Jb12bzRouteRouteChildren: Jb12bzRouteRouteChildren = {
+  Jb12bzChefsRoute: Jb12bzChefsRoute,
   Jb12bzCitiesRoute: Jb12bzCitiesRoute,
   Jb12bzLeadsRoute: Jb12bzLeadsRoute,
   Jb12bzMealPlansRoute: Jb12bzMealPlansRoute,

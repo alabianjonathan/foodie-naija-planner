@@ -15,14 +15,15 @@ function AdminChefsPage() {
   const { data, isLoading } = useQuery({ queryKey: ["admin", "chefs"], queryFn: () => list() });
 
   const mut = useMutation({
-    mutationFn: (v: Parameters<typeof adminUpdateChef>[0]["data"]) => update({ data: v }),
+    mutationFn: (v: { id: string; status?: any; verified?: boolean; featured?: boolean; plan?: any }) =>
+      update({ data: v as any }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin", "chefs"] }); toast.success("Updated"); },
     onError: (e: any) => toast.error(e?.message ?? "Failed"),
   });
 
   return (
     <div>
-      <PageHeader title="Chefs" description="Approve, verify, and manage chef profiles." />
+      <PageHeader title="Chefs" subtitle="Approve, verify, and manage chef profiles." />
       {isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
