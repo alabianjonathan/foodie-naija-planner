@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
-import { PhoneShell } from "@/components/PhoneShell";
+import { SiteShell } from "@/components/SiteShell";
 
 export const Route = createFileRoute("/help")({
   head: () => ({
@@ -26,27 +25,30 @@ const faqs = [
 
 function HelpPage() {
   return (
-    <PhoneShell>
-      <div className="px-5 pt-6 pb-16">
-        <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4">
-          <ArrowLeft className="h-4 w-4" /> Back
-        </Link>
-        <h1 className="font-display text-3xl mb-6">Help & FAQ</h1>
-        <div className="space-y-3">
+    <SiteShell>
+      <section className="mx-auto max-w-3xl px-5 py-16 md:py-24">
+        <span className="chip w-fit bg-brand/10 text-brand">Help centre</span>
+        <h1 className="mt-4 font-display text-4xl leading-tight text-charcoal md:text-6xl">Frequently asked questions.</h1>
+        <p className="mt-4 text-lg text-muted-foreground">Everything you need to know about using MealBeta.</p>
+
+        <div className="mt-12 space-y-3">
           {faqs.map((f) => (
-            <details key={f.q} className="card-soft group">
-              <summary className="cursor-pointer text-sm font-semibold list-none flex justify-between items-center">
+            <details key={f.q} className="group rounded-2xl bg-card p-5 shadow-soft ring-1 ring-border/60">
+              <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-charcoal">
                 {f.q}
-                <span className="text-brand text-lg group-open:rotate-45 transition-transform">+</span>
+                <span className="text-brand text-2xl leading-none transition-transform group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-2 text-xs text-charcoal leading-relaxed">{f.a}</p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
             </details>
           ))}
         </div>
-        <div className="mt-8 text-center text-sm text-muted-foreground">
-          Still stuck? <Link to="/contact" className="text-brand font-semibold">Contact us</Link>
+
+        <div className="mt-12 rounded-3xl bg-secondary/60 p-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            Still stuck? <Link to="/contact" className="font-semibold text-brand">Contact us</Link>
+          </p>
         </div>
-      </div>
-    </PhoneShell>
+      </section>
+    </SiteShell>
   );
 }

@@ -1,6 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
-import { PhoneShell } from "@/components/PhoneShell";
+import { createFileRoute } from "@tanstack/react-router";
+import { SiteShell } from "@/components/SiteShell";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -17,30 +16,34 @@ export const Route = createFileRoute("/terms")({
 });
 
 function TermsPage() {
+  const sections = [
+    { h: "Using the service", p: "MealBeta provides meal planning, cost and calorie estimates, and connects you with independent restaurants and chefs. Estimates are guidance, not guarantees." },
+    { h: "Accounts", p: "You are responsible for keeping your account credentials safe. Don't share your password." },
+    { h: "Third parties", p: "Chefs and restaurants listed are independent operators. Bookings and orders are directly between you and them; MealBeta is not a party to those transactions." },
+    { h: "Acceptable use", p: "Don't use MealBeta to harass others, scrape data, or submit false content." },
+    { h: "Changes", p: "We may update these terms. Continued use after changes means you accept the updated terms." },
+  ];
   return (
-    <PhoneShell>
-      <div className="px-5 pt-6 pb-16">
-        <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4">
-          <ArrowLeft className="h-4 w-4" /> Back
-        </Link>
-        <h1 className="font-display text-3xl mb-2">Terms of Service</h1>
-        <p className="text-xs text-muted-foreground mb-6">Last updated: July 2026</p>
-        <div className="space-y-4 text-sm text-charcoal leading-relaxed">
-          <p>By using MealBeta you agree to these terms.</p>
-          <h2 className="font-semibold text-base mt-6">Using the service</h2>
-          <p>MealBeta provides meal planning, cost and calorie estimates, and connects you with independent restaurants and chefs. Estimates are guidance, not guarantees.</p>
-          <h2 className="font-semibold text-base mt-6">Accounts</h2>
-          <p>You are responsible for keeping your account credentials safe. Don't share your password.</p>
-          <h2 className="font-semibold text-base mt-6">Third parties</h2>
-          <p>Chefs and restaurants listed are independent operators. Bookings and orders are directly between you and them; MealBeta is not a party to those transactions.</p>
-          <h2 className="font-semibold text-base mt-6">Acceptable use</h2>
-          <p>Don't use MealBeta to harass others, scrape data, or submit false content.</p>
-          <h2 className="font-semibold text-base mt-6">Changes</h2>
-          <p>We may update these terms. Continued use after changes means you accept the updated terms.</p>
-          <h2 className="font-semibold text-base mt-6">Contact</h2>
-          <p>Questions? <a href="mailto:hello@mealbeta.app" className="text-brand font-medium">hello@mealbeta.app</a></p>
+    <SiteShell>
+      <section className="mx-auto max-w-3xl px-5 py-16 md:py-24">
+        <span className="chip w-fit bg-brand/10 text-brand">Legal</span>
+        <h1 className="mt-4 font-display text-4xl leading-tight text-charcoal md:text-6xl">Terms of Service</h1>
+        <p className="mt-3 text-sm text-muted-foreground">Last updated: July 2026</p>
+
+        <div className="mt-10 space-y-6 text-[15px] leading-relaxed">
+          <p className="text-foreground">By using MealBeta you agree to these terms.</p>
+          {sections.map((s) => (
+            <div key={s.h}>
+              <h2 className="font-display text-2xl text-charcoal">{s.h}</h2>
+              <p className="mt-2 text-muted-foreground">{s.p}</p>
+            </div>
+          ))}
+          <div>
+            <h2 className="font-display text-2xl text-charcoal">Contact</h2>
+            <p className="mt-2 text-muted-foreground">Questions? <a href="mailto:hello@mealbeta.app" className="font-medium text-brand">hello@mealbeta.app</a></p>
+          </div>
         </div>
-      </div>
-    </PhoneShell>
+      </section>
+    </SiteShell>
   );
 }
