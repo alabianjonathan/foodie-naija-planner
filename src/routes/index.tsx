@@ -76,11 +76,11 @@ function Landing() {
       <Nav />
       <Hero />
       <TrustStrip areaCount={areaCount} />
+      <PrivateChefsSection />
       <Features />
       <HowItWorks />
       <Showcase />
       <Restaurants />
-      <PrivateChefsSection />
 
       <Testimonials />
       <FinalCTA />
@@ -88,6 +88,7 @@ function Landing() {
     </div>
   );
 }
+
 
 /* ---------------- Nav ---------------- */
 function Nav() {
