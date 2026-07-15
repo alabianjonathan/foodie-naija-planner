@@ -134,61 +134,54 @@ function Home() {
         </h1>
       </section>
 
-      {/* Search */}
+      {/* MealBeta AI search box (replaces search + Today's AI pick banner) */}
       <section className="px-5">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search jollof, egusi, moi moi…"
-            className="w-full rounded-2xl bg-secondary/60 border border-border/60 pl-11 pr-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
-          />
-          {query && (
+        <div className="rounded-3xl border border-border bg-white p-4 shadow-[0_8px_28px_-16px_rgba(15,60,25,0.25)] focus-within:border-brand/50 transition">
+          <div className="flex items-start gap-2">
+            <textarea
+              value={aiQuery}
+              onChange={(e) => setAiQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); goSuggest(); } }}
+              placeholder={AI_PLACEHOLDERS[phIndex]}
+              rows={2}
+              className="flex-1 text-[15px] bg-transparent outline-none resize-none placeholder:text-muted-foreground/70 leading-relaxed"
+            />
             <button
-              onClick={() => setQuery("")}
-              aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-background/80 flex items-center justify-center"
+              type="button"
+              onClick={startVoice}
+              aria-label="Voice input"
+              className="h-9 w-9 rounded-full bg-secondary text-charcoal flex items-center justify-center hover:bg-brand/10 hover:text-brand transition"
             >
-              <X className="h-3.5 w-3.5 text-muted-foreground" />
+              <Mic className="h-4 w-4" />
             </button>
-          )}
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 text-xs text-brand font-medium">
+              <Sparkles className="h-3.5 w-3.5" /> MealBeta AI
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={openFilters}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-2 text-sm font-medium text-charcoal hover:border-brand/40"
+              >
+                <SlidersHorizontal className="h-4 w-4" /> Filters
+              </button>
+              <button
+                onClick={goSuggest}
+                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand text-brand-foreground px-4 py-2 text-sm font-semibold"
+              >
+                <Send className="h-4 w-4" /> Suggest Meals
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {query.trim() && (
-        <section className="px-5 mt-4">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-3">
-            {searchResults.length} result{searchResults.length === 1 ? "" : "s"} for "{query}"
-          </p>
-          {searchResults.length === 0 ? (
-            <div className="text-sm text-muted-foreground text-center py-8">
-              No meals match. Try "rice", "soup" or "beans".
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {searchResults.map((m) => <MealCard key={m.id} meal={m} />)}
-            </div>
-          )}
-        </section>
-      )}
-
-      {!query.trim() && (<>
+      <>
 
 
       {/* Bento grid */}
       <section className="px-5 mt-5 grid grid-cols-6 gap-3">
-        {/* Hero AI suggestion — spans full width */}
-        <Link to="/today" className="col-span-6 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand via-leaf to-[oklch(0.5_0.15_150)] p-5 text-brand-foreground shadow-[var(--shadow-lift)]">
-          <div className="absolute -right-6 -bottom-6 text-[7rem] opacity-25 leading-none select-none">🍲</div>
-          <div className="relative">
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/25 backdrop-blur rounded-full px-2.5 py-1">
-              <Sparkles className="h-3 w-3" /> Today's AI pick
-            </div>
-            <h2 className="mt-3 font-display text-[1.5rem] leading-[1.1]">What should you eat this {mealPeriod()}?</h2>
-            <p className="mt-1 text-sm text-white/85 max-w-[75%]">3 meals tuned to your budget & goal.</p>
-          </div>
-        </Link>
 
         {/* Planner — tall */}
         <Link to="/planner" className="col-span-3 row-span-2 rounded-3xl bg-card p-4 shadow-[var(--shadow-soft)] flex flex-col justify-between min-h-[150px]">
@@ -201,6 +194,7 @@ function Home() {
             <p className="text-xs text-muted-foreground mt-1">Plan 7 days ahead</p>
           </div>
         </Link>
+
 
         {/* Shopping */}
         <Link to="/shopping" className="col-span-3 rounded-3xl bg-warm/25 p-4 shadow-[var(--shadow-soft)] flex items-center gap-3">
