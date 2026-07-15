@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { countAreas } from "@/lib/catalog.functions";
+import { listChefs } from "@/lib/chefs.functions";
 import { useEffect } from "react";
 import {
   ArrowRight,
@@ -14,7 +15,12 @@ import {
   Wallet,
   Check,
   Leaf,
+  ChefHat,
+  Star,
+  ShieldCheck,
+  MapPin,
 } from "lucide-react";
+
 import heroFood from "@/assets/hero-food.jpg";
 import spread from "@/assets/landing-spread.jpg";
 import userShot from "@/assets/landing-user.jpg";
@@ -70,11 +76,11 @@ function Landing() {
       <Nav />
       <Hero />
       <TrustStrip areaCount={areaCount} />
+      <PrivateChefsSection />
       <Features />
       <HowItWorks />
       <Showcase />
       <Restaurants />
-      <PrivateChefsSection />
 
       <Testimonials />
       <FinalCTA />
@@ -82,6 +88,7 @@ function Landing() {
     </div>
   );
 }
+
 
 /* ---------------- Nav ---------------- */
 function Nav() {
@@ -149,10 +156,17 @@ function Hero() {
                 <ArrowRight className="h-4 w-4" />
               </span>
             </Link>
+            <Link
+              to="/chefs"
+              className="inline-flex items-center gap-2 rounded-full bg-charcoal px-5 py-3.5 text-sm font-semibold text-background hover:opacity-90"
+            >
+              <ChefHat className="h-4 w-4" /> Book a Private Chef
+            </Link>
             <a href="#how" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3.5 text-sm font-semibold text-foreground hover:bg-secondary">
               See how it works
             </a>
           </div>
+
 
           <AppBadges />
 
@@ -418,33 +432,102 @@ function Restaurants() {
 
 /* ---------------- Private Chefs ---------------- */
 function PrivateChefsSection() {
+  const fetchChefs = useServerFn(listChefs);
+  const { data: chefs = [] } = useQuery({
+    queryKey: ["chefs", "home"],
+    queryFn: () => fetchChefs(),
+  });
+  const featured = chefs.slice(0, 6);
+
+  const fmtPrice = (min: number | null, max: number | null) => {
+    if (min == null && max == null) return "Price on request";
+    if (min != null && max != null) return `₦${min.toLocaleString()} – ₦${max.toLocaleString()}`;
+    return `From ₦${(min ?? max)!.toLocaleString()}`;
+  };
+
   return (
     <section id="private-chefs" className="relative overflow-hidden bg-gradient-to-br from-[oklch(0.98_0.02_130)] to-[oklch(0.95_0.05_100)]">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <div className="text-center max-w-2xl mx-auto">
-          <span className="chip bg-brand/10 text-brand"><Leaf className="h-3.5 w-3.5" /> New on MealBeta</span>
+          <span className="chip bg-brand/10 text-brand"><ChefHat className="h-3.5 w-3.5" /> Private Chefs on MealBeta</span>
           <h2 className="mt-4 font-display text-4xl leading-tight text-charcoal md:text-5xl">
-            Need someone to cook for you?
+            Book a private chef, home cook, or meal-prep vendor.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            MealBeta helps you find private chefs, home cooks, meal prep vendors, soup bowl vendors, and event food vendors near you.
+            Verified chefs across Nigeria for daily meals, weekly meal prep, soup bowls, small chops, birthdays and events.
+            Chat on WhatsApp or send a booking request in seconds.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/chefs" className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:opacity-90">
-              Find a Chef <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link to="/become-a-chef" className="inline-flex items-center gap-2 rounded-full border border-charcoal/20 bg-white px-5 py-3 text-sm font-semibold text-charcoal hover:bg-charcoal/5">
-              Become a Chef
-            </Link>
+        </div>
+
+        {featured.length > 0 && (
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((c) => (
+              <Link
+                key={c.id}
+                to="/chefs/$slug"
+                params={{ slug: c.slug }}
+                className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-soft ring-1 ring-border/60 transition hover:-translate-y-0.5 hover:shadow-lift"
+              >
+                <div className="relative aspect-[5/4] overflow-hidden bg-secondary">
+                  {c.photoUrl ? (
+                    <img src={c.photoUrl} alt={c.businessName} className="h-full w-full object-cover transition group-hover:scale-[1.03]" loading="lazy" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <ChefHat className="h-10 w-10" />
+                    </div>
+                  )}
+                  {c.featured && (
+                    <span className="absolute left-3 top-3 rounded-full bg-warm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Featured</span>
+                  )}
+                  {c.verified && (
+                    <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-bold text-brand">
+                      <ShieldCheck className="h-3 w-3" /> Verified
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-charcoal">{c.businessName}</h3>
+                    {c.rating != null && (
+                      <div className="inline-flex shrink-0 items-center gap-0.5 text-xs font-semibold text-charcoal">
+                        <Star className="h-3.5 w-3.5 fill-warm text-warm" /> {c.rating.toFixed(1)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
+                    <MapPin className="h-3 w-3" /> {c.area ? `${c.area}, ${c.city}` : c.city}
+                  </div>
+                  {c.bio && (
+                    <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{c.bio}</p>
+                  )}
+                  <div className="mt-auto flex items-center justify-between pt-4">
+                    <div className="text-xs font-semibold text-brand">{fmtPrice(c.priceMin, c.priceMax)}</div>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-brand-foreground">
+                      Book <ArrowRight className="h-3 w-3" />
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
-          <Link to="/private-chefs" className="mt-4 inline-block text-xs font-medium text-brand underline">
-            Learn how it works
+        )}
+
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <Link to="/chefs" className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:opacity-90">
+            Browse all chefs <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link to="/become-a-chef" className="inline-flex items-center gap-2 rounded-full border border-charcoal/20 bg-white px-5 py-3 text-sm font-semibold text-charcoal hover:bg-charcoal/5">
+            Become a Chef
+          </Link>
+          <Link to="/private-chefs" className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-brand underline underline-offset-4">
+            How it works
           </Link>
         </div>
       </div>
     </section>
   );
 }
+
 
 
 /* ---------------- Testimonials ---------------- */
