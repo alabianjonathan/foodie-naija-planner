@@ -536,9 +536,9 @@ function ResultCard({
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
-        {btn(primary)}
-        {btn(primary === "cook" ? "order" : "cook")}
-        {btn(primary === "chef" ? "cook" : "chef")}
+        {btn("chef")}
+        {btn("order")}
+        {btn("cook")}
         <button onClick={() => toggle.mutate({ mealId: meal.uuid, saved: !isSaved })} className="inline-flex items-center justify-center gap-1 rounded-full bg-secondary text-charcoal py-2 text-xs font-medium">
           <Bookmark className={`h-3.5 w-3.5 ${isSaved ? "fill-current" : ""}`} /> {isSaved ? "Saved" : "Save"}
         </button>
