@@ -491,7 +491,7 @@ function ResultCard({
   };
 
   // Emphasise action for the selected mode.
-  const primary = mode === "order" ? "order" : mode === "chef" ? "chef" : "cook";
+  const primary = mode === "order" ? "order" : mode === "cook" ? "cook" : "chef";
 
   const btn = (kind: "cook" | "order" | "chef") => {
     const isPrimary = kind === primary;
