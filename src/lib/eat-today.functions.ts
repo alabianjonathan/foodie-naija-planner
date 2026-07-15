@@ -326,21 +326,42 @@ export const findChefsForMeal = createServerFn({ method: "POST" })
       area = area ?? profile?.area ?? undefined;
     }
 
-    let q = context.supabase
-      .from("chefs")
-      .select("id, slug, business_name, city, area, areas_covered, categories, rating, verified, featured, photo_url, phone, whatsapp, price_min, price_max, status")
-      .eq("status", "active")
-      .order("featured", { ascending: false })
-      .order("verified", { ascending: false })
-      .order("rating", { ascending: false, nullsFirst: false })
-      .limit(10);
-    if (city) q = q.eq("city", city);
-    const { data: rows } = await q;
+    const cols = "id, slug, business_name, city, area, areas_covered, categories, rating, verified, featured, photo_url, phone, whatsapp, price_min, price_max, status";
 
-    const scored = (rows ?? []).sort((a, b) => {
+    let stateCities: string[] = [];
+    if (city) {
+      const { data: cityRow } = await context.supabase
+        .from("cities").select("state").eq("name", city).maybeSingle();
+      if (cityRow?.state) {
+        const { data: sameState } = await context.supabase
+          .from("cities").select("name").eq("state", cityRow.state);
+        stateCities = (sameState ?? []).map((c) => c.name);
+      }
+    }
+
+    const runQuery = async (scope: "city" | "state" | "any") => {
+      let q = context.supabase.from("chefs").select(cols).eq("status", "active")
+        .order("featured", { ascending: false })
+        .order("verified", { ascending: false })
+        .order("rating", { ascending: false, nullsFirst: false })
+        .limit(15);
+      if (scope === "city" && city) q = q.eq("city", city);
+      else if (scope === "state" && stateCities.length) q = q.in("city", stateCities);
+      const { data: rows } = await q;
+      return rows ?? [];
+    };
+
+    let rows = await runQuery("city");
+    if (rows.length === 0 && stateCities.length) rows = await runQuery("state");
+    if (rows.length === 0) rows = await runQuery("any");
+
+    const scored = rows.sort((a, b) => {
       const aArea = area && (a.area === area || (a.areas_covered ?? []).includes(area)) ? 1 : 0;
       const bArea = area && (b.area === area || (b.areas_covered ?? []).includes(area)) ? 1 : 0;
       if (aArea !== bArea) return bArea - aArea;
+      const aCity = city && a.city === city ? 1 : 0;
+      const bCity = city && b.city === city ? 1 : 0;
+      if (aCity !== bCity) return bCity - aCity;
       if (a.verified !== b.verified) return a.verified ? -1 : 1;
       return Number(b.rating ?? 0) - Number(a.rating ?? 0);
     }).slice(0, 3);
