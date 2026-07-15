@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { countAreas } from "@/lib/catalog.functions";
+import { listChefs } from "@/lib/chefs.functions";
 import { useEffect } from "react";
 import {
   ArrowRight,
@@ -14,7 +15,12 @@ import {
   Wallet,
   Check,
   Leaf,
+  ChefHat,
+  Star,
+  ShieldCheck,
+  MapPin,
 } from "lucide-react";
+
 import heroFood from "@/assets/hero-food.jpg";
 import spread from "@/assets/landing-spread.jpg";
 import userShot from "@/assets/landing-user.jpg";
