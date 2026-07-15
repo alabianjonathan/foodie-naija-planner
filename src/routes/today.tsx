@@ -59,6 +59,18 @@ type Filters = {
 
 const EMPTY_FILTERS: Filters = { goals: [], preferences: [] };
 
+// Realistic price range for a meal, adjusted for whether the user plans to
+// cook or order. Falls back to a sensible Nigerian estimate range when the
+// stored value is unrealistically low (< ₦1,500).
+function formatPriceRange(meal: UiMeal, mode?: "cook" | "order" | "chef"): string {
+  const useOrder = mode === "order" || mode === "chef";
+  let lo = useOrder ? meal.orderMin : meal.cookMin;
+  let hi = useOrder ? meal.orderMax : meal.cookMax;
+  if (!lo || lo < 1500) { lo = 2500; hi = Math.max(hi ?? 0, 5500); }
+  if (!hi || hi <= lo) hi = Math.round(lo * 1.8);
+  return `est. ₦${lo.toLocaleString()}–₦${hi.toLocaleString()}`;
+}
+
 function Chip({ active, onClick, children, size = "sm" }: { active: boolean; onClick: () => void; children: React.ReactNode; size?: "sm" | "md" }) {
   return (
     <button
