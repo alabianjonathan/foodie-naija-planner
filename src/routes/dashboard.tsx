@@ -30,24 +30,51 @@ function mealPeriod(): string {
   return "night";
 }
 
+const AI_PLACEHOLDERS = [
+  "Tell MealBeta what you feel like eating…",
+  "I have rice, eggs and chicken at home.",
+  "I want a healthy meal under ₦3,000.",
+  "Suggest something filling for dinner.",
+  "I want Nigerian food that is not spicy.",
+  "What can I eat after the gym?",
+];
+
 function Home() {
   const { user, loading } = useRequireAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState<string>("");
   const [profile, setProfile] = useState<{ restriction?: string | null; goal?: string | null } | null>(null);
   const [nonce, setNonce] = useState(0);
-  const [query, setQuery] = useState("");
+  const [aiQuery, setAiQuery] = useState("");
+  const [phIndex, setPhIndex] = useState(0);
   const slot = useMemo(() => currentSlot(), [nonce]);
   const { meals, isLoading: mealsLoading } = useCatalogMeals();
 
-  const searchResults = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return meals.filter(m =>
-      m.name.toLowerCase().includes(q) ||
-      m.category.toLowerCase().includes(q) ||
-      m.ingredients.some(i => i.name.toLowerCase().includes(q))
-    ).slice(0, 12);
-  }, [query, meals]);
+  useEffect(() => {
+    const t = setInterval(() => setPhIndex((i) => (i + 1) % AI_PLACEHOLDERS.length), 3500);
+    return () => clearInterval(t);
+  }, []);
+
+  const goSuggest = () => {
+    void navigate({ to: "/today", search: { q: aiQuery || undefined, auto: aiQuery ? true : undefined } });
+  };
+  const openFilters = () => {
+    void navigate({ to: "/today", search: { q: aiQuery || undefined, openFilters: true } });
+  };
+  const startVoice = () => {
+    type SR = { start: () => void; onresult: (e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void; onerror: () => void; lang: string; interimResults: boolean };
+    const w = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
+    const Rec = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!Rec) { toast.info("Voice input isn't supported on this device."); return; }
+    const r = new Rec();
+    r.lang = "en-NG";
+    r.interimResults = false;
+    r.onresult = (e) => setAiQuery((q) => (q ? q + " " : "") + e.results[0][0].transcript);
+    r.onerror = () => toast.error("Couldn't hear you — try again.");
+    r.start();
+    toast.info("Listening…");
+  };
+
 
 
   const { featured, quick } = useMemo(() => {
