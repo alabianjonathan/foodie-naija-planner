@@ -231,7 +231,7 @@ Respond ONLY with JSON:
 export type MatchedRestaurant = {
   id: string; slug: string; name: string; city: string; area: string | null;
   address: string | null; phone: string | null; whatsapp: string | null;
-  rating: number; verified: boolean; tags: string[];
+  rating: number; verified: boolean; tags: string[]; matchLabel: string;
 };
 
 export const findRestaurantsForMeal = createServerFn({ method: "POST" })
@@ -242,7 +242,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
     let city = data.city;
     let area = data.area;
-    if (!city) {
+    if (!city || !area) {
       const { data: profile } = await context.supabase
         .from("profiles").select("city, area").eq("id", context.userId).maybeSingle();
       city = profile?.city ?? undefined;
@@ -251,53 +251,94 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
 
     const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status";
 
-    // Lookup same-state city list for fallback
+    // Lookup same-state city list for fallback. Some imported restaurants use
+    // satellite cities (Epe, Ikorodu, Badagry) that are not in the cities table,
+    // so also match the state name/token against restaurant addresses.
     let stateCities: string[] = [];
+    let stateName: string | undefined;
+    let stateToken: string | undefined;
     if (city) {
       const { data: cityRow } = await context.supabase
         .from("cities").select("state").eq("name", city).maybeSingle();
       if (cityRow?.state) {
+        stateName = cityRow.state;
+        stateToken = cityRow.state.replace(/\s+State$/i, "").trim();
         const { data: sameState } = await context.supabase
           .from("cities").select("name").eq("state", cityRow.state);
-        stateCities = (sameState ?? []).map((c) => c.name);
+        stateCities = Array.from(new Set([city, ...(sameState ?? []).map((c) => c.name)].filter(Boolean)));
       }
     }
 
-    const runQuery = async (scope: "city" | "state" | "any", mealFilter: boolean) => {
+    const runQuery = async (scope: "city" | "state" | "any", mealFilter: boolean, verifiedOnly: boolean) => {
       let q = context.supabase.from("restaurants").select(cols).eq("status", "active");
       if (scope === "city" && city) q = q.eq("city", city);
       else if (scope === "state" && stateCities.length) q = q.in("city", stateCities);
+      if (verifiedOnly) q = q.eq("verified", true);
       if (mealFilter) q = q.contains("meal_slugs", [data.mealSlug]);
-      const { data: rows } = await q
+      const { data: rows, error } = await q
         .order("verified", { ascending: false })
         .order("rating", { ascending: false })
-        .limit(10);
+        .limit(scope === "any" ? 80 : 20);
+      if (error) throw error;
       return rows ?? [];
     };
 
-    // Try in order: city+meal, city, state+meal, state, any+meal, any
-    let rows = await runQuery("city", true);
-    if (rows.length === 0 && city) rows = await runQuery("city", false);
-    if (rows.length === 0 && stateCities.length) rows = await runQuery("state", true);
-    if (rows.length === 0 && stateCities.length) rows = await runQuery("state", false);
-    if (rows.length === 0) rows = await runQuery("any", true);
-    if (rows.length === 0) rows = await runQuery("any", false);
+    const stateMatches = (r: { city: string | null; address: string | null }) => {
+      if (!stateName && !stateToken) return false;
+      const haystack = `${r.city ?? ""} ${r.address ?? ""}`.toLowerCase();
+      return [stateName, stateToken].filter(Boolean).some((s) => haystack.includes(String(s).toLowerCase()));
+    };
+
+    const withAddressState = async (mealFilter: boolean, verifiedOnly: boolean) => {
+      const rows = await runQuery("any", mealFilter, verifiedOnly);
+      return rows.filter(stateMatches);
+    };
+
+    const scopes: Array<() => Promise<any[]>> = [
+      () => runQuery("city", true, true),
+      () => runQuery("city", false, true),
+      () => runQuery("state", true, true),
+      () => runQuery("state", false, true),
+      () => withAddressState(true, true),
+      () => withAddressState(false, true),
+      () => runQuery("city", true, false),
+      () => runQuery("city", false, false),
+      () => runQuery("state", true, false),
+      () => runQuery("state", false, false),
+      () => withAddressState(true, false),
+      () => withAddressState(false, false),
+      () => runQuery("any", true, true),
+      () => runQuery("any", false, true),
+      () => runQuery("any", true, false),
+      () => runQuery("any", false, false),
+    ];
+
+    let rows: any[] = [];
+    for (const load of scopes) {
+      rows = await load();
+      if (rows.length > 0) break;
+    }
 
     const scored = rows.sort((a, b) => {
-      const aArea = area && a.area === area ? 1 : 0;
-      const bArea = area && b.area === area ? 1 : 0;
-      if (aArea !== bArea) return bArea - aArea;
-      const aCity = city && a.city === city ? 1 : 0;
-      const bCity = city && b.city === city ? 1 : 0;
-      if (aCity !== bCity) return bCity - aCity;
-      if (a.verified !== b.verified) return a.verified ? -1 : 1;
-      return Number(b.rating ?? 0) - Number(a.rating ?? 0);
+      const areaScore = (r: any) => area && r.area === area ? 1 : 0;
+      const cityScore = (r: any) => city && r.city === city ? 1 : 0;
+      const stateScore = (r: any) => stateMatches(r) ? 1 : 0;
+      const aScore = areaScore(a) * 40 + cityScore(a) * 20 + stateScore(a) * 10 + (a.verified ? 5 : 0) + Number(a.rating ?? 0);
+      const bScore = areaScore(b) * 40 + cityScore(b) * 20 + stateScore(b) * 10 + (b.verified ? 5 : 0) + Number(b.rating ?? 0);
+      return bScore - aScore;
     }).slice(0, 3);
+
+    const labelFor = (r: any) => {
+      if (area && r.area === area) return `In ${area}`;
+      if (city && r.city === city) return `In ${city}`;
+      if (stateMatches(r)) return stateToken ? `Same state (${stateToken})` : "Same state";
+      return "Available restaurant";
+    };
 
     return scored.map((r) => ({
       id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area,
       address: r.address ?? null, phone: r.phone ?? null, whatsapp: r.whatsapp ?? null,
-      rating: Number(r.rating ?? 0), verified: !!r.verified, tags: r.tags ?? [],
+      rating: Number(r.rating ?? 0), verified: !!r.verified, tags: r.tags ?? [], matchLabel: labelFor(r),
     }));
   });
 
@@ -319,7 +360,7 @@ export const findChefsForMeal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<MatchedChef[]> => {
     let city = data.city;
     let area = data.area;
-    if (!city) {
+    if (!city || !area) {
       const { data: profile } = await context.supabase
         .from("profiles").select("city, area").eq("id", context.userId).maybeSingle();
       city = profile?.city ?? undefined;
