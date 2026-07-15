@@ -174,6 +174,12 @@ function TodayPage() {
 
   const submit = () => mutation.mutate(undefined);
 
+  // Auto-run once when arriving with ?q=…&auto=1 from the dashboard.
+  useEffect(() => {
+    if (search.auto && search.q && !authLoading && user) submit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user]);
+
   const picks = useMemo(() => (result?.picks ?? [])
     .map((p) => ({ pick: p, meal: getMeal(p.mealId) }))
     .filter((x): x is { pick: RecommendPick; meal: UiMeal } => !!x.meal), [result, getMeal]);
