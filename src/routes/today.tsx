@@ -59,6 +59,18 @@ type Filters = {
 
 const EMPTY_FILTERS: Filters = { goals: [], preferences: [] };
 
+// Realistic price range for a meal, adjusted for whether the user plans to
+// cook or order. Falls back to a sensible Nigerian estimate range when the
+// stored value is unrealistically low (< ₦1,500).
+function formatPriceRange(meal: UiMeal, mode?: "cook" | "order" | "chef"): string {
+  const useOrder = mode === "order" || mode === "chef";
+  let lo = useOrder ? meal.orderMin : meal.cookMin;
+  let hi = useOrder ? meal.orderMax : meal.cookMax;
+  if (!lo || lo < 1500) { lo = 2500; hi = Math.max(hi ?? 0, 5500); }
+  if (!hi || hi <= lo) hi = Math.round(lo * 1.8);
+  return `est. ₦${lo.toLocaleString()}–₦${hi.toLocaleString()}`;
+}
+
 function Chip({ active, onClick, children, size = "sm" }: { active: boolean; onClick: () => void; children: React.ReactNode; size?: "sm" | "md" }) {
   return (
     <button
@@ -503,7 +515,7 @@ function ResultCard({
             <h3 className="font-display text-base leading-tight truncate">{meal.name}</h3>
           </button>
           <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
-            <span className="inline-flex items-center gap-1"><Wallet className="h-3 w-3" />est. ₦{meal.cookMin.toLocaleString()}</span>
+            <span className="inline-flex items-center gap-1"><Wallet className="h-3 w-3" />{formatPriceRange(meal, mode)}</span>
             <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3" />{meal.caloriesMin}–{meal.caloriesMax} kcal</span>
             <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{meal.cookingTimeMin}m</span>
             {pick.mealTime && <span className="inline-flex items-center gap-1"><Utensils className="h-3 w-3" />{pick.mealTime}</span>}
@@ -649,29 +661,50 @@ function OrderDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; ci
     <Dialog open={!!meal} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md rounded-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader className="text-left">
-          <DialogTitle className="font-display text-lg">Restaurants for {meal?.name}</DialogTitle>
-          <DialogDescription className="text-xs">Based on active listings{city ? ` in ${city}` : ""}.</DialogDescription>
+          <DialogTitle className="font-display text-lg">Order {meal?.name}</DialogTitle>
+          <DialogDescription className="text-xs">Top 3 verified restaurants near you{city ? ` in ${city}` : ""}. Tap a card to view the full profile.</DialogDescription>
         </DialogHeader>
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
         {q.data && q.data.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-6">No matching restaurants yet{city ? ` in ${city}` : ""}. Try clearing your city filter.</p>
+          <p className="text-sm text-muted-foreground text-center py-6">No restaurants near you yet{city ? ` in ${city}` : ""}. Try updating your location.</p>
         )}
         <div className="space-y-2">
           {q.data?.map((r) => (
-            <div key={r.id} className="rounded-2xl border border-border p-3">
+            <Link
+              key={r.id}
+              to="/restaurants/$slug"
+              params={{ slug: r.slug }}
+              onClick={onClose}
+              className="block rounded-2xl border border-border p-3 hover:border-brand/40 transition"
+            >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm truncate">{r.name} {r.verified && <span className="text-[10px] text-leaf ml-1">✓ verified</span>}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">{r.area ? `${r.area}, ` : ""}{r.city}</p>
-                  {r.address && <p className="text-[11px] text-muted-foreground truncate">{r.address}</p>}
+                  <p className="font-semibold text-sm truncate flex items-center gap-1.5">
+                    {r.name}
+                    {r.verified && (
+                      <span className="inline-flex items-center gap-0.5 text-[10px] bg-leaf/15 text-leaf rounded-full px-1.5 py-0.5 font-semibold">
+                        ✓ Verified
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                    <Store className="inline h-3 w-3 mr-0.5" />
+                    {r.address || [r.area, r.city].filter(Boolean).join(", ")}
+                  </p>
+                  {r.phone && (
+                    <p className="text-[11px] text-brand mt-0.5">{r.phone}</p>
+                  )}
                 </div>
-                <span className="text-xs bg-warm/20 rounded-full px-2 py-0.5 whitespace-nowrap">★ {r.rating.toFixed(1)}</span>
+                {r.rating > 0 && (
+                  <span className="text-xs bg-warm/20 rounded-full px-2 py-0.5 whitespace-nowrap">★ {r.rating.toFixed(1)}</span>
+                )}
               </div>
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex gap-2" onClick={(e) => e.stopPropagation()}>
                 {r.phone && <a href={`tel:${r.phone}`} className="text-xs px-3 py-1 rounded-full bg-brand text-brand-foreground">Call</a>}
                 {r.whatsapp && <a href={`https://wa.me/${r.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="text-xs px-3 py-1 rounded-full bg-leaf text-leaf-foreground">WhatsApp</a>}
+                <span className="ml-auto text-[11px] text-muted-foreground inline-flex items-center gap-1">View profile <ArrowRight className="h-3 w-3" /></span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </DialogContent>
@@ -690,16 +723,16 @@ function ChefDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; cit
     <Dialog open={!!meal} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md rounded-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader className="text-left">
-          <DialogTitle className="font-display text-lg">Chefs for {meal?.name}</DialogTitle>
-          <DialogDescription className="text-xs">Verified & featured chefs first{city ? `, in ${city}` : ""}.</DialogDescription>
+          <DialogTitle className="font-display text-lg">Book a chef for {meal?.name}</DialogTitle>
+          <DialogDescription className="text-xs">Top 3 verified chefs near you{city ? ` in ${city}` : ""}. Tap a card to view the full profile.</DialogDescription>
         </DialogHeader>
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
         {q.data && q.data.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-6">No chefs match yet{city ? ` in ${city}` : ""}. Try broadening your city.</p>
+          <p className="text-sm text-muted-foreground text-center py-6">No chefs near you yet{city ? ` in ${city}` : ""}. Try updating your location.</p>
         )}
         <div className="space-y-2">
           {q.data?.map((c) => (
-            <Link key={c.id} to="/chefs/$slug" params={{ slug: c.slug }} onClick={onClose} className="block rounded-2xl border border-border p-3 hover:border-brand/40">
+            <Link key={c.id} to="/chefs/$slug" params={{ slug: c.slug }} onClick={onClose} className="block rounded-2xl border border-border p-3 hover:border-brand/40 transition">
               <div className="flex items-start gap-3">
                 {c.photoUrl ? (
                   <img src={c.photoUrl} alt="" className="h-12 w-12 rounded-xl object-cover" />
@@ -707,16 +740,30 @@ function ChefDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; cit
                   <div className="h-12 w-12 rounded-xl bg-warm/20 flex items-center justify-center text-lg">👨‍🍳</div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm truncate">
+                  <p className="font-semibold text-sm truncate flex items-center gap-1.5">
                     {c.businessName}
-                    {c.verified && <span className="text-[10px] text-leaf ml-1">✓</span>}
+                    {c.verified && (
+                      <span className="inline-flex items-center gap-0.5 text-[10px] bg-leaf/15 text-leaf rounded-full px-1.5 py-0.5 font-semibold">
+                        ✓ Verified
+                      </span>
+                    )}
                   </p>
-                  <p className="text-[11px] text-muted-foreground truncate">{c.area ? `${c.area}, ` : ""}{c.city}</p>
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                    <ChefHat className="inline h-3 w-3 mr-0.5" />
+                    {[c.area, c.city].filter(Boolean).join(", ")}
+                    {c.areasCovered.length ? ` · covers ${c.areasCovered.slice(0, 2).join(", ")}` : ""}
+                  </p>
+                  {c.phone && <p className="text-[11px] text-brand mt-0.5">{c.phone}</p>}
                   {(c.priceMin || c.priceMax) && (
-                    <p className="text-[11px] text-brand mt-0.5">from ₦{(c.priceMin ?? 0).toLocaleString()}{c.priceMax ? `–₦${c.priceMax.toLocaleString()}` : ""}</p>
+                    <p className="text-[11px] text-charcoal mt-0.5">from ₦{(c.priceMin ?? 0).toLocaleString()}{c.priceMax ? `–₦${c.priceMax.toLocaleString()}` : ""}</p>
                   )}
                 </div>
                 {c.rating != null && <span className="text-xs bg-warm/20 rounded-full px-2 py-0.5">★ {c.rating.toFixed(1)}</span>}
+              </div>
+              <div className="mt-2 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                {c.phone && <a href={`tel:${c.phone}`} className="text-xs px-3 py-1 rounded-full bg-brand text-brand-foreground">Call</a>}
+                {c.whatsapp && <a href={`https://wa.me/${c.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="text-xs px-3 py-1 rounded-full bg-leaf text-leaf-foreground">WhatsApp</a>}
+                <span className="ml-auto text-[11px] text-muted-foreground inline-flex items-center gap-1">View profile <ArrowRight className="h-3 w-3" /></span>
               </div>
             </Link>
           ))}
@@ -725,3 +772,4 @@ function ChefDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; cit
     </Dialog>
   );
 }
+

@@ -240,17 +240,49 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     mealSlug: z.string(), city: z.string().optional(), area: z.string().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
-    let q = context.supabase
-      .from("restaurants")
-      .select("id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status")
-      .eq("status", "active")
+    // Fall back to profile city/area when not explicitly passed.
+    let city = data.city;
+    let area = data.area;
+    if (!city) {
+      const { data: profile } = await context.supabase
+        .from("profiles").select("city, area").eq("id", context.userId).maybeSingle();
+      city = profile?.city ?? undefined;
+      area = area ?? profile?.area ?? undefined;
+    }
+
+    const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status";
+    const base = () => {
+      let q = context.supabase.from("restaurants").select(cols).eq("status", "active");
+      if (city) q = q.eq("city", city);
+      return q;
+    };
+
+    // 1) Restaurants that serve this meal, in the user's city.
+    let { data: rows } = await base()
       .contains("meal_slugs", [data.mealSlug])
       .order("verified", { ascending: false })
       .order("rating", { ascending: false })
-      .limit(8);
-    if (data.city) q = q.eq("city", data.city);
-    const { data: rows } = await q;
-    return (rows ?? []).map((r) => ({
+      .limit(6);
+
+    // 2) Fallback — any verified restaurant in the user's city/area.
+    if (!rows || rows.length === 0) {
+      const { data: fallback } = await base()
+        .order("verified", { ascending: false })
+        .order("rating", { ascending: false })
+        .limit(6);
+      rows = fallback ?? [];
+    }
+
+    // Prefer matching area, then keep top 3.
+    const scored = (rows ?? []).sort((a, b) => {
+      const aArea = area && a.area === area ? 1 : 0;
+      const bArea = area && b.area === area ? 1 : 0;
+      if (aArea !== bArea) return bArea - aArea;
+      if (a.verified !== b.verified) return a.verified ? -1 : 1;
+      return Number(b.rating ?? 0) - Number(a.rating ?? 0);
+    }).slice(0, 3);
+
+    return scored.map((r) => ({
       id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area,
       address: r.address ?? null, phone: r.phone ?? null, whatsapp: r.whatsapp ?? null,
       rating: Number(r.rating ?? 0), verified: !!r.verified, tags: r.tags ?? [],
@@ -273,6 +305,15 @@ export const findChefsForMeal = createServerFn({ method: "POST" })
     city: z.string().optional(), area: z.string().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedChef[]> => {
+    let city = data.city;
+    let area = data.area;
+    if (!city) {
+      const { data: profile } = await context.supabase
+        .from("profiles").select("city, area").eq("id", context.userId).maybeSingle();
+      city = profile?.city ?? undefined;
+      area = area ?? profile?.area ?? undefined;
+    }
+
     let q = context.supabase
       .from("chefs")
       .select("id, slug, business_name, city, area, areas_covered, categories, rating, verified, featured, photo_url, phone, whatsapp, price_min, price_max, status")
@@ -280,10 +321,19 @@ export const findChefsForMeal = createServerFn({ method: "POST" })
       .order("featured", { ascending: false })
       .order("verified", { ascending: false })
       .order("rating", { ascending: false, nullsFirst: false })
-      .limit(8);
-    if (data.city) q = q.eq("city", data.city);
+      .limit(10);
+    if (city) q = q.eq("city", city);
     const { data: rows } = await q;
-    return (rows ?? []).map((c) => ({
+
+    const scored = (rows ?? []).sort((a, b) => {
+      const aArea = area && (a.area === area || (a.areas_covered ?? []).includes(area)) ? 1 : 0;
+      const bArea = area && (b.area === area || (b.areas_covered ?? []).includes(area)) ? 1 : 0;
+      if (aArea !== bArea) return bArea - aArea;
+      if (a.verified !== b.verified) return a.verified ? -1 : 1;
+      return Number(b.rating ?? 0) - Number(a.rating ?? 0);
+    }).slice(0, 3);
+
+    return scored.map((c) => ({
       id: c.id, slug: c.slug, businessName: c.business_name, city: c.city, area: c.area,
       areasCovered: c.areas_covered ?? [], categories: c.categories ?? [],
       rating: c.rating == null ? null : Number(c.rating), verified: !!c.verified,
@@ -292,3 +342,4 @@ export const findChefsForMeal = createServerFn({ method: "POST" })
       priceMax: c.price_max == null ? null : Number(c.price_max),
     }));
   });
+
