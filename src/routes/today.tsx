@@ -503,7 +503,7 @@ function ResultCard({
             <h3 className="font-display text-base leading-tight truncate">{meal.name}</h3>
           </button>
           <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
-            <span className="inline-flex items-center gap-1"><Wallet className="h-3 w-3" />est. ₦{meal.cookMin.toLocaleString()}</span>
+            <span className="inline-flex items-center gap-1"><Wallet className="h-3 w-3" />{formatPriceRange(meal, mode)}</span>
             <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3" />{meal.caloriesMin}–{meal.caloriesMax} kcal</span>
             <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{meal.cookingTimeMin}m</span>
             {pick.mealTime && <span className="inline-flex items-center gap-1"><Utensils className="h-3 w-3" />{pick.mealTime}</span>}
