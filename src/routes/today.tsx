@@ -20,7 +20,14 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
-export const Route = createFileRoute("/today")({ component: TodayPage });
+export const Route = createFileRoute("/today")({
+  component: TodayPage,
+  validateSearch: (s: Record<string, unknown>) => ({
+    q: typeof s.q === "string" ? s.q : undefined,
+    openFilters: s.openFilters === true || s.openFilters === "1" ? true : undefined,
+    auto: s.auto === true || s.auto === "1" ? true : undefined,
+  }),
+});
 
 const PLACEHOLDERS = [
   "Tell MealBeta what you feel like eating…",
