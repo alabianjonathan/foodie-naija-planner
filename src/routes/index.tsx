@@ -156,10 +156,17 @@ function Hero() {
                 <ArrowRight className="h-4 w-4" />
               </span>
             </Link>
+            <Link
+              to="/chefs"
+              className="inline-flex items-center gap-2 rounded-full bg-charcoal px-5 py-3.5 text-sm font-semibold text-background hover:opacity-90"
+            >
+              <ChefHat className="h-4 w-4" /> Book a Private Chef
+            </Link>
             <a href="#how" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3.5 text-sm font-semibold text-foreground hover:bg-secondary">
               See how it works
             </a>
           </div>
+
 
           <AppBadges />
 
