@@ -36,6 +36,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as Jb12bzRouteRouteImport } from './routes/jb12bz/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Jb12bzIndexRouteImport } from './routes/jb12bz/index'
+import { Route as RestaurantsSlugRouteImport } from './routes/restaurants.$slug'
 import { Route as MealIdRouteImport } from './routes/meal.$id'
 import { Route as Jb12bzUsersRouteImport } from './routes/jb12bz/users'
 import { Route as Jb12bzSettingsRouteImport } from './routes/jb12bz/settings'
@@ -182,6 +183,11 @@ const Jb12bzIndexRoute = Jb12bzIndexRouteImport.update({
   path: '/',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
+const RestaurantsSlugRoute = RestaurantsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => RestaurantsRoute,
+} as any)
 const MealIdRoute = MealIdRouteImport.update({
   id: '/meal/$id',
   path: '/meal/$id',
@@ -254,7 +260,7 @@ export interface FileRoutesByFullPath {
   '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/restaurants': typeof RestaurantsRoute
+  '/restaurants': typeof RestaurantsRouteWithChildren
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/jb12bz/settings': typeof Jb12bzSettingsRoute
   '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
+  '/restaurants/$slug': typeof RestaurantsSlugRoute
   '/jb12bz/': typeof Jb12bzIndexRoute
 }
 export interface FileRoutesByTo {
@@ -292,7 +299,7 @@ export interface FileRoutesByTo {
   '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/restaurants': typeof RestaurantsRoute
+  '/restaurants': typeof RestaurantsRouteWithChildren
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
@@ -308,6 +315,7 @@ export interface FileRoutesByTo {
   '/jb12bz/settings': typeof Jb12bzSettingsRoute
   '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
+  '/restaurants/$slug': typeof RestaurantsSlugRoute
   '/jb12bz': typeof Jb12bzIndexRoute
 }
 export interface FileRoutesById {
@@ -332,7 +340,7 @@ export interface FileRoutesById {
   '/private-chefs': typeof PrivateChefsRoute
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/restaurants': typeof RestaurantsRoute
+  '/restaurants': typeof RestaurantsRouteWithChildren
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/shopping': typeof ShoppingRoute
@@ -348,6 +356,7 @@ export interface FileRoutesById {
   '/jb12bz/settings': typeof Jb12bzSettingsRoute
   '/jb12bz/users': typeof Jb12bzUsersRoute
   '/meal/$id': typeof MealIdRoute
+  '/restaurants/$slug': typeof RestaurantsSlugRoute
   '/jb12bz/': typeof Jb12bzIndexRoute
 }
 export interface FileRouteTypes {
@@ -389,6 +398,7 @@ export interface FileRouteTypes {
     | '/jb12bz/settings'
     | '/jb12bz/users'
     | '/meal/$id'
+    | '/restaurants/$slug'
     | '/jb12bz/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/jb12bz/settings'
     | '/jb12bz/users'
     | '/meal/$id'
+    | '/restaurants/$slug'
     | '/jb12bz'
   id:
     | '__root__'
@@ -466,6 +477,7 @@ export interface FileRouteTypes {
     | '/jb12bz/settings'
     | '/jb12bz/users'
     | '/meal/$id'
+    | '/restaurants/$slug'
     | '/jb12bz/'
   fileRoutesById: FileRoutesById
 }
@@ -490,7 +502,7 @@ export interface RootRouteChildren {
   PrivateChefsRoute: typeof PrivateChefsRoute
   ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  RestaurantsRoute: typeof RestaurantsRoute
+  RestaurantsRoute: typeof RestaurantsRouteWithChildren
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
   ShoppingRoute: typeof ShoppingRoute
@@ -690,6 +702,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzIndexRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
+    '/restaurants/$slug': {
+      id: '/restaurants/$slug'
+      path: '/$slug'
+      fullPath: '/restaurants/$slug'
+      preLoaderRoute: typeof RestaurantsSlugRouteImport
+      parentRoute: typeof RestaurantsRoute
+    }
     '/meal/$id': {
       id: '/meal/$id'
       path: '/meal/$id'
@@ -801,6 +820,18 @@ const ChefsRouteChildren: ChefsRouteChildren = {
 
 const ChefsRouteWithChildren = ChefsRoute._addFileChildren(ChefsRouteChildren)
 
+interface RestaurantsRouteChildren {
+  RestaurantsSlugRoute: typeof RestaurantsSlugRoute
+}
+
+const RestaurantsRouteChildren: RestaurantsRouteChildren = {
+  RestaurantsSlugRoute: RestaurantsSlugRoute,
+}
+
+const RestaurantsRouteWithChildren = RestaurantsRoute._addFileChildren(
+  RestaurantsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Jb12bzRouteRoute: Jb12bzRouteRouteWithChildren,
@@ -822,7 +853,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivateChefsRoute: PrivateChefsRoute,
   ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  RestaurantsRoute: RestaurantsRoute,
+  RestaurantsRoute: RestaurantsRouteWithChildren,
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
   ShoppingRoute: ShoppingRoute,
