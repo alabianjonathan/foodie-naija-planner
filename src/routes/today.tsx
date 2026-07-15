@@ -491,7 +491,7 @@ function ResultCard({
   };
 
   // Emphasise action for the selected mode.
-  const primary = mode === "order" ? "order" : mode === "chef" ? "chef" : "cook";
+  const primary = mode === "order" ? "order" : mode === "cook" ? "cook" : "chef";
 
   const btn = (kind: "cook" | "order" | "chef") => {
     const isPrimary = kind === primary;
@@ -501,7 +501,7 @@ function ResultCard({
       : kind === "chef" ? "bg-leaf/10 text-leaf"
       : "bg-warm/20 text-charcoal";
     if (kind === "order") return <button onClick={onOrder} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><Store className="h-3.5 w-3.5" /> Order It</button>;
-    if (kind === "chef") return <button onClick={onChef} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><ChefHat className="h-3.5 w-3.5" /> Find a Chef</button>;
+    if (kind === "chef") return <button onClick={onChef} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><ChefHat className="h-3.5 w-3.5" /> Book a Chef</button>;
     return <Link to="/meal/$id" params={{ id: meal.id }} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><Utensils className="h-3.5 w-3.5" /> Cook It</Link>;
   };
 
@@ -536,9 +536,9 @@ function ResultCard({
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
-        {btn(primary)}
-        {btn(primary === "cook" ? "order" : "cook")}
-        {btn(primary === "chef" ? "cook" : "chef")}
+        {btn("chef")}
+        {btn("order")}
+        {btn("cook")}
         <button onClick={() => toggle.mutate({ mealId: meal.uuid, saved: !isSaved })} className="inline-flex items-center justify-center gap-1 rounded-full bg-secondary text-charcoal py-2 text-xs font-medium">
           <Bookmark className={`h-3.5 w-3.5 ${isSaved ? "fill-current" : ""}`} /> {isSaved ? "Saved" : "Save"}
         </button>
