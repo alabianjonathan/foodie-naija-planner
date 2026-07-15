@@ -110,9 +110,10 @@ function TodayPage() {
   const { user, loading: authLoading } = useRequireAuth();
   const { getMeal } = useCatalogMeals();
   const generate = useServerFn(recommendMeals);
-  const [query, setQuery] = useState("");
+  const search = Route.useSearch();
+  const [query, setQuery] = useState(search.q ?? "");
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(!!search.openFilters);
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [avoidIds, setAvoidIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
