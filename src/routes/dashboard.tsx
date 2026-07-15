@@ -294,7 +294,7 @@ function Home() {
           ))}
         </div>
       </section>
-      </>)}
+      </>
 
       <div className="h-8" />
     </PhoneShell>
