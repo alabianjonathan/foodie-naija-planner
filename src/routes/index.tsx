@@ -64,8 +64,8 @@ function Welcome() {
         paddingRight: "env(safe-area-inset-right)",
       }}
     >
-      {/* Hero image */}
-      <div className="relative h-[45dvh] min-h-0 w-full shrink-0 overflow-hidden">
+      {/* Hero image — capped so it never steals space from content on short screens */}
+      <div className="relative h-[35dvh] max-h-[300px] min-h-0 w-full shrink-0 overflow-hidden">
         <img
           src={heroFood}
           alt="A warm plate of Nigerian jollof rice with chicken and plantain"
@@ -86,26 +86,30 @@ function Welcome() {
         </div>
 
         {/* Floating badge */}
-        <div className="absolute bottom-5 left-5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-charcoal shadow-soft backdrop-blur">
+        <div className="absolute bottom-4 left-5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-charcoal shadow-soft backdrop-blur">
           <Sparkles className="h-3.5 w-3.5 text-warm" fill="currentColor" />
           AI meal planner for Nigeria
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex min-h-0 flex-1 flex-col px-6 pb-5 pt-4">
-        <h1 className="font-display text-[clamp(1.75rem,7vw,2.5rem)] leading-[1.05] tracking-tight text-charcoal">
-          Plan better.<br />
-          Eat better.<br />
-          <span className="text-warm">Spend</span> better.
-        </h1>
+      {/* Content — distributed so nothing overlaps */}
+      <div className="flex min-h-0 flex-1 flex-col justify-between px-6 pb-5 pt-5">
+        <div className="shrink-0 space-y-2">
+          <h1 className="font-display text-[clamp(1.625rem,6.5vw,2.25rem)] leading-[1.08] tracking-tight text-charcoal">
+            Plan better.
+            <br />
+            Eat better.
+            <br />
+            <span className="text-warm">Spend</span> better.
+          </h1>
 
-        <p className="mt-2 line-clamp-2 text-[14px] leading-snug text-muted-foreground">
-          Weekly Nigerian meal plans, honest calorie & cost estimates, and chefs or restaurants near you.
-        </p>
+          <p className="line-clamp-2 text-[14px] leading-snug text-muted-foreground">
+            Weekly Nigerian meal plans, honest calorie & cost estimates, and chefs or restaurants near you.
+          </p>
+        </div>
 
         {/* Quick feature chips */}
-        <div className="mt-4 grid grid-cols-2 gap-2.5">
+        <div className="shrink-0 grid grid-cols-2 gap-2.5 pt-3">
           <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card p-2.5">
             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-brand/15 text-brand">
               <UtensilsCrossed className="h-4 w-4" />
@@ -127,7 +131,7 @@ function Welcome() {
         </div>
 
         {/* Actions pinned to bottom */}
-        <div className="mt-auto space-y-2.5 pt-4">
+        <div className="shrink-0 space-y-2.5 pt-4">
           <Link
             to="/auth"
             className="flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-semibold text-brand-foreground shadow-lift active:scale-[0.99]"
