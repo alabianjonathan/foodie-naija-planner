@@ -501,7 +501,7 @@ function ResultCard({
       : kind === "chef" ? "bg-leaf/10 text-leaf"
       : "bg-warm/20 text-charcoal";
     if (kind === "order") return <button onClick={onOrder} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><Store className="h-3.5 w-3.5" /> Order It</button>;
-    if (kind === "chef") return <button onClick={onChef} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><ChefHat className="h-3.5 w-3.5" /> Find a Chef</button>;
+    if (kind === "chef") return <button onClick={onChef} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><ChefHat className="h-3.5 w-3.5" /> Book a Chef</button>;
     return <Link to="/meal/$id" params={{ id: meal.id }} className={`inline-flex items-center justify-center gap-1 rounded-full py-2 text-xs font-medium ${cls}`}><Utensils className="h-3.5 w-3.5" /> Cook It</Link>;
   };
 
