@@ -245,7 +245,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     if (!city || !area) {
       const { data: profile } = await context.supabase
         .from("profiles").select("city, area").eq("id", context.userId).maybeSingle();
-      city = profile?.city ?? undefined;
+      city = city ?? profile?.city ?? undefined;
       area = area ?? profile?.area ?? undefined;
     }
 
@@ -363,7 +363,7 @@ export const findChefsForMeal = createServerFn({ method: "POST" })
     if (!city || !area) {
       const { data: profile } = await context.supabase
         .from("profiles").select("city, area").eq("id", context.userId).maybeSingle();
-      city = profile?.city ?? undefined;
+      city = city ?? profile?.city ?? undefined;
       area = area ?? profile?.area ?? undefined;
     }
 
