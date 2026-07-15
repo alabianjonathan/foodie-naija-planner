@@ -20,7 +20,14 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
-export const Route = createFileRoute("/today")({ component: TodayPage });
+export const Route = createFileRoute("/today")({
+  component: TodayPage,
+  validateSearch: (s: Record<string, unknown>) => ({
+    q: typeof s.q === "string" ? s.q : undefined,
+    openFilters: s.openFilters === true || s.openFilters === "1" ? true : undefined,
+    auto: s.auto === true || s.auto === "1" ? true : undefined,
+  }),
+});
 
 const PLACEHOLDERS = [
   "Tell MealBeta what you feel like eating…",
@@ -103,9 +110,10 @@ function TodayPage() {
   const { user, loading: authLoading } = useRequireAuth();
   const { getMeal } = useCatalogMeals();
   const generate = useServerFn(recommendMeals);
-  const [query, setQuery] = useState("");
+  const search = Route.useSearch();
+  const [query, setQuery] = useState(search.q ?? "");
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(!!search.openFilters);
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [avoidIds, setAvoidIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
@@ -166,6 +174,12 @@ function TodayPage() {
 
   const submit = () => mutation.mutate(undefined);
 
+  // Auto-run once when arriving with ?q=…&auto=1 from the dashboard.
+  useEffect(() => {
+    if (search.auto && search.q && !authLoading && user) submit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user]);
+
   const picks = useMemo(() => (result?.picks ?? [])
     .map((p) => ({ pick: p, meal: getMeal(p.mealId) }))
     .filter((x): x is { pick: RecommendPick; meal: UiMeal } => !!x.meal), [result, getMeal]);
@@ -189,7 +203,7 @@ function TodayPage() {
     const r = new Rec();
     r.lang = "en-NG";
     r.interimResults = false;
-    r.onresult = (e) => { setQuery((q) => (q ? q + " " : "") + e.results[0][0].transcript); };
+    r.onresult = (e) => { setQuery((q: string) => (q ? q + " " : "") + e.results[0][0].transcript); };
     r.onerror = () => toast.error("Couldn't hear you — try again.");
     r.start();
     toast.info("Listening…");
