@@ -76,7 +76,9 @@ function Welcome() {
 
         {/* Top bar with logo */}
         <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-4">
-          <img src={logoAsset.url} alt="MealBeta" className="h-8 w-auto drop-shadow" />
+          <div className="rounded-full bg-white/95 p-2 shadow-sm backdrop-blur">
+            <img src={logoAsset.url} alt="MealBeta" className="h-6 w-auto" />
+          </div>
           <Link
             to="/auth"
             className="rounded-full bg-white/90 px-4 py-1.5 text-xs font-semibold text-charcoal shadow-sm backdrop-blur active:scale-95"
