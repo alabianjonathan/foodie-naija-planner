@@ -197,7 +197,7 @@ function TodayPage() {
     const r = new Rec();
     r.lang = "en-NG";
     r.interimResults = false;
-    r.onresult = (e) => { setQuery((q) => (q ? q + " " : "") + e.results[0][0].transcript); };
+    r.onresult = (e) => { setQuery((q: string) => (q ? q + " " : "") + e.results[0][0].transcript); };
     r.onerror = () => toast.error("Couldn't hear you — try again.");
     r.start();
     toast.info("Listening…");
