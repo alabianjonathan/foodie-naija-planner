@@ -240,7 +240,6 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     mealSlug: z.string(), city: z.string().optional(), area: z.string().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
-    // Fall back to profile city/area when not explicitly passed.
     let city = data.city;
     let area = data.area;
     if (!city) {
@@ -251,33 +250,46 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     }
 
     const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status";
-    const base = () => {
-      let q = context.supabase.from("restaurants").select(cols).eq("status", "active");
-      if (city) q = q.eq("city", city);
-      return q;
-    };
 
-    // 1) Restaurants that serve this meal, in the user's city.
-    let { data: rows } = await base()
-      .contains("meal_slugs", [data.mealSlug])
-      .order("verified", { ascending: false })
-      .order("rating", { ascending: false })
-      .limit(6);
-
-    // 2) Fallback — any verified restaurant in the user's city/area.
-    if (!rows || rows.length === 0) {
-      const { data: fallback } = await base()
-        .order("verified", { ascending: false })
-        .order("rating", { ascending: false })
-        .limit(6);
-      rows = fallback ?? [];
+    // Lookup same-state city list for fallback
+    let stateCities: string[] = [];
+    if (city) {
+      const { data: cityRow } = await context.supabase
+        .from("cities").select("state").eq("name", city).maybeSingle();
+      if (cityRow?.state) {
+        const { data: sameState } = await context.supabase
+          .from("cities").select("name").eq("state", cityRow.state);
+        stateCities = (sameState ?? []).map((c) => c.name);
+      }
     }
 
-    // Prefer matching area, then keep top 3.
-    const scored = (rows ?? []).sort((a, b) => {
+    const runQuery = async (scope: "city" | "state" | "any", mealFilter: boolean) => {
+      let q = context.supabase.from("restaurants").select(cols).eq("status", "active");
+      if (scope === "city" && city) q = q.eq("city", city);
+      else if (scope === "state" && stateCities.length) q = q.in("city", stateCities);
+      if (mealFilter) q = q.contains("meal_slugs", [data.mealSlug]);
+      const { data: rows } = await q
+        .order("verified", { ascending: false })
+        .order("rating", { ascending: false })
+        .limit(10);
+      return rows ?? [];
+    };
+
+    // Try in order: city+meal, city, state+meal, state, any+meal, any
+    let rows = await runQuery("city", true);
+    if (rows.length === 0 && city) rows = await runQuery("city", false);
+    if (rows.length === 0 && stateCities.length) rows = await runQuery("state", true);
+    if (rows.length === 0 && stateCities.length) rows = await runQuery("state", false);
+    if (rows.length === 0) rows = await runQuery("any", true);
+    if (rows.length === 0) rows = await runQuery("any", false);
+
+    const scored = rows.sort((a, b) => {
       const aArea = area && a.area === area ? 1 : 0;
       const bArea = area && b.area === area ? 1 : 0;
       if (aArea !== bArea) return bArea - aArea;
+      const aCity = city && a.city === city ? 1 : 0;
+      const bCity = city && b.city === city ? 1 : 0;
+      if (aCity !== bCity) return bCity - aCity;
       if (a.verified !== b.verified) return a.verified ? -1 : 1;
       return Number(b.rating ?? 0) - Number(a.rating ?? 0);
     }).slice(0, 3);
