@@ -358,8 +358,8 @@ function TodayPage() {
       />
 
       <MealDetailDialog open={openMeal} onClose={() => setOpenMeal(null)} ingredientsSplit={ingredientsSplit} onOrder={() => { if (openMeal) { setOrderFor(openMeal.meal); setOpenMeal(null); } }} onChef={() => { if (openMeal) { setChefFor(openMeal.meal); setOpenMeal(null); } }} />
-      <OrderDialog meal={orderFor} city={filters.city} onClose={() => setOrderFor(null)} enabled={!!user} />
-      <ChefDialog meal={chefFor} city={filters.city} onClose={() => setChefFor(null)} enabled={!!user} />
+      <OrderDialog meal={orderFor} city={filters.city} area={filters.area} onClose={() => setOrderFor(null)} enabled={!!user} />
+      <ChefDialog meal={chefFor} city={filters.city} area={filters.area} onClose={() => setChefFor(null)} enabled={!!user} />
     </PhoneShell>
   );
 }
@@ -650,23 +650,27 @@ function MealDetailDialog({
   );
 }
 
-function OrderDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; city?: string; onClose: () => void; enabled: boolean }) {
+function OrderDialog({ meal, city, area, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; onClose: () => void; enabled: boolean }) {
   const fetchFn = useServerFn(findRestaurantsForMeal);
   const q = useQuery({
-    queryKey: ["today-restaurants", meal?.slug, city],
+    queryKey: ["today-restaurants", meal?.slug, city, area],
     enabled: !!meal && enabled,
-    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, city } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
+    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, city, area } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
   });
+  const locationText = [area, city].filter(Boolean).join(", ");
   return (
     <Dialog open={!!meal} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md rounded-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader className="text-left">
           <DialogTitle className="font-display text-lg">Order {meal?.name}</DialogTitle>
-          <DialogDescription className="text-xs">Top 3 verified restaurants near you{city ? ` in ${city}` : ""}. Tap a card to view the full profile.</DialogDescription>
+          <DialogDescription className="text-xs">Top restaurant matches near you{locationText ? ` in ${locationText}` : ""}. If your area has no match, MealBeta checks the same state and then available listings. Tap a card to view the full profile.</DialogDescription>
         </DialogHeader>
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
+        {q.isError && (
+          <p className="text-sm text-muted-foreground text-center py-6">Restaurants could not load right now. Please try again.</p>
+        )}
         {q.data && q.data.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-6">No restaurants near you yet{city ? ` in ${city}` : ""}. Try updating your location.</p>
+          <p className="text-sm text-muted-foreground text-center py-6">No restaurant listings are available yet. Try another meal or update your location.</p>
         )}
         <div className="space-y-2">
           {q.data?.map((r) => (
@@ -686,7 +690,13 @@ function OrderDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; ci
                         ✓ Verified
                       </span>
                     )}
+                    {!r.verified && (
+                      <span className="inline-flex items-center gap-0.5 text-[10px] bg-secondary text-charcoal rounded-full px-1.5 py-0.5 font-semibold">
+                        Listed
+                      </span>
+                    )}
                   </p>
+                  <p className="text-[10px] text-leaf font-semibold mt-0.5">{r.matchLabel}</p>
                   <p className="text-[11px] text-muted-foreground truncate mt-0.5">
                     <Store className="inline h-3 w-3 mr-0.5" />
                     {r.address || [r.area, r.city].filter(Boolean).join(", ")}
@@ -712,21 +722,25 @@ function OrderDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; ci
   );
 }
 
-function ChefDialog({ meal, city, onClose, enabled }: { meal: UiMeal | null; city?: string; onClose: () => void; enabled: boolean }) {
+function ChefDialog({ meal, city, area, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; onClose: () => void; enabled: boolean }) {
   const fetchFn = useServerFn(findChefsForMeal);
   const q = useQuery({
-    queryKey: ["today-chefs", meal?.slug, city],
+    queryKey: ["today-chefs", meal?.slug, city, area],
     enabled: !!meal && enabled,
-    queryFn: () => fetchFn({ data: { mealName: meal!.name, category: meal!.category, city } }) as unknown as ReturnType<typeof findChefsForMeal>,
+    queryFn: () => fetchFn({ data: { mealName: meal!.name, category: meal!.category, city, area } }) as unknown as ReturnType<typeof findChefsForMeal>,
   });
+  const locationText = [area, city].filter(Boolean).join(", ");
   return (
     <Dialog open={!!meal} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md rounded-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader className="text-left">
           <DialogTitle className="font-display text-lg">Book a chef for {meal?.name}</DialogTitle>
-          <DialogDescription className="text-xs">Top 3 verified chefs near you{city ? ` in ${city}` : ""}. Tap a card to view the full profile.</DialogDescription>
+          <DialogDescription className="text-xs">Top 3 chef matches near you{locationText ? ` in ${locationText}` : ""}. Tap a card to view the full profile.</DialogDescription>
         </DialogHeader>
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
+        {q.isError && (
+          <p className="text-sm text-muted-foreground text-center py-6">Chefs could not load right now. Please try again.</p>
+        )}
         {q.data && q.data.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-6">No chefs near you yet{city ? ` in ${city}` : ""}. Try updating your location.</p>
         )}
