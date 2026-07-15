@@ -22,13 +22,6 @@ function currentSlot(): "Breakfast" | "Lunch" | "Dinner" {
   return "Dinner";
 }
 
-function mealPeriod(): string {
-  const h = new Date().getHours();
-  if (h < 11) return "morning";
-  if (h < 16) return "afternoon";
-  if (h < 21) return "evening";
-  return "night";
-}
 
 const AI_PLACEHOLDERS = [
   "Tell MealBeta what you feel like eating…",
