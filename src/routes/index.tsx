@@ -56,9 +56,8 @@ function Welcome() {
 
   return (
     <div
-      className="relative flex w-full flex-col overflow-hidden bg-[oklch(0.98_0.02_130)] text-foreground"
+      className="relative flex h-dvh w-full flex-col overflow-hidden bg-[oklch(0.98_0.02_130)] text-foreground"
       style={{
-        minHeight: "100dvh",
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)",
         paddingLeft: "env(safe-area-inset-left)",
@@ -66,7 +65,7 @@ function Welcome() {
       }}
     >
       {/* Hero image */}
-      <div className="relative h-[58dvh] min-h-[360px] w-full overflow-hidden">
+      <div className="relative h-[45dvh] min-h-0 w-full shrink-0 overflow-hidden">
         <img
           src={heroFood}
           alt="A warm plate of Nigerian jollof rice with chicken and plantain"
@@ -87,27 +86,27 @@ function Welcome() {
         </div>
 
         {/* Floating badge */}
-        <div className="absolute bottom-6 left-5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-charcoal shadow-soft backdrop-blur">
+        <div className="absolute bottom-5 left-5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-charcoal shadow-soft backdrop-blur">
           <Sparkles className="h-3.5 w-3.5 text-warm" fill="currentColor" />
           AI meal planner for Nigeria
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col px-6 pb-6 pt-4">
-        <h1 className="font-display text-[clamp(2rem,8vw,2.75rem)] leading-[1.05] tracking-tight text-charcoal">
+      <div className="flex min-h-0 flex-1 flex-col px-6 pb-5 pt-4">
+        <h1 className="font-display text-[clamp(1.75rem,7vw,2.5rem)] leading-[1.05] tracking-tight text-charcoal">
           Plan better.<br />
           Eat better.<br />
           <span className="text-warm">Spend</span> better.
         </h1>
 
-        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-          Weekly Nigerian meal plans, honest calorie & cost estimates, and chefs or restaurants near you when you don't feel like cooking.
+        <p className="mt-2 line-clamp-2 text-[14px] leading-snug text-muted-foreground">
+          Weekly Nigerian meal plans, honest calorie & cost estimates, and chefs or restaurants near you.
         </p>
 
         {/* Quick feature chips */}
-        <div className="mt-5 grid grid-cols-2 gap-2.5">
-          <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card p-3">
+        <div className="mt-4 grid grid-cols-2 gap-2.5">
+          <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card p-2.5">
             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-brand/15 text-brand">
               <UtensilsCrossed className="h-4 w-4" />
             </div>
@@ -116,7 +115,7 @@ function Welcome() {
               <div className="truncate text-[11px] text-muted-foreground">Naija dishes</div>
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card p-3">
+          <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card p-2.5">
             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-warm/15 text-warm">
               <ChefHat className="h-4 w-4" />
             </div>
@@ -128,10 +127,10 @@ function Welcome() {
         </div>
 
         {/* Actions pinned to bottom */}
-        <div className="mt-auto space-y-3 pt-8">
+        <div className="mt-auto space-y-2.5 pt-4">
           <Link
             to="/auth"
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-brand py-4 text-base font-semibold text-brand-foreground shadow-lift active:scale-[0.99]"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-semibold text-brand-foreground shadow-lift active:scale-[0.99]"
             style={{ WebkitTapHighlightColor: "transparent" }}
           >
             Get started
