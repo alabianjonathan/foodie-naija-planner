@@ -1,82 +1,69 @@
+# Upgrade "What Should I Eat Today?" (`/today`)
 
-# MealBeta Chefs — Plan
+Scope: rebuild only `src/routes/today.tsx` and its supporting server function `src/lib/recommendations.functions.ts`. No changes to other routes, nav, or unrelated features. Keep MealBeta's current mobile-first look (PhoneShell, existing tokens, chips, card-soft).
 
-A new pillar of MealBeta so users don't only see restaurants. After planning a meal, users choose: **Cook Myself · Order from Restaurant · Contact a Chef**. Restaurants and meal planner stay untouched.
+## User experience
 
-Payments: **Paystack subscriptions** (chefs only — no per-booking commission).
+Single mobile screen with:
 
-## 1. Database (Lovable Cloud)
+1. **Header** — "What Should I Eat Today?" + subtitle: *"Tell us what you feel like eating, your budget, or what ingredients you already have, and MealBeta will suggest the best options for you."*
+2. **Conversational input** — textarea + Send. Placeholder rotates through example prompts (e.g. "I have ₦3,000 and want something filling").
+3. **Quick filters** (chips, collapsible "More options" for advanced) —
+   - Meal Time, Goal, Food Preference, Budget, Time Available, Spice Level
+   - Advanced (expand): Allergies (text), Foods to avoid (text), Ingredients at home (text), People (number), City/Area (prefilled from profile)
+4. **Results** — four labeled cards: **Best Match**, **Healthier Option**, **Budget Option**, **Quick Option**. Each card shows meal image/emoji, name, short description, "Why this matches" reason, price/kcal/protein/carbs/fat/fibre estimates, prep time, main ingredients, portion, meal-time suitability, considerations.
+   - Actions: Order This Meal, Find a Chef, Cook This Meal, View Recipe (→ `/meal/$id`), Save, Share, Show Another
+   - Feedback row: I like this / Not for me / Too expensive / Too heavy / Too spicy / Ate recently / Healthier / Cheaper
+5. **Ingredients mode** — when user provides ingredients, split into *You Already Have* / *You Still Need* with substitutions & estimated extra cost.
+6. **Why this was recommended** — plain-language paragraph per card.
+7. **Disclaimer** at the bottom (nutrition estimates + medical note).
 
-New tables (all with RLS + GRANTs):
+Order/Chef actions open a Dialog listing matched restaurants/chefs from DB, filtered by user's city/area, rating, verified status, and (for chefs) matching service type / speciality.
 
-- `chefs` — profile: user_id, full_name, business_name, slug, bio, phone, whatsapp, email, city, area, areas_covered[], categories[] (from the 10 chef categories), years_experience, photo_url, id_document_url, price_min, price_max, availability, rating, verified, featured, status (pending/active/suspended), plan (basic/featured/premium), plan_expires_at.
-- `chef_listings` — chef_id, name, type (food|service), description, price_min, price_max, photos[], available_days[], service_area, status.
-- `chef_leads` — chef_id, user_id (nullable), name, phone, whatsapp, message, requested_date, status (new/contacted/closed).
-- `chef_reviews` — chef_id, user_id, rating, comment.
-- `chef_profile_views` — chef_id, viewer_id (nullable), viewed_at (for analytics counts).
-- `chef_subscriptions` — chef_id, plan, status (active/expired/canceled), paystack_customer_code, paystack_subscription_code, current_period_end.
-- Extend `user_roles` app_role enum with `chef`.
+## Backend / logic
 
-RLS highlights:
-- Anyone (anon+auth): SELECT active chefs & their active listings & aggregated reviews.
-- Chef: manage own row, own listings, view own leads / views.
-- Authenticated users: INSERT leads, reviews for a chef.
-- Admin (`has_role admin/super_admin`): full manage.
+Extend `src/lib/recommendations.functions.ts`:
 
-Listing-limit enforcement via a `BEFORE INSERT` trigger on `chef_listings`: basic=1, featured=10, premium=unlimited.
+- New `recommendMeals` server fn (auth required):
+  - Input: `{ query?: string; filters?: {...}; feedback?: {...}; avoidIds?: string[] }`
+  - Loads: profile (goal, budget, city, restriction, people, cook_order), all active meals, user's saved meals (to boost/avoid duplicates), recent recommendations stored in `profiles.recent_recommendations` (add col if missing — otherwise pass avoidIds from client localStorage).
+  - Calls Lovable AI Gateway (`google/gemini-2.5-flash`) using AI SDK `Output.object` with a small schema:
+    ```
+    { summary, picks: [{ label: "Best Match"|"Healthier Option"|"Budget Option"|"Quick Option", mealId, reason, priceEstimate, prepMinutes, considerations, mealTime }] }
+    ```
+  - Prompt encodes user profile, budget, allergies, dislikes, ingredients at home, time constraint, spice, cuisine, goal, people count, and instructs the model to pick 4 different meal IDs from the catalog with rationale. Rules: never include allergens, respect dislikes, weight-loss → moderate cal + protein + fibre, budget → cheapest matching, quick → lowest cookingTimeMin, healthier → highest healthScore. Fall back to filtered heuristic sort if the AI call fails (use `NoObjectGeneratedError.text` guard per gateway rules).
+  - Returns `{ summary, picks }`.
+- Keep the existing `generateDailyRecommendation` untouched (used elsewhere? — check; only `today.tsx` uses it, so replace usage there).
 
-Storage bucket `chef-uploads` (private) for photos & ID docs; signed URLs served to public where needed (photos are public via a policy on a `chef-photos` public bucket; IDs stay private).
+- Add `findRestaurantsForMeal({ mealId, city, area })` server fn — queries `restaurants` where `status = 'active'`, address present, city matches, ordered by rating desc, limit 6. Returns name, address, phone, rating, verified.
+- Add `findChefsForMeal({ mealId, serviceType, city, area })` server fn — queries `chefs` joined with `chef_listings` (speciality match by meal name/category), filter `verified` desc, active plan, rating desc, city match, limit 6.
 
-## 2. Customer-facing routes
+All three server fns use `requireSupabaseAuth` for authed reads and RLS-respecting client (`context.supabase`).
 
-- `/chefs` — MealBeta Chefs discovery. Filters: city, area, category, plan, verified. Chef cards (name, business, location, areas, specialty, starting price, plan badge, rating, verified, WhatsApp, Request booking).
-- `/chefs/$slug` — Chef details: photo, bio, areas covered, listings grid, price range, availability, reviews, verification badge, WhatsApp & Request booking buttons (booking = modal → inserts `chef_leads`).
-- `/chef-plans` — pricing table (Basic Free / Featured ₦15k / Premium ₦30k) with the exact rows listed in the brief.
-- `/become-a-chef` — public chef registration form (creates auth account if needed, inserts `chefs` with status=pending, grants `chef` role on approval).
+## Frontend components (in `today.tsx` only)
 
-Wire into existing flow:
-- On `/dashboard` and after `/planner` cost/calorie result → add a **"Contact a Chef"** card next to Cook Myself / Order from Restaurant.
-- Add "MealBeta Chefs" entry in `BottomNav`.
+- Local `QuickFilters` component (chips groups).
+- `MealResultCard` with all fields, feedback row, action buttons.
+- `RestaurantDialog` and `ChefDialog` — reuse shadcn Dialog + fetch via `useQuery`.
+- Ingredients breakdown block appears only when ingredients present.
+- Persist feedback + last picks in `localStorage` (`avoidIds` sent on next call, feedback influences next prompt).
 
-## 3. Chef dashboard (`/chef/*`, gated by `chef` role)
+## Data assumptions & guardrails
 
-- `/chef` — overview: current plan, listing usage (used/limit), profile views (last 30d), leads count, upgrade CTA.
-- `/chef/listings` — CRUD for listings; blocks add when limit hit with the exact upgrade prompt text.
-- `/chef/leads` — inbox of `chef_leads`, mark contacted/closed, WhatsApp deep-link.
-- `/chef/profile` — edit profile, photos, areas covered.
-- `/chef/billing` — plan status, upgrade/downgrade → Paystack.
+- Use existing tables only (`meals`, `restaurants`, `chefs`, `chef_listings`, `chef_reviews`, `saved_meals`, `profiles`). No schema migrations.
+- Nutrition/price shown as estimates (label "est.").
+- Empty/loading/error states styled with existing tokens.
+- Do not fabricate restaurants/chefs — if query returns none, show empty state ("No matching restaurants in your area yet — try broadening the city.").
+- Keep responses under limits by not enum-constraining schema (label is a plain string, validated client-side).
 
-## 4. Payments (Paystack subscriptions)
+## Out of scope
 
-- Secret `PAYSTACK_SECRET_KEY` (add_secret).
-- Create Paystack Plans (Featured ₦15,000/mo, Premium ₦30,000/mo) — one-time script/migration.
-- Server fn `initializeChefSubscription({ plan })` → returns Paystack authorization URL.
-- Public server route `/api/public/webhooks/paystack` verifying `x-paystack-signature` (HMAC-SHA512 with secret) → updates `chef_subscriptions` and `chefs.plan` / `plan_expires_at` on `subscription.create`, `charge.success`, `subscription.disable`, `invoice.payment_failed`.
-- Downgrade to Basic automatically when subscription expires.
+- No changes to nav, other routes, homepage, admin, or DB schema.
+- No new legal pages / SEO changes.
+- No new tables — reuse existing.
 
-## 5. Admin (`/jb12bz/chefs`)
+## Files touched
 
-Table with actions: approve, reject, verify toggle, suspend, feature toggle, assign/upgrade/downgrade plan manually, view active/expired subscriptions, listing count per chef, view chef leads, edit profile.
-
-Add sidebar item "Chefs" in `AdminSidebar`.
-
-## 6. Technical notes
-
-- Server fns in `src/lib/chefs.functions.ts` (public listing) and `src/lib/chef-owner.functions.ts` (chef-auth) and `src/lib/admin-chefs.functions.ts` (admin).
-- Paystack webhook in `src/routes/api/public/webhooks/paystack.ts`.
-- Reuse existing `PhoneShell`, `TopBar`, `card-soft`, `chip`, brand tokens — no new design language.
-- Landing page (`/`) gets one extra section "Meet MealBeta Chefs" linking to `/chefs` and `/become-a-chef`.
-
-## 7. Rollout order
-
-1. Migration (tables, enum, RLS, GRANTs, trigger, buckets).
-2. Server fns + Paystack secret + webhook route.
-3. Customer routes (`/chefs`, `/chefs/$slug`, `/chef-plans`, `/become-a-chef`).
-4. Chef dashboard.
-5. Admin chef management.
-6. Wire into `/dashboard` and `/planner` result screens + BottomNav + landing section.
-
-## Out of scope (explicit)
-
-- No changes to restaurants, meal planner logic, or existing meal recommendations.
-- No per-booking commission or in-app checkout for chef bookings — leads go via WhatsApp/booking request only.
+- `src/routes/today.tsx` (rewrite in place)
+- `src/lib/recommendations.functions.ts` (add new fns, keep existing exports)
+- Possibly `src/lib/chefs.functions.ts` / new `src/lib/restaurants.functions.ts` for the two lookup fns (or add to recommendations file — will add a small `src/lib/eat-today.functions.ts` to keep concerns separate).
