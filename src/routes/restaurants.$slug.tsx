@@ -4,6 +4,7 @@ import { PhoneShell } from "@/components/PhoneShell";
 import { TopBar } from "@/components/TopBar";
 import { supabase } from "@/integrations/supabase/client";
 import { Star, MapPin, Phone, MessageCircle, Navigation, Clock, Truck, ShieldCheck, Loader2 } from "lucide-react";
+import coverAsset from "@/assets/restaurant-cover.jpg.asset.json";
 
 export const Route = createFileRoute("/restaurants/$slug")({
   component: RestaurantProfile,
