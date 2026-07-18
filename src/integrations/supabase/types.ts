@@ -386,6 +386,98 @@ export type Database = {
         }
         Relationships: []
       }
+      food_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      foods: {
+        Row: {
+          aliases: string[]
+          category_id: string | null
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          aliases?: string[]
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          aliases?: string[]
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "foods_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "food_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      import_logs: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          ran_by: string | null
+          rows: Json
+          summary: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          ran_by?: string | null
+          rows?: Json
+          summary?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          ran_by?: string | null
+          rows?: Json
+          summary?: Json
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           city: string | null
@@ -640,70 +732,151 @@ export type Database = {
         }
         Relationships: []
       }
+      restaurant_foods: {
+        Row: {
+          created_at: string
+          food_id: string
+          restaurant_id: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          food_id: string
+          restaurant_id: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          food_id?: string
+          restaurant_id?: string
+          source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_foods_food_id_fkey"
+            columns: ["food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_foods_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurants: {
         Row: {
           address: string | null
           area: string | null
+          branch_name: string | null
+          chain: string | null
           city: string
+          cover_url: string | null
           created_at: string
           delivery: boolean
           distance_km: number
           email: string | null
+          food_data_priority: number
+          google_maps_url: string | null
+          has_verified_food_data: boolean
           id: string
+          last_imported_at: string | null
+          latitude: number | null
+          longitude: number | null
           meal_slugs: string[]
           name: string
+          needs_review: boolean
           opening: string | null
           owner_id: string | null
           phone: string | null
           rating: number
+          restaurant_data_source: string | null
+          review_reason: string | null
           slug: string
+          source_url: string | null
+          state: string | null
           status: string
           tags: string[]
           updated_at: string
+          verification_status: string | null
           verified: boolean
           whatsapp: string | null
         }
         Insert: {
           address?: string | null
           area?: string | null
+          branch_name?: string | null
+          chain?: string | null
           city: string
+          cover_url?: string | null
           created_at?: string
           delivery?: boolean
           distance_km?: number
           email?: string | null
+          food_data_priority?: number
+          google_maps_url?: string | null
+          has_verified_food_data?: boolean
           id?: string
+          last_imported_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
           meal_slugs?: string[]
           name: string
+          needs_review?: boolean
           opening?: string | null
           owner_id?: string | null
           phone?: string | null
           rating?: number
+          restaurant_data_source?: string | null
+          review_reason?: string | null
           slug: string
+          source_url?: string | null
+          state?: string | null
           status?: string
           tags?: string[]
           updated_at?: string
+          verification_status?: string | null
           verified?: boolean
           whatsapp?: string | null
         }
         Update: {
           address?: string | null
           area?: string | null
+          branch_name?: string | null
+          chain?: string | null
           city?: string
+          cover_url?: string | null
           created_at?: string
           delivery?: boolean
           distance_km?: number
           email?: string | null
+          food_data_priority?: number
+          google_maps_url?: string | null
+          has_verified_food_data?: boolean
           id?: string
+          last_imported_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
           meal_slugs?: string[]
           name?: string
+          needs_review?: boolean
           opening?: string | null
           owner_id?: string | null
           phone?: string | null
           rating?: number
+          restaurant_data_source?: string | null
+          review_reason?: string | null
           slug?: string
+          source_url?: string | null
+          state?: string | null
           status?: string
           tags?: string[]
           updated_at?: string
+          verification_status?: string | null
           verified?: boolean
           whatsapp?: string | null
         }
