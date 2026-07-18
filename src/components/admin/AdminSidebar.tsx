@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, Users, Store, UtensilsCrossed,
-  MapPin, CalendarRange, Inbox, Settings, LogOut, ChefHat,
+  MapPin, CalendarRange, Inbox, Settings, LogOut, ChefHat, Upload,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 

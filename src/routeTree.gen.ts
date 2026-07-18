@@ -44,6 +44,7 @@ import { Route as Jb12bzRestaurantsRouteImport } from './routes/jb12bz/restauran
 import { Route as Jb12bzMealsRouteImport } from './routes/jb12bz/meals'
 import { Route as Jb12bzMealPlansRouteImport } from './routes/jb12bz/meal-plans'
 import { Route as Jb12bzLeadsRouteImport } from './routes/jb12bz/leads'
+import { Route as Jb12bzImportRestaurantsRouteImport } from './routes/jb12bz/import-restaurants'
 import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
 import { Route as Jb12bzChefsRouteImport } from './routes/jb12bz/chefs'
 import { Route as ChefsSlugRouteImport } from './routes/chefs.$slug'
@@ -223,6 +224,11 @@ const Jb12bzLeadsRoute = Jb12bzLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
+const Jb12bzImportRestaurantsRoute = Jb12bzImportRestaurantsRouteImport.update({
+  id: '/import-restaurants',
+  path: '/import-restaurants',
+  getParentRoute: () => Jb12bzRouteRoute,
+} as any)
 const Jb12bzCitiesRoute = Jb12bzCitiesRouteImport.update({
   id: '/cities',
   path: '/cities',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/import-restaurants': typeof Jb12bzImportRestaurantsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
   '/jb12bz/meals': typeof Jb12bzMealsRoute
@@ -308,6 +315,7 @@ export interface FileRoutesByTo {
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/import-restaurants': typeof Jb12bzImportRestaurantsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
   '/jb12bz/meals': typeof Jb12bzMealsRoute
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/import-restaurants': typeof Jb12bzImportRestaurantsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
   '/jb12bz/meals': typeof Jb12bzMealsRoute
@@ -391,6 +400,7 @@ export interface FileRouteTypes {
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
+    | '/jb12bz/import-restaurants'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
     | '/jb12bz/meals'
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
+    | '/jb12bz/import-restaurants'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
     | '/jb12bz/meals'
@@ -470,6 +481,7 @@ export interface FileRouteTypes {
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
+    | '/jb12bz/import-restaurants'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
     | '/jb12bz/meals'
@@ -758,6 +770,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzLeadsRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
+    '/jb12bz/import-restaurants': {
+      id: '/jb12bz/import-restaurants'
+      path: '/import-restaurants'
+      fullPath: '/jb12bz/import-restaurants'
+      preLoaderRoute: typeof Jb12bzImportRestaurantsRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
+    }
     '/jb12bz/cities': {
       id: '/jb12bz/cities'
       path: '/cities'
@@ -785,6 +804,7 @@ declare module '@tanstack/react-router' {
 interface Jb12bzRouteRouteChildren {
   Jb12bzChefsRoute: typeof Jb12bzChefsRoute
   Jb12bzCitiesRoute: typeof Jb12bzCitiesRoute
+  Jb12bzImportRestaurantsRoute: typeof Jb12bzImportRestaurantsRoute
   Jb12bzLeadsRoute: typeof Jb12bzLeadsRoute
   Jb12bzMealPlansRoute: typeof Jb12bzMealPlansRoute
   Jb12bzMealsRoute: typeof Jb12bzMealsRoute
@@ -797,6 +817,7 @@ interface Jb12bzRouteRouteChildren {
 const Jb12bzRouteRouteChildren: Jb12bzRouteRouteChildren = {
   Jb12bzChefsRoute: Jb12bzChefsRoute,
   Jb12bzCitiesRoute: Jb12bzCitiesRoute,
+  Jb12bzImportRestaurantsRoute: Jb12bzImportRestaurantsRoute,
   Jb12bzLeadsRoute: Jb12bzLeadsRoute,
   Jb12bzMealPlansRoute: Jb12bzMealPlansRoute,
   Jb12bzMealsRoute: Jb12bzMealsRoute,
