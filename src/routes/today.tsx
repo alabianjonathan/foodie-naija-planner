@@ -655,7 +655,7 @@ function OrderDialog({ meal, city, area, onClose, enabled }: { meal: UiMeal | nu
   const q = useQuery({
     queryKey: ["today-restaurants", meal?.slug, city, area],
     enabled: !!meal && enabled,
-    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, city, area } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
+    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, mealName: meal!.name, city, area } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
   });
   const locationText = [area, city].filter(Boolean).join(", ");
   return (
