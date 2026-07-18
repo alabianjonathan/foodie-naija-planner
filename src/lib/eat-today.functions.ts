@@ -237,9 +237,34 @@ export type MatchedRestaurant = {
 export const findRestaurantsForMeal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({
-    mealSlug: z.string(), city: z.string().optional(), area: z.string().optional(),
+    mealSlug: z.string(), mealName: z.string().optional(),
+    city: z.string().optional(), area: z.string().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
+    // Resolve restaurantIds that carry this meal via the imported foods index.
+    // Match by foods.name / aliases against the meal name tokens.
+    let foodRestaurantIds = new Set<string>();
+    const mealText = (data.mealName ?? data.mealSlug.replace(/-/g, " ")).toLowerCase();
+    if (mealText) {
+      const tokens = Array.from(new Set(mealText.split(/\s+/).filter((t) => t.length >= 3)));
+      const orFilter = tokens
+        .map((t) => `name.ilike.%${t}%,aliases.cs.{${t}}`)
+        .join(",");
+      const { data: foodMatches } = await context.supabase
+        .from("foods")
+        .select("id")
+        .or(orFilter)
+        .limit(50);
+      const foodIds = (foodMatches ?? []).map((f: { id: string }) => f.id);
+      if (foodIds.length) {
+        const { data: links } = await context.supabase
+          .from("restaurant_foods")
+          .select("restaurant_id")
+          .in("food_id", foodIds);
+        foodRestaurantIds = new Set((links ?? []).map((l: { restaurant_id: string }) => l.restaurant_id));
+      }
+    }
+
     let city = data.city;
     let area = data.area;
     if (!city || !area) {
