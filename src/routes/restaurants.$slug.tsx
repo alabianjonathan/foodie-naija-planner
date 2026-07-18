@@ -50,7 +50,7 @@ function RestaurantProfile() {
             <div className="rounded-3xl overflow-hidden card-soft !p-0">
               <div
                 className="relative h-40 bg-cover bg-center flex items-end justify-between p-4"
-                style={{ backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.15)), url(${data.cover_url || coverAsset.url})` }}
+                style={{ backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.15)), url(${(data as { cover_url?: string | null }).cover_url || coverAsset.url})` }}
               >
                 <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center font-display text-3xl text-brand shadow-lg">
                   {data.name[0]}
