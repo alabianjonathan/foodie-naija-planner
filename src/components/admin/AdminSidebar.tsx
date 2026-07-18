@@ -11,6 +11,7 @@ const items: NavItem[] = [
   { to: "/jb12bz", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/jb12bz/users", label: "Users", icon: Users },
   { to: "/jb12bz/restaurants", label: "Restaurants", icon: Store },
+  { to: "/jb12bz/import-restaurants", label: "Import Restaurants", icon: Upload },
   { to: "/jb12bz/chefs", label: "Chefs", icon: ChefHat },
   { to: "/jb12bz/meals", label: "Meals", icon: UtensilsCrossed },
   { to: "/jb12bz/cities", label: "Cities & Areas", icon: MapPin },
