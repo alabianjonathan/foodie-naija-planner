@@ -319,7 +319,29 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       return rows.filter(stateMatches);
     };
 
+    const runFoodScope = async (scope: "city" | "state" | "any", verifiedOnly: boolean) => {
+      if (foodRestaurantIds.size === 0) return [];
+      let q = context.supabase.from("restaurants").select(cols).eq("status", "active")
+        .in("id", Array.from(foodRestaurantIds));
+      if (scope === "city" && city) q = q.eq("city", city);
+      else if (scope === "state" && stateCities.length) q = q.in("city", stateCities);
+      if (verifiedOnly) q = q.eq("verified", true);
+      const { data: rows } = await q
+        .order("food_data_priority", { ascending: false })
+        .order("verified", { ascending: false })
+        .order("rating", { ascending: false })
+        .limit(scope === "any" ? 60 : 20);
+      return rows ?? [];
+    };
+
     const scopes: Array<() => Promise<any[]>> = [
+      // Highest signal: imported food index
+      () => runFoodScope("city", true),
+      () => runFoodScope("city", false),
+      () => runFoodScope("state", true),
+      () => runFoodScope("state", false),
+      () => runFoodScope("any", true),
+      // Legacy meal_slugs
       () => runQuery("city", true, true),
       () => runQuery("city", false, true),
       () => runQuery("state", true, true),
@@ -343,6 +365,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       rows = await load();
       if (rows.length > 0) break;
     }
+
 
     const scored = rows.sort((a, b) => {
       const areaScore = (r: any) => area && r.area === area ? 1 : 0;
