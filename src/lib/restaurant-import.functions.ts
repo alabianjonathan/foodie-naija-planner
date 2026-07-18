@@ -266,7 +266,7 @@ export const importRestaurantsFromRows = createServerFn({ method: "POST" })
         } else {
           const { data: ins, error } = await supabaseAdmin
             .from("restaurants")
-            .insert({ ...cleaned, rating: 0, distance_km: 0 })
+            .insert({ ...cleaned, rating: 0, distance_km: 0 } as never)
             .select("id")
             .single();
           if (error) throw error;
