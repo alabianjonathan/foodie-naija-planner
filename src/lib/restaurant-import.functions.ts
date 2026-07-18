@@ -184,8 +184,9 @@ export const importRestaurantsFromRows = createServerFn({ method: "POST" })
       .from("restaurants")
       .select("id, slug, chain, branch_name, name, city, phone");
     const restBySlug = new Map((existingRests ?? []).map((r) => [r.slug, r]));
-    const restByKey = new Map<string, typeof (existingRests ?? [])[number]>();
-    for (const r of existingRests ?? []) {
+    type ExistingRest = { id: string; slug: string; chain: string | null; branch_name: string | null; name: string; city: string; phone: string | null };
+    const restByKey = new Map<string, ExistingRest>();
+    for (const r of (existingRests ?? []) as ExistingRest[]) {
       if (r.chain && r.branch_name) {
         restByKey.set(`${r.chain}::${r.branch_name}::${r.city}`.toLowerCase(), r);
       }
