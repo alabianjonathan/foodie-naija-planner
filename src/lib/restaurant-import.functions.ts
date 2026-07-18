@@ -255,7 +255,7 @@ export const importRestaurantsFromRows = createServerFn({ method: "POST" })
         if (existing) {
           const { data: upd, error } = await supabaseAdmin
             .from("restaurants")
-            .update(cleaned)
+            .update(cleaned as never)
             .eq("id", existing.id)
             .select("id")
             .single();
