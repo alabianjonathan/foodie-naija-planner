@@ -408,7 +408,7 @@ function TodayPage() {
       />
 
       <MealDetailDialog open={openMeal} onClose={() => setOpenMeal(null)} ingredientsSplit={ingredientsSplit} onOrder={() => { if (openMeal) { setOrderFor(openMeal.meal); setOpenMeal(null); } }} onChef={() => { if (openMeal) { setChefFor(openMeal.meal); setOpenMeal(null); } }} />
-      <OrderDialog meal={orderFor} city={filters.city} area={filters.area} geo={geo} onClose={() => setOrderFor(null)} enabled={!!user} />
+      <OrderDialog meal={orderFor} city={filters.city} area={filters.area} geo={geo} onEnableLocation={requestLocation} onClose={() => setOrderFor(null)} enabled={!!user} />
       <ChefDialog meal={chefFor} city={filters.city} area={filters.area} onClose={() => setChefFor(null)} enabled={!!user} />
     </PhoneShell>
   );
