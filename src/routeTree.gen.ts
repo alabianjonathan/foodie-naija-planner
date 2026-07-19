@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackerRouteImport } from './routes/tracker'
 import { Route as TodayRouteImport } from './routes/today'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShoppingRouteImport } from './routes/shopping'
@@ -49,6 +50,11 @@ import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
 import { Route as Jb12bzChefsRouteImport } from './routes/jb12bz/chefs'
 import { Route as ChefsSlugRouteImport } from './routes/chefs.$slug'
 
+const TrackerRoute = TrackerRouteImport.update({
+  id: '/tracker',
+  path: '/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
   path: '/today',
@@ -272,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/shopping': typeof ShoppingRoute
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
+  '/tracker': typeof TrackerRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -312,6 +319,7 @@ export interface FileRoutesByTo {
   '/shopping': typeof ShoppingRoute
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
+  '/tracker': typeof TrackerRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -354,6 +362,7 @@ export interface FileRoutesById {
   '/shopping': typeof ShoppingRoute
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
+  '/tracker': typeof TrackerRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/shopping'
     | '/terms'
     | '/today'
+    | '/tracker'
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/shopping'
     | '/terms'
     | '/today'
+    | '/tracker'
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/shopping'
     | '/terms'
     | '/today'
+    | '/tracker'
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
@@ -520,11 +532,19 @@ export interface RootRouteChildren {
   ShoppingRoute: typeof ShoppingRoute
   TermsRoute: typeof TermsRoute
   TodayRoute: typeof TodayRoute
+  TrackerRoute: typeof TrackerRoute
   MealIdRoute: typeof MealIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tracker': {
+      id: '/tracker'
+      path: '/tracker'
+      fullPath: '/tracker'
+      preLoaderRoute: typeof TrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/today': {
       id: '/today'
       path: '/today'
@@ -880,6 +900,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShoppingRoute: ShoppingRoute,
   TermsRoute: TermsRoute,
   TodayRoute: TodayRoute,
+  TrackerRoute: TrackerRoute,
   MealIdRoute: MealIdRoute,
 }
 export const routeTree = rootRouteImport
