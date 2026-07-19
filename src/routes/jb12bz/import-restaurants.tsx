@@ -60,6 +60,7 @@ function ImportPage() {
   const [err, setErr] = useState<string | null>(null);
   const [sheetName, setSheetName] = useState<string>("");
   const [dryRun, setDryRun] = useState(false);
+  const [wipeFirst, setWipeFirst] = useState(false);
 
   const onFile = async (f: File) => {
     setFile(f); setReport(null); setErr(null); setPreview([]);
