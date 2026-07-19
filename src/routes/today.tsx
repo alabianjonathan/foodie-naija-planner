@@ -611,6 +611,20 @@ function MealDetailDialog({
               <p className="text-xs text-charcoal/80 leading-relaxed">{open.meal.description}</p>
             )}
 
+            <div className="grid grid-cols-2 gap-2">
+              {Object.values(open.meal.nutrition).map((n) => (
+                <span
+                  key={n.key}
+                  title={`${n.name}: ${n.raw ?? "n/a"}`}
+                  className="inline-flex items-center gap-1 text-[10px] px-2 py-1.5 rounded-xl bg-secondary text-charcoal font-medium"
+                >
+                  <span>{n.emoji}</span>
+                  <span className="truncate">{n.name}: {n.score}/10</span>
+                  <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">• {n.label}</span>
+                </span>
+              ))}
+            </div>
+
             {ingredientsSplit ? (
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-2xl bg-leaf/5 p-3">
