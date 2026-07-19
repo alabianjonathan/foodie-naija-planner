@@ -232,6 +232,7 @@ export type MatchedRestaurant = {
   id: string; slug: string; name: string; city: string; area: string | null;
   address: string | null; phone: string | null; whatsapp: string | null;
   rating: number; verified: boolean; tags: string[]; matchLabel: string;
+  distanceKm: number | null;
 };
 
 export const findRestaurantsForMeal = createServerFn({ method: "POST" })
@@ -239,6 +240,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({
     mealSlug: z.string(), mealName: z.string().optional(),
     city: z.string().optional(), area: z.string().optional(),
+    lat: z.number().optional(), lng: z.number().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
     // Resolve restaurantIds that carry this meal via the imported foods index.
