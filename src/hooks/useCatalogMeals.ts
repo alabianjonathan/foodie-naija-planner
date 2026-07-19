@@ -101,7 +101,7 @@ export function useCatalogMeals() {
     queryFn: () => fetchMeals() as unknown as Promise<CatalogMeal[]>,
     staleTime: 5 * 60 * 1000,
   });
-  const meals = useMemo(() => (query.data ?? []).map(toUiMeal), [query.data]);
+  const meals = useMemo(() => (query.data ?? []).map((m, i) => toUiMeal(m, { index: i })), [query.data]);
   const bySlug = useMemo(() => new Map(meals.map((m) => [m.slug, m])), [meals]);
   const getMeal = (slug: string | undefined | null) => (slug ? bySlug.get(slug) : undefined);
   return { meals, getMeal, isLoading: query.isLoading, error: query.error };
