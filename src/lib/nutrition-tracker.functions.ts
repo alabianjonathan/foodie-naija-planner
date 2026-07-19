@@ -288,12 +288,10 @@ export const getRangeSummary = createServerFn({ method: "GET" })
   });
 
 // ----- Streaks & achievements -----
-type SupabaseCtx = { from: (t: string) => { select: (c: string) => { eq: (col: string, val: string) => { maybeSingle: () => Promise<{ data: unknown }> } } } };
-
-async function updateStreak(sb: SupabaseCtx, userId: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function updateStreak(sb: any, userId: string) {
   const today = new Date().toISOString().slice(0, 10);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: cur } = await (sb as any).from("nutrition_streaks").select("*").eq("user_id", userId).maybeSingle();
+  const { data: cur } = await sb.from("nutrition_streaks").select("*").eq("user_id", userId).maybeSingle();
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
   const yStr = yesterday.toISOString().slice(0, 10);
   let current = 1, longest = 1;
@@ -302,8 +300,7 @@ async function updateStreak(sb: SupabaseCtx, userId: string) {
     if (cur.last_logged_on === yStr) current = (cur.current_streak ?? 0) + 1;
     longest = Math.max(cur.longest_streak ?? 0, current);
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (sb as any).from("nutrition_streaks").upsert({ user_id: userId, current_streak: current, longest_streak: longest, last_logged_on: today });
+  await sb.from("nutrition_streaks").upsert({ user_id: userId, current_streak: current, longest_streak: longest, last_logged_on: today });
 }
 
 export type StreakInfo = { current_streak: number; longest_streak: number; last_logged_on: string | null; achievements: Array<{ id: string; label: string; emoji: string; date: string }> };
