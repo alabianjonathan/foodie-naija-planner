@@ -276,7 +276,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       area = area ?? profile?.area ?? undefined;
     }
 
-    const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status";
+    const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status, latitude, longitude";
 
     // Lookup same-state city list for fallback. Some imported restaurants use
     // satellite cities (Epe, Ikorodu, Badagry) that are not in the cities table,
