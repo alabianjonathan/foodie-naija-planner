@@ -120,6 +120,10 @@ function ImportPage() {
             <input type="checkbox" checked={dryRun} onChange={(e) => setDryRun(e.target.checked)} />
             Dry run (preview only, no writes)
           </label>
+          <label className="flex items-center gap-2 text-sm text-destructive">
+            <input type="checkbox" checked={wipeFirst} onChange={(e) => setWipeFirst(e.target.checked)} />
+            Replace all (delete every existing restaurant first)
+          </label>
           <button
             disabled={!preview.length || busy}
             onClick={submit}
