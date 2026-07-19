@@ -337,7 +337,7 @@ function TodayPage() {
 
         {result && (
           <button onClick={submit} disabled={mutation.isPending} className="w-full inline-flex items-center justify-center gap-1.5 rounded-full border border-brand/30 text-brand py-2.5 text-sm font-medium disabled:opacity-60">
-            {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Show different options
+            {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Show more options
           </button>
         )}
 
