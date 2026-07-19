@@ -5,7 +5,7 @@ import { TopBar } from "@/components/TopBar";
 import {
   Sparkles, Flame, Clock, Wallet, Loader2, Leaf, ArrowRight, X,
   Send, Bookmark, Share2, Utensils, Store, ChefHat, RefreshCw, Info, ThumbsUp, ThumbsDown,
-  SlidersHorizontal, Mic, MapPin,
+  SlidersHorizontal, Mic, MapPin, Navigation, Phone,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -730,26 +730,40 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
   });
   const locationText = [area, city].filter(Boolean).join(", ");
   return (
-    <Dialog open={!!meal} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-md rounded-3xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader className="text-left">
-          <DialogTitle className="font-display text-lg">Order {meal?.name}</DialogTitle>
-          <DialogDescription className="text-xs">Top restaurant matches near you{locationText ? ` in ${locationText}` : ""}. If your area has no match, MealBeta checks the same state and then available listings. Tap a card to view the full profile.</DialogDescription>
-        </DialogHeader>
+    <Sheet open={!!meal} onOpenChange={(v) => !v && onClose()}>
+      <SheetContent side="bottom" className="mx-auto flex h-[88vh] max-w-[480px] flex-col overflow-hidden rounded-t-[2rem] border-border bg-background p-0">
+        <SheetHeader className="border-b border-border bg-card px-5 pb-4 pt-5 text-left">
+          <div className="mb-3 flex h-1.5 w-12 self-center rounded-full bg-muted" />
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+            <div className="min-w-0">
+              <SheetTitle className="font-display text-xl leading-tight">Order {meal?.name}</SheetTitle>
+              <SheetDescription className="mt-1 text-xs leading-relaxed">
+                Showing verified restaurant branches{locationText ? ` around ${locationText}` : " near you"}. MealBeta prioritises closer areas, then wider city/state matches.
+              </SheetDescription>
+            </div>
+            <span className="rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-semibold text-brand">
+              Top {q.data?.length ?? 3}
+            </span>
+          </div>
+        </SheetHeader>
+
+        <div className="flex-1 overflow-y-auto px-5 py-4">
         {!geo && (
           <button
             onClick={onEnableLocation}
-            className="w-full flex items-center justify-between gap-2 rounded-xl border border-brand/30 bg-brand/5 px-3 py-2 text-left"
+            className="mb-3 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-brand/25 bg-brand/5 px-4 py-3 text-left"
           >
             <span className="text-xs">
               <span className="font-semibold text-charcoal">Use my precise location</span>
               <span className="block text-[11px] text-muted-foreground">Rank restaurants by distance from where you are right now.</span>
             </span>
-            <MapPin className="h-4 w-4 text-brand shrink-0" />
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground">
+              <MapPin className="h-4 w-4" />
+            </span>
           </button>
         )}
         {geo && (
-          <p className="text-[11px] text-leaf flex items-center gap-1"><MapPin className="h-3 w-3" /> Ranking by distance from your location</p>
+          <p className="mb-3 flex items-center gap-1.5 rounded-full bg-leaf/10 px-3 py-1.5 text-[11px] font-medium text-leaf"><MapPin className="h-3 w-3" /> Ranking by distance from your location</p>
         )}
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
         {q.isError && (
@@ -758,53 +772,67 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
         {q.data && q.data.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-6">No restaurant listings are available yet. Try another meal or update your location.</p>
         )}
-        <div className="space-y-2">
-          {q.data?.map((r) => (
-            <Link
+        <div className="space-y-3">
+          {q.data?.map((r, index) => (
+            <article
               key={r.id}
-              to="/restaurants/$slug"
-              params={{ slug: r.slug }}
-              onClick={onClose}
-              className="block rounded-2xl border border-border p-3 hover:border-brand/40 transition"
+              className="overflow-hidden rounded-3xl border border-border bg-card shadow-[0_14px_32px_-24px_oklch(0.22_0.03_155_/_0.35)]"
             >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm truncate flex items-center gap-1.5">
-                    {r.name}
-                    {r.verified && (
-                      <span className="inline-flex items-center gap-0.5 text-[10px] bg-leaf/15 text-leaf rounded-full px-1.5 py-0.5 font-semibold">
-                        ✓ Verified
-                      </span>
-                    )}
-                    {!r.verified && (
-                      <span className="inline-flex items-center gap-0.5 text-[10px] bg-secondary text-charcoal rounded-full px-1.5 py-0.5 font-semibold">
-                        Listed
-                      </span>
-                    )}
+              <div className="relative bg-gradient-to-br from-brand/90 via-leaf/75 to-warm/80 px-4 py-3">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                  <span className="inline-flex min-w-0 items-center gap-1 rounded-full bg-card/95 px-2 py-1 text-[10px] font-semibold text-brand">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{r.matchLabel}</span>
+                  </span>
+                  <span className="rounded-full bg-card/95 px-2 py-1 text-[10px] font-semibold text-charcoal">#{index + 1}</span>
+                </div>
+              </div>
+
+              <div className="p-4">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-charcoal">{r.chain ?? r.name}</p>
+                    <p className="mt-0.5 text-xs font-medium text-brand">{r.branchName || r.area || r.city}</p>
+                  </div>
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    {r.verified && <span className="rounded-full bg-leaf/15 px-2 py-1 text-[10px] font-semibold text-leaf">✓ Verified</span>}
+                    {r.rating > 0 && <span className="rounded-full bg-warm/20 px-2 py-1 text-[10px] font-semibold text-charcoal">★ {r.rating.toFixed(1)}</span>}
+                  </div>
+                </div>
+
+                <div className="mt-3 rounded-2xl bg-secondary/55 p-3">
+                  <p className="flex items-start gap-1.5 text-xs leading-relaxed text-charcoal">
+                    <Store className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" />
+                    <span>{r.address || [r.area, r.city].filter(Boolean).join(", ")}</span>
                   </p>
-                  <p className="text-[10px] text-leaf font-semibold mt-0.5">{r.matchLabel}</p>
-                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-                    <Store className="inline h-3 w-3 mr-0.5" />
-                    {r.address || [r.area, r.city].filter(Boolean).join(", ")}
-                  </p>
-                  {r.phone && (
-                    <p className="text-[11px] text-brand mt-0.5">{r.phone}</p>
+                  {r.tags.length > 0 && (
+                    <div className="mt-2 flex gap-1.5 overflow-x-auto pb-0.5">
+                      {r.tags.slice(0, 4).map((tag) => (
+                        <span key={tag} className="shrink-0 rounded-full bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{tag}</span>
+                      ))}
+                    </div>
                   )}
                 </div>
-                {r.rating > 0 && (
-                  <span className="text-xs bg-warm/20 rounded-full px-2 py-0.5 whitespace-nowrap">★ {r.rating.toFixed(1)}</span>
-                )}
+
+                <div className="mt-3 grid grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-2">
+                  {r.phone && <a href={`tel:${r.phone}`} className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-medium text-brand-foreground"><Phone className="h-3 w-3" /> Call</a>}
+                  {r.googleMapsUrl && <a href={r.googleMapsUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-charcoal"><Navigation className="h-3 w-3" /> Map</a>}
+                  <Link
+                    to="/restaurants/$slug"
+                    params={{ slug: r.slug }}
+                    onClick={onClose}
+                    className="inline-flex min-w-0 items-center justify-self-end gap-1 truncate text-[11px] font-medium text-brand"
+                  >
+                    View profile <ArrowRight className="h-3 w-3 shrink-0" />
+                  </Link>
+                </div>
               </div>
-              <div className="mt-2 flex gap-2" onClick={(e) => e.stopPropagation()}>
-                {r.phone && <a href={`tel:${r.phone}`} className="text-xs px-3 py-1 rounded-full bg-brand text-brand-foreground">Call</a>}
-                {r.whatsapp && <a href={`https://wa.me/${r.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="text-xs px-3 py-1 rounded-full bg-leaf text-leaf-foreground">WhatsApp</a>}
-                <span className="ml-auto text-[11px] text-muted-foreground inline-flex items-center gap-1">View profile <ArrowRight className="h-3 w-3" /></span>
-              </div>
-            </Link>
+            </article>
           ))}
         </div>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
