@@ -5,7 +5,7 @@ import { TopBar } from "@/components/TopBar";
 import {
   Sparkles, Flame, Clock, Wallet, Loader2, Leaf, ArrowRight, X,
   Send, Bookmark, Share2, Utensils, Store, ChefHat, RefreshCw, Info, ThumbsUp, ThumbsDown,
-  SlidersHorizontal, Mic,
+  SlidersHorizontal, Mic, MapPin,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
