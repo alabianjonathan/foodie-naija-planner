@@ -59,7 +59,7 @@ function labelForScore(score: number, key: NutrientKey): string {
 
 export function nutrientInfo(key: NutrientKey, raw: string | null | undefined, slug: string): NutrientInfo {
   const normalized = (raw ?? "").trim().toLowerCase();
-  const base = BASE_SCORE[normalized] ?? 5.0;
+  const base = BASE_SCORE[key][normalized] ?? 5.0;
   // Add a small deterministic variance so two meals with the same level don't
   // show identical scores, while keeping the score stable across renders.
   const variance = (hashNumber(`${slug}:${key}`) - 0.5) * 0.8;
