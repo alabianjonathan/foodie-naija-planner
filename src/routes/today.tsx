@@ -15,6 +15,7 @@ import {
 } from "@/lib/eat-today.functions";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
+import { nutritionReason } from "@/lib/nutrition";
 import { useToggleSavedMeal, useSavedMealIds } from "@/hooks/useSavedMeals";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
