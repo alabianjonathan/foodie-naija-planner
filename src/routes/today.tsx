@@ -521,7 +521,7 @@ function ResultCard({
             {Object.values(meal.nutrition).map((n) => (
               <span
                 key={n.key}
-                title={`${n.name}: ${n.raw ?? "n/a"}`}
+                title={`${n.name}: ~${n.grams}g`}
                 className="inline-flex items-center gap-1 text-[10px] px-2 py-1.5 rounded-xl bg-secondary text-charcoal font-medium"
               >
                 <span>{n.emoji}</span>
@@ -535,8 +535,8 @@ function ResultCard({
 
       <div className="mt-3 rounded-xl bg-secondary/50 p-2.5">
         <p className="text-[11px] font-semibold text-charcoal mb-0.5">Why this was recommended</p>
-        <p className="text-xs text-charcoal/80 leading-snug">{pick.reason}</p>
-        {pick.considerations && <p className="text-[11px] text-muted-foreground mt-1">Consider: {pick.considerations}</p>}
+        <p className="text-xs text-charcoal/80 leading-snug">{meal.nutritionReason}</p>
+        {pick.considerations && <p className="text-[11px] text-muted-foreground mt-1">Note: {pick.considerations}</p>}
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
@@ -615,7 +615,7 @@ function MealDetailDialog({
               {Object.values(open.meal.nutrition).map((n) => (
                 <span
                   key={n.key}
-                  title={`${n.name}: ${n.raw ?? "n/a"}`}
+                  title={`${n.name}: ~${n.grams}g`}
                   className="inline-flex items-center gap-1 text-[10px] px-2 py-1.5 rounded-xl bg-secondary text-charcoal font-medium"
                 >
                   <span>{n.emoji}</span>
@@ -653,7 +653,7 @@ function MealDetailDialog({
 
             <div className="rounded-2xl bg-secondary/50 p-3">
               <p className="text-xs font-semibold mb-1">Why this was recommended</p>
-              <p className="text-xs text-charcoal/80 leading-relaxed">{open.pick.reason}</p>
+              <p className="text-xs text-charcoal/80 leading-relaxed">{open.meal.nutritionReason}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
