@@ -23,10 +23,14 @@ const NAME: Record<NutrientKey, string> = {
   fiber: "Fibre",
 };
 
-const BASE_SCORE: Record<string, number> = {
-  high: 8.5,
-  medium: 6.5,
-  low: 3.5,
+const BASE_SCORE: Record<NutrientKey, Record<string, number>> = {
+  // Protein & fibre are seen as positive, so medium reads as "Good".
+  protein: { high: 8.5, medium: 6.5, low: 3.5 },
+  // Carbs are energy; medium reads as "Balanced".
+  carbs: { high: 8.5, medium: 7.0, low: 3.5 },
+  // Fat is neutral; medium reads as "Moderate".
+  fat: { high: 8.5, medium: 5.5, low: 3.5 },
+  fiber: { high: 8.5, medium: 6.5, low: 3.5 },
 };
 
 function hashNumber(input: string): number {
