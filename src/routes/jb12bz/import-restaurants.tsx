@@ -80,9 +80,13 @@ function ImportPage() {
 
   const submit = async () => {
     if (!preview.length) return;
+    if (wipeFirst && !dryRun) {
+      const ok = window.confirm(`This will DELETE all ${preview.length ? "existing" : ""} restaurants and their food links, then import ${preview.length} rows. Continue?`);
+      if (!ok) return;
+    }
     setBusy(true); setErr(null); setReport(null);
     try {
-      const res = await runImport({ data: { rows: preview, dryRun } });
+      const res = await runImport({ data: { rows: preview, dryRun, wipeFirst } });
       setReport(res);
     } catch (e) {
       setErr((e as Error).message ?? "Import failed");
