@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, Sparkles, ChefHat, UtensilsCrossed, Flame, Beef, Leaf, Wheat } from "lucide-react";
+import { ArrowRight, Sparkles, ChefHat, UtensilsCrossed } from "lucide-react";
 
 import heroFood from "@/assets/hero-food.jpg.asset.json";
 import logoAsset from "@/assets/mealbeta-logo.png.asset.json";
