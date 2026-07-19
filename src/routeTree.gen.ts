@@ -48,6 +48,7 @@ import { Route as Jb12bzImportRestaurantsRouteImport } from './routes/jb12bz/imp
 import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
 import { Route as Jb12bzChefsRouteImport } from './routes/jb12bz/chefs'
 import { Route as ChefsSlugRouteImport } from './routes/chefs.$slug'
+import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
 
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
@@ -244,6 +245,11 @@ const ChefsSlugRoute = ChefsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ChefsRoute,
 } as any)
+const AuthenticatedTrackerRoute = AuthenticatedTrackerRouteImport.update({
+  id: '/_authenticated/tracker',
+  path: '/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -272,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/shopping': typeof ShoppingRoute
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
+  '/tracker': typeof AuthenticatedTrackerRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -312,6 +319,7 @@ export interface FileRoutesByTo {
   '/shopping': typeof ShoppingRoute
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
+  '/tracker': typeof AuthenticatedTrackerRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -354,6 +362,7 @@ export interface FileRoutesById {
   '/shopping': typeof ShoppingRoute
   '/terms': typeof TermsRoute
   '/today': typeof TodayRoute
+  '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/shopping'
     | '/terms'
     | '/today'
+    | '/tracker'
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/shopping'
     | '/terms'
     | '/today'
+    | '/tracker'
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/shopping'
     | '/terms'
     | '/today'
+    | '/_authenticated/tracker'
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
@@ -520,6 +532,7 @@ export interface RootRouteChildren {
   ShoppingRoute: typeof ShoppingRoute
   TermsRoute: typeof TermsRoute
   TodayRoute: typeof TodayRoute
+  AuthenticatedTrackerRoute: typeof AuthenticatedTrackerRoute
   MealIdRoute: typeof MealIdRoute
 }
 
@@ -798,6 +811,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChefsSlugRouteImport
       parentRoute: typeof ChefsRoute
     }
+    '/_authenticated/tracker': {
+      id: '/_authenticated/tracker'
+      path: '/tracker'
+      fullPath: '/tracker'
+      preLoaderRoute: typeof AuthenticatedTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -880,6 +900,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShoppingRoute: ShoppingRoute,
   TermsRoute: TermsRoute,
   TodayRoute: TodayRoute,
+  AuthenticatedTrackerRoute: AuthenticatedTrackerRoute,
   MealIdRoute: MealIdRoute,
 }
 export const routeTree = rootRouteImport

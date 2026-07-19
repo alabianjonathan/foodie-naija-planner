@@ -50,7 +50,7 @@ function TrackerPage() {
   const month = useQuery({ queryKey: ["tracker", "range", "month"], queryFn: () => fetchRange({ data: { range: "month" } }), enabled: range === "month" });
   const goals = useQuery({ queryKey: ["tracker", "goals"], queryFn: () => fetchGoals() });
   const streak = useQuery({ queryKey: ["tracker", "streak"], queryFn: () => fetchStreak() });
-  const insights = useQuery({ queryKey: ["tracker", "insights"], queryFn: () => fetchInsights({ data: {} }), staleTime: 30 * 60 * 1000 });
+  const insights = useQuery({ queryKey: ["tracker", "insights"], queryFn: () => fetchInsights(), staleTime: 30 * 60 * 1000 });
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["tracker"] });
