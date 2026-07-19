@@ -289,39 +289,48 @@ export function computeNutrition(input: Parameters<typeof estimateMacros>[0]): {
   };
 }
 
-/** Personalised, nutrition-driven "why this was recommended" line. */
+/** Personalised, nutrition-driven "why this was recommended" line — Nigerian-friendly wording. */
 export function nutritionReason(
   mealName: string,
   n: Record<NutrientKey, NutrientInfo>,
   macros: MacroEstimate,
   ctx?: { costText?: string; goal?: string | null; considerMinutes?: number | null },
 ): string {
-  const parts: string[] = [];
+  // Build friendly, everyday strengths — the kind of thing a Nigerian friend would tell you.
   const strengths: string[] = [];
-  if (n.protein.score >= 7) strengths.push(`rich in protein (${Math.round(n.protein.grams)}g)`);
-  if (n.fiber.score >= 7) strengths.push(`high in fibre (${Math.round(n.fiber.grams)}g)`);
-  if (n.fat.label === "Healthy") strengths.push("built on healthy fats");
-  if (n.carbs.label === "Balanced") strengths.push("balanced complex carbs for steady energy");
+  if (n.protein.score >= 7) strengths.push(`packed with protein (${Math.round(n.protein.grams)}g) — good for muscle and staying full`);
+  if (n.fiber.score >= 7) strengths.push(`high in fibre (${Math.round(n.fiber.grams)}g) to help digestion and keep belly settled`);
+  if (n.fat.label === "Healthy") strengths.push("uses good fats (like fish, groundnut or avocado oil) — better for the heart");
+  if (n.carbs.label === "Balanced") strengths.push("gives steady energy without the heavy sleepy feeling after eating");
   if (strengths.length === 0) {
-    if (n.protein.score >= 5) strengths.push(`a moderate protein hit (${Math.round(n.protein.grams)}g)`);
-    if (n.carbs.score >= 5) strengths.push(`solid carbs for energy (${Math.round(n.carbs.grams)}g)`);
-    if (strengths.length === 0) strengths.push(`about ${macros.calories} kcal to fuel the day`);
+    if (n.protein.score >= 5) strengths.push(`a fair protein serving (~${Math.round(n.protein.grams)}g)`);
+    if (n.carbs.score >= 5) strengths.push(`enough carbs (~${Math.round(n.carbs.grams)}g) to carry you through work or school`);
+    if (strengths.length === 0) strengths.push(`about ${macros.calories} kcal — a normal Nigerian plate size`);
   }
-  parts.push(`${mealName} is ${strengths.slice(0, 2).join(" and ")}`);
+
+  const parts: string[] = [];
+  parts.push(`${mealName} is ${strengths.slice(0, 2).join(", and ")}`);
 
   const goal = (ctx?.goal ?? "").toLowerCase();
-  if (goal.includes("protein") && n.protein.score >= 7) parts.push("matching your goal to raise protein intake");
-  else if (goal.includes("weight") && macros.calories <= 500) parts.push("keeping calories moderate for your weight goal");
-  else if (goal.includes("energy") && n.carbs.score >= 6) parts.push("giving sustained energy from its carb base");
+  if (goal.includes("protein") && n.protein.score >= 7) parts.push("which matches your goal to add more protein");
+  else if ((goal.includes("weight loss") || goal.includes("lose")) && macros.calories <= 500) parts.push("and it keeps calories light for your weight-loss plan");
+  else if (goal.includes("gain") && macros.calories >= 700) parts.push("and the calories are enough to help you gain healthily");
+  else if (goal.includes("energy") && n.carbs.score >= 6) parts.push("and it gives long-lasting energy from its carb base");
+  else if (goal.includes("diabet") && n.carbs.label === "Balanced") parts.push("and the carbs are the slow-release type — friendlier for blood sugar");
 
-  if (ctx?.costText) parts.push(`and it fits ${ctx.costText}`);
+  if (ctx?.costText) parts.push(`and it fits ${ctx.costText} — no need to break the bank`);
 
   let sentence = parts.join(", ") + ".";
-  // Considerations — attach a second sentence when a real trade-off exists.
+
+  // Considerations — friendly heads-up written like a market advice.
   const cons: string[] = [];
-  if (n.fat.label === "High" && n.fat.score < 6) cons.push(`fat is on the higher side (~${Math.round(macros.fatG)}g)`);
-  if (n.fiber.score < 4) cons.push("fibre is on the low side — pair with a vegetable side");
-  if (ctx?.considerMinutes && ctx.considerMinutes >= 60) cons.push(`cook time is ${ctx.considerMinutes} minutes`);
-  if (cons.length) sentence += ` Consider: ${cons.join("; ")}.`;
+  if (n.fat.label === "High" && n.fat.score < 6) cons.push(`oil is on the high side (~${Math.round(macros.fatG)}g) — try to reduce palm oil or fried plantain`);
+  if (n.fiber.score < 4) cons.push("fibre is low — add vegetables like ugu, ewedu, or a small salad on the side");
+  if (n.protein.score < 4) cons.push("protein is small — add boiled egg, fish, or beans to balance it");
+  if (macros.calories >= 900) cons.push("it's a heavy plate — share, or take a smaller portion if you're watching weight");
+  if (ctx?.considerMinutes && ctx.considerMinutes >= 60) cons.push(`cooking takes about ${ctx.considerMinutes} minutes, so plan ahead`);
+  else if (ctx?.considerMinutes && ctx.considerMinutes <= 30) sentence += ` Bonus: ready in ~${ctx.considerMinutes} minutes, so it's great for busy days.`;
+
+  if (cons.length) sentence += ` Heads up: ${cons.slice(0, 2).join("; ")}.`;
   return sentence;
 }
