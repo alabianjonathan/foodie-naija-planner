@@ -5,7 +5,7 @@ import { TopBar } from "@/components/TopBar";
 import {
   Sparkles, Flame, Clock, Wallet, Loader2, Leaf, ArrowRight, X,
   Send, Bookmark, Share2, Utensils, Store, ChefHat, RefreshCw, Info, ThumbsUp, ThumbsDown,
-  SlidersHorizontal, Mic,
+  SlidersHorizontal, Mic, MapPin,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -137,6 +137,35 @@ function TodayPage() {
   const [orderFor, setOrderFor] = useState<UiMeal | null>(null);
   const [chefFor, setChefFor] = useState<UiMeal | null>(null);
   const [feedback, setFeedback] = useState<string>("");
+  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoState, setGeoState] = useState<"idle" | "asking" | "denied">("idle");
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mb.geo");
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { lat: number; lng: number; ts: number };
+      if (Date.now() - parsed.ts > 24 * 3600 * 1000) return;
+      setGeo({ lat: parsed.lat, lng: parsed.lng });
+    } catch { /* ignore */ }
+  }, []);
+
+  const requestLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      toast.error("Your device doesn't support location.");
+      return;
+    }
+    setGeoState("asking");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const g = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setGeo(g); setGeoState("idle");
+        try { localStorage.setItem("mb.geo", JSON.stringify({ ...g, ts: Date.now() })); } catch { /* ignore */ }
+        toast.success("Location set — restaurants will be ranked by distance.");
+      },
+      () => { setGeoState("denied"); toast.error("Location permission denied. You can still browse by city/area."); },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 5 * 60 * 1000 },
+    );
+  };
 
   useEffect(() => {
     const t = setInterval(() => setPhIndex((i) => (i + 1) % PLACEHOLDERS.length), 3500);
@@ -379,7 +408,7 @@ function TodayPage() {
       />
 
       <MealDetailDialog open={openMeal} onClose={() => setOpenMeal(null)} ingredientsSplit={ingredientsSplit} onOrder={() => { if (openMeal) { setOrderFor(openMeal.meal); setOpenMeal(null); } }} onChef={() => { if (openMeal) { setChefFor(openMeal.meal); setOpenMeal(null); } }} />
-      <OrderDialog meal={orderFor} city={filters.city} area={filters.area} onClose={() => setOrderFor(null)} enabled={!!user} />
+      <OrderDialog meal={orderFor} city={filters.city} area={filters.area} geo={geo} onEnableLocation={requestLocation} onClose={() => setOrderFor(null)} enabled={!!user} />
       <ChefDialog meal={chefFor} city={filters.city} area={filters.area} onClose={() => setChefFor(null)} enabled={!!user} />
     </PhoneShell>
   );
@@ -692,12 +721,12 @@ function MealDetailDialog({
   );
 }
 
-function OrderDialog({ meal, city, area, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; onClose: () => void; enabled: boolean }) {
+function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; geo: { lat: number; lng: number } | null; onEnableLocation: () => void; onClose: () => void; enabled: boolean }) {
   const fetchFn = useServerFn(findRestaurantsForMeal);
   const q = useQuery({
-    queryKey: ["today-restaurants", meal?.slug, city, area],
+    queryKey: ["today-restaurants", meal?.slug, city, area, geo?.lat, geo?.lng],
     enabled: !!meal && enabled,
-    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, mealName: meal!.name, city, area } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
+    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, mealName: meal!.name, city, area, lat: geo?.lat, lng: geo?.lng } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
   });
   const locationText = [area, city].filter(Boolean).join(", ");
   return (
@@ -707,6 +736,21 @@ function OrderDialog({ meal, city, area, onClose, enabled }: { meal: UiMeal | nu
           <DialogTitle className="font-display text-lg">Order {meal?.name}</DialogTitle>
           <DialogDescription className="text-xs">Top restaurant matches near you{locationText ? ` in ${locationText}` : ""}. If your area has no match, MealBeta checks the same state and then available listings. Tap a card to view the full profile.</DialogDescription>
         </DialogHeader>
+        {!geo && (
+          <button
+            onClick={onEnableLocation}
+            className="w-full flex items-center justify-between gap-2 rounded-xl border border-brand/30 bg-brand/5 px-3 py-2 text-left"
+          >
+            <span className="text-xs">
+              <span className="font-semibold text-charcoal">Use my precise location</span>
+              <span className="block text-[11px] text-muted-foreground">Rank restaurants by distance from where you are right now.</span>
+            </span>
+            <MapPin className="h-4 w-4 text-brand shrink-0" />
+          </button>
+        )}
+        {geo && (
+          <p className="text-[11px] text-leaf flex items-center gap-1"><MapPin className="h-3 w-3" /> Ranking by distance from your location</p>
+        )}
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
         {q.isError && (
           <p className="text-sm text-muted-foreground text-center py-6">Restaurants could not load right now. Please try again.</p>

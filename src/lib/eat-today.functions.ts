@@ -232,6 +232,7 @@ export type MatchedRestaurant = {
   id: string; slug: string; name: string; city: string; area: string | null;
   address: string | null; phone: string | null; whatsapp: string | null;
   rating: number; verified: boolean; tags: string[]; matchLabel: string;
+  distanceKm: number | null;
 };
 
 export const findRestaurantsForMeal = createServerFn({ method: "POST" })
@@ -239,6 +240,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({
     mealSlug: z.string(), mealName: z.string().optional(),
     city: z.string().optional(), area: z.string().optional(),
+    lat: z.number().optional(), lng: z.number().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
     // Resolve restaurantIds that carry this meal via the imported foods index.
@@ -274,7 +276,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       area = area ?? profile?.area ?? undefined;
     }
 
-    const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status";
+    const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status, latitude, longitude";
 
     // Lookup same-state city list for fallback. Some imported restaurants use
     // satellite cities (Epe, Ikorodu, Badagry) that are not in the cities table,
@@ -403,24 +405,46 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       if (rows.length > 0) break;
     }
 
-    const scored = rows.sort((a, b) => {
-      const areaScore = (r: any) => area && r.area === area ? 1 : 0;
-      const localScore = (r: any) => localityMatches(r) ? 1 : 0;
-      const cityScore = (r: any) => city && r.city === city ? 1 : 0;
-      const stateScore = (r: any) => stateMatches(r) ? 1 : 0;
-      const satellitePenalty = (r: any) => cityIsMetro && r.city && farSatellites.has(r.city) ? 1 : 0;
-      const score = (r: any) =>
-        areaScore(r) * 60 +
-        localScore(r) * 40 +
-        cityScore(r) * 20 +
-        stateScore(r) * 5 -
-        satellitePenalty(r) * 50 +
-        (r.verified ? 5 : 0) +
-        Number(r.rating ?? 0);
-      return score(b) - score(a);
-    }).slice(0, 3);
+    // Compute haversine distance in km when we have the user's lat/lng.
+    const haversineKm = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
+      const R = 6371;
+      const toRad = (d: number) => (d * Math.PI) / 180;
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(s));
+    };
+    const hasUserLoc = typeof data.lat === "number" && typeof data.lng === "number";
+    const distFor = (r: any): number | null => {
+      if (!hasUserLoc || r.latitude == null || r.longitude == null) return null;
+      return haversineKm({ lat: data.lat!, lng: data.lng! }, { lat: Number(r.latitude), lng: Number(r.longitude) });
+    };
+
+    const scored = rows
+      .map((r) => ({ ...r, _dist: distFor(r) }))
+      .sort((a, b) => {
+        // When we know user location, distance dominates.
+        if (a._dist != null && b._dist != null) return a._dist - b._dist;
+        if (a._dist != null) return -1;
+        if (b._dist != null) return 1;
+        const areaScore = (r: any) => area && r.area === area ? 1 : 0;
+        const localScore = (r: any) => localityMatches(r) ? 1 : 0;
+        const cityScore = (r: any) => city && r.city === city ? 1 : 0;
+        const stateScore = (r: any) => stateMatches(r) ? 1 : 0;
+        const satellitePenalty = (r: any) => cityIsMetro && r.city && farSatellites.has(r.city) ? 1 : 0;
+        const score = (r: any) =>
+          areaScore(r) * 60 +
+          localScore(r) * 40 +
+          cityScore(r) * 20 +
+          stateScore(r) * 5 -
+          satellitePenalty(r) * 50 +
+          (r.verified ? 5 : 0) +
+          Number(r.rating ?? 0);
+        return score(b) - score(a);
+      }).slice(0, 3);
 
     const labelFor = (r: any) => {
+      if (r._dist != null) return `${r._dist < 1 ? "<1" : r._dist.toFixed(1)} km away`;
       if (area && r.area === area) return `In ${area}`;
       if (localityMatches(r) && localityToken) return `Near ${localityToken}`;
       if (city && r.city === city) return `In ${city}`;
@@ -432,6 +456,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area,
       address: r.address ?? null, phone: r.phone ?? null, whatsapp: r.whatsapp ?? null,
       rating: Number(r.rating ?? 0), verified: !!r.verified, tags: r.tags ?? [], matchLabel: labelFor(r),
+      distanceKm: r._dist,
     }));
   });
 

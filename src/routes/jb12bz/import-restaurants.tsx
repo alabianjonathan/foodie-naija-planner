@@ -60,6 +60,7 @@ function ImportPage() {
   const [err, setErr] = useState<string | null>(null);
   const [sheetName, setSheetName] = useState<string>("");
   const [dryRun, setDryRun] = useState(false);
+  const [wipeFirst, setWipeFirst] = useState(false);
 
   const onFile = async (f: File) => {
     setFile(f); setReport(null); setErr(null); setPreview([]);
@@ -79,9 +80,13 @@ function ImportPage() {
 
   const submit = async () => {
     if (!preview.length) return;
+    if (wipeFirst && !dryRun) {
+      const ok = window.confirm(`This will DELETE all ${preview.length ? "existing" : ""} restaurants and their food links, then import ${preview.length} rows. Continue?`);
+      if (!ok) return;
+    }
     setBusy(true); setErr(null); setReport(null);
     try {
-      const res = await runImport({ data: { rows: preview, dryRun } });
+      const res = await runImport({ data: { rows: preview, dryRun, wipeFirst } });
       setReport(res);
     } catch (e) {
       setErr((e as Error).message ?? "Import failed");
@@ -114,6 +119,10 @@ function ImportPage() {
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={dryRun} onChange={(e) => setDryRun(e.target.checked)} />
             Dry run (preview only, no writes)
+          </label>
+          <label className="flex items-center gap-2 text-sm text-destructive">
+            <input type="checkbox" checked={wipeFirst} onChange={(e) => setWipeFirst(e.target.checked)} />
+            Replace all (delete every existing restaurant first)
           </label>
           <button
             disabled={!preview.length || busy}
@@ -161,8 +170,9 @@ function ImportPage() {
 
         {report && (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-7 gap-2 text-sm">
               <Stat label="Total" value={report.totalRows} />
+              <Stat label="Deleted" value={report.deleted} tone={report.deleted > 0 ? "bad" : undefined} />
               <Stat label="Created" value={report.created} tone="good" />
               <Stat label="Updated" value={report.updated} tone="good" />
               <Stat label="Foods" value={report.foodsCreated} />

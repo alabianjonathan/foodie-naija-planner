@@ -29,6 +29,7 @@ const RowSchema = z.object({
 const InputSchema = z.object({
   rows: z.array(RowSchema).min(1).max(2000),
   dryRun: z.boolean().optional().default(false),
+  wipeFirst: z.boolean().optional().default(false),
 });
 
 // -------------------- Alias / normalization tables --------------------
@@ -161,6 +162,7 @@ export type ImportReport = {
   failed: number;
   foodsCreated: number;
   linksCreated: number;
+  deleted: number;
   details: Array<{ chain: string; branch: string; city: string; action: "created" | "updated" | "review" | "failed"; note?: string }>;
 };
 
@@ -195,8 +197,20 @@ export const importRestaurantsFromRows = createServerFn({ method: "POST" })
     const report: ImportReport = {
       totalRows: data.rows.length,
       created: 0, updated: 0, reviewed: 0, failed: 0,
-      foodsCreated: 0, linksCreated: 0, details: [],
+      foodsCreated: 0, linksCreated: 0, deleted: 0, details: [],
     };
+
+    // Wipe existing restaurants (and their food links) first when requested.
+    if (data.wipeFirst && !data.dryRun) {
+      await supabaseAdmin.from("restaurant_foods").delete().not("restaurant_id", "is", null);
+      const { data: delRows, error: delErr } = await supabaseAdmin
+        .from("restaurants").delete().not("id", "is", null).select("id");
+      if (delErr) throw delErr;
+      report.deleted = (delRows ?? []).length;
+      restBySlug.clear();
+      restByKey.clear();
+      if (existingRests) existingRests.length = 0;
+    }
 
     for (const row of data.rows) {
       try {
