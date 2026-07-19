@@ -186,11 +186,8 @@ function TodayPage() {
 
   const submit = () => mutation.mutate(undefined);
 
-  // Auto-run once when arriving with ?q=…&auto=1 from the dashboard.
-  useEffect(() => {
-    if (search.auto && search.q && !authLoading && user) submit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user]);
+  // Note: we intentionally do NOT auto-run on mount. The user must press
+  // "Suggest Meals" (or "Show more options") to trigger a recommendation.
 
   const picks = useMemo(() => (result?.picks ?? [])
     .map((p) => ({ pick: p, meal: getMeal(p.mealId) }))
@@ -337,7 +334,7 @@ function TodayPage() {
 
         {result && (
           <button onClick={submit} disabled={mutation.isPending} className="w-full inline-flex items-center justify-center gap-1.5 rounded-full border border-brand/30 text-brand py-2.5 text-sm font-medium disabled:opacity-60">
-            {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Show different options
+            {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Show more options
           </button>
         )}
 
@@ -521,10 +518,10 @@ function ResultCard({
             {pick.mealTime && <span className="inline-flex items-center gap-1"><Utensils className="h-3 w-3" />{pick.mealTime}</span>}
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">P: {meal.protein}</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">C: {meal.carbs}</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">F: {meal.fat}</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fibre: {meal.fiber}</span>
+            <span title={`Protein: ${meal.protein}`} className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">Protein: {meal.protein}</span>
+            <span title={`Carbs: ${meal.carbs}`} className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">Carbs: {meal.carbs}</span>
+            <span title={`Fat: ${meal.fat}`} className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">Fat: {meal.fat}</span>
+            <span title={`Fibre: ${meal.fiber}`} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fibre: {meal.fiber}</span>
           </div>
         </div>
       </div>
