@@ -42,7 +42,7 @@ export type UiMeal = {
   slug: string;
 };
 
-export function toUiMeal(m: CatalogMeal): UiMeal {
+export function toUiMeal(m: CatalogMeal, opts?: { index?: number; userSeed?: string; goal?: string | null }): UiMeal {
   const { macros, nutrients } = computeNutrition({
     ingredients: m.ingredients,
     caloriesMin: m.caloriesMin,
@@ -57,6 +57,9 @@ export function toUiMeal(m: CatalogMeal): UiMeal {
   const reason = nutritionReason(m.name, nutrients, macros, {
     costText: cookMid ? `a ~₦${cookMid.toLocaleString()} cook budget` : undefined,
     considerMinutes: m.cookingTimeMin,
+    index: opts?.index,
+    userSeed: opts?.userSeed,
+    goal: opts?.goal,
   });
   return {
     id: m.slug,
