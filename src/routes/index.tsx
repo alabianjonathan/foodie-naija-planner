@@ -95,7 +95,7 @@ function Welcome() {
           {/* AI badge */}
           <div className="inline-flex items-center gap-1.5 rounded-full bg-warm/10 px-3 py-1.5 text-[11px] font-semibold text-warm">
             <Sparkles className="h-3.5 w-3.5" fill="currentColor" />
-            AI meal planner for Nigeria
+            AI meal planner for everyone
           </div>
 
           <p className="font-display text-[clamp(1.5rem,5.5vw,2rem)] leading-[1.15] tracking-tight text-charcoal">
