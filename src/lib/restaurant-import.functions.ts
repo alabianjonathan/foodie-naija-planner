@@ -29,6 +29,7 @@ const RowSchema = z.object({
 const InputSchema = z.object({
   rows: z.array(RowSchema).min(1).max(2000),
   dryRun: z.boolean().optional().default(false),
+  wipeFirst: z.boolean().optional().default(false),
 });
 
 // -------------------- Alias / normalization tables --------------------
