@@ -1,17 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { DataTable, StatusPill } from "@/components/admin/DataTable";
 import { adminListRestaurants, adminUpsertRestaurant, adminDeleteRestaurant } from "@/lib/admin-catalog.functions";
-import { Plus, ShieldCheck, Trash2, Check, X, Pencil } from "lucide-react";
+import { Plus, ShieldCheck, Trash2, Check, X, Pencil, Search, Star } from "lucide-react";
 
 type Row = {
   id: string; slug: string; name: string; city: string; area: string | null;
-  rating: number; distance_km: number; delivery: boolean; phone: string | null;
+  state: string | null; neighborhood: string | null;
+  rating: number; reviews_count: number; mealbeta_score: number;
+  distance_km: number; delivery: boolean; phone: string | null;
   whatsapp: string | null; email: string | null; opening: string | null;
-  tags: string[]; meal_slugs: string[]; verified: boolean; status: string;
+  tags: string[]; cuisines: string[]; meal_slugs: string[];
+  verified: boolean; status: string; needs_review: boolean;
+  image_url: string | null;
 };
 
 export const Route = createFileRoute("/jb12bz/restaurants")({
@@ -38,15 +42,60 @@ function RestaurantsPage() {
   const [editing, setEditing] = useState<Row | null>(null);
   const [creating, setCreating] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [cuisineFilter, setCuisineFilter] = useState<string>("all");
+  const [cityFilter, setCityFilter] = useState<string>("all");
+  const [verificationFilter, setVerificationFilter] = useState<string>("all");
+  const [minScore, setMinScore] = useState<number>(0);
+  const [search, setSearch] = useState("");
 
-  const filtered = statusFilter === "all" ? rows : rows.filter((r) => r.status === statusFilter);
+  const cuisines = useMemo(() => {
+    const s = new Set<string>();
+    for (const r of rows) for (const c of r.cuisines ?? []) s.add(c);
+    return Array.from(s).sort();
+  }, [rows]);
+  const cities = useMemo(() => Array.from(new Set(rows.map((r) => r.city))).sort(), [rows]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (statusFilter !== "all" && r.status !== statusFilter) return false;
+      if (cuisineFilter !== "all" && !(r.cuisines ?? []).includes(cuisineFilter)) return false;
+      if (cityFilter !== "all" && r.city !== cityFilter) return false;
+      if (verificationFilter === "verified" && !r.verified) return false;
+      if (verificationFilter === "unverified" && r.verified) return false;
+      if (verificationFilter === "needs_review" && !r.needs_review) return false;
+      if ((r.mealbeta_score ?? 0) < minScore) return false;
+      if (q) {
+        const hay = `${r.name} ${r.city} ${r.area ?? ""} ${r.neighborhood ?? ""} ${r.state ?? ""} ${(r.cuisines ?? []).join(" ")} ${(r.tags ?? []).join(" ")}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [rows, statusFilter, cuisineFilter, cityFilter, verificationFilter, minScore, search]);
+
+  const stats = useMemo(() => {
+    const total = rows.length;
+    const verified = rows.filter((r) => r.verified).length;
+    const needsReview = rows.filter((r) => r.needs_review).length;
+    const avg = total ? Math.round(rows.reduce((a, r) => a + (r.mealbeta_score ?? 0), 0) / total * 10) / 10 : 0;
+    return { total, verified, needsReview, avg };
+  }, [rows]);
 
   return (
     <div>
-      <PageHeader title="Restaurants" subtitle="Approve, verify, and manage restaurant partners. Live from the customer app database."
+      <PageHeader title="Restaurants" subtitle="Approve, verify, score, and manage restaurant partners."
         actions={<button onClick={() => { setCreating(true); setEditing(null); }} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand text-brand-foreground text-sm"><Plus className="h-4 w-4" /> Add restaurant</button>}
       />
       {error && <div className="mb-4 text-sm p-3 rounded border border-destructive/30 bg-destructive/5 text-destructive">{(error as Error).message}</div>}
+
+      {/* Summary cards */}
+      <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+        <SummaryCard label="Total" value={stats.total} />
+        <SummaryCard label="Verified" value={stats.verified} tone="good" />
+        <SummaryCard label="Needs review" value={stats.needsReview} tone={stats.needsReview > 0 ? "warn" : undefined} />
+        <SummaryCard label="Avg MealBeta Score" value={stats.avg} />
+      </div>
+
       {(creating || editing) && (
         <RestaurantForm
           initial={editing ?? undefined}
@@ -54,23 +103,53 @@ function RestaurantsPage() {
           onSave={(v) => { save.mutate(v); setEditing(null); setCreating(false); }}
         />
       )}
-      <div className="mb-3 flex items-center gap-2 text-sm">
-        <span className="text-muted-foreground">Filter status:</span>
-        {["all", "active", "pending", "suspended"].map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)} className={`px-2.5 py-1 rounded-full border ${statusFilter === s ? "bg-brand text-brand-foreground border-brand" : "bg-card"}`}>{s}</button>
-        ))}
+
+      {/* Filters */}
+      <div className="mb-3 bg-card border rounded-xl p-3 flex flex-wrap items-center gap-3 text-sm">
+        <div className="flex items-center gap-2 flex-1 min-w-[200px] px-2 py-1 rounded-lg border">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <input placeholder="Search name, area, cuisine, tag…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 bg-transparent outline-none text-sm" />
+        </div>
+        <Select label="Status" value={statusFilter} onChange={setStatusFilter}
+          options={[["all", "All"], ["active", "Active"], ["pending", "Pending"], ["suspended", "Suspended"]]} />
+        <Select label="City" value={cityFilter} onChange={setCityFilter}
+          options={[["all", "All cities"], ...cities.map((c) => [c, c] as [string, string])]} />
+        <Select label="Cuisine" value={cuisineFilter} onChange={setCuisineFilter}
+          options={[["all", "All cuisines"], ...cuisines.map((c) => [c, c] as [string, string])]} />
+        <Select label="Verification" value={verificationFilter} onChange={setVerificationFilter}
+          options={[["all", "All"], ["verified", "Verified"], ["unverified", "Unverified"], ["needs_review", "Needs review"]]} />
+        <label className="flex items-center gap-2">
+          Min score
+          <input type="number" min={0} max={100} value={minScore} onChange={(e) => setMinScore(Number(e.target.value) || 0)} className="w-16 px-2 py-1 rounded border bg-background" />
+        </label>
+        <div className="text-xs text-muted-foreground ml-auto">{filtered.length} of {rows.length}</div>
       </div>
+
       {isLoading ? <div className="text-sm text-muted-foreground">Loading…</div> : (
         <DataTable<Row>
           rows={filtered}
           searchKeys={["name", "city", "area"]}
           columns={[
-            { key: "name", header: "Restaurant", render: (r) => <div><div className="font-medium">{r.name} {r.verified && <ShieldCheck className="inline h-3.5 w-3.5 text-brand" />}</div><div className="text-xs text-muted-foreground">{r.tags.join(", ")}</div></div> },
-            { key: "location", header: "Location", render: (r) => <span>{r.area}, {r.city}</span> },
+            { key: "name", header: "Restaurant", render: (r) => (
+              <div className="flex items-start gap-2">
+                {r.image_url && <img src={r.image_url} alt="" className="h-10 w-10 rounded object-cover shrink-0" />}
+                <div className="min-w-0">
+                  <div className="font-medium truncate">{r.name} {r.verified && <ShieldCheck className="inline h-3.5 w-3.5 text-brand" />}</div>
+                  <div className="text-xs text-muted-foreground truncate">{(r.cuisines ?? []).slice(0, 3).join(" • ") || (r.tags ?? []).slice(0, 3).join(" • ")}</div>
+                </div>
+              </div>
+            ) },
+            { key: "location", header: "Location", render: (r) => <div className="text-sm"><div>{r.neighborhood ?? r.area ?? "—"}</div><div className="text-xs text-muted-foreground">{r.city}{r.state ? `, ${r.state}` : ""}</div></div> },
+            { key: "score", header: "MealBeta", render: (r) => (
+              <div>
+                <div className={`font-semibold ${(r.mealbeta_score ?? 0) >= 70 ? "text-leaf" : (r.mealbeta_score ?? 0) >= 40 ? "text-warm" : "text-muted-foreground"}`}>{r.mealbeta_score ?? 0}</div>
+                <div className="text-xs text-muted-foreground flex items-center gap-1"><Star className="h-3 w-3" />{r.rating} · {r.reviews_count}</div>
+              </div>
+            ) },
             { key: "phone", header: "Phone", render: (r) => r.phone ?? "—" },
-            { key: "delivery", header: "Delivery", render: (r) => r.delivery ? "Yes" : "No" },
-            { key: "rating", header: "Rating", render: (r) => `⭐ ${r.rating}` },
-            { key: "status", header: "Status", render: (r) => <StatusPill status={r.status} /> },
+            { key: "status", header: "Status", render: (r) => (
+              <div className="flex flex-col gap-1"><StatusPill status={r.status} />{r.needs_review && <span className="text-[10px] px-1.5 py-0.5 rounded bg-warm/20 text-warm">review</span>}</div>
+            ) },
           ]}
           actions={(r) => (
             <div className="flex items-center gap-1 justify-end">
@@ -80,7 +159,7 @@ function RestaurantsPage() {
                   <button title="Reject" onClick={() => save.mutate({ ...r, status: "suspended" })} className="p-1.5 rounded hover:bg-red-50 text-destructive"><X className="h-4 w-4" /></button>
                 </>
               )}
-              <button title="Verify" onClick={() => save.mutate({ ...r, verified: !r.verified })} className="p-1.5 rounded hover:bg-muted text-muted-foreground"><ShieldCheck className="h-4 w-4" /></button>
+              <button title={r.verified ? "Unverify" : "Verify"} onClick={() => save.mutate({ ...r, verified: !r.verified })} className={`p-1.5 rounded hover:bg-muted ${r.verified ? "text-brand" : "text-muted-foreground"}`}><ShieldCheck className="h-4 w-4" /></button>
               <button title="Edit" onClick={() => { setEditing(r); setCreating(false); }} className="p-1.5 rounded hover:bg-muted"><Pencil className="h-4 w-4" /></button>
               <button title="Delete" onClick={() => { if (confirm(`Delete ${r.name}?`)) remove.mutate({ id: r.id }); }} className="p-1.5 rounded hover:bg-red-50 text-destructive"><Trash2 className="h-4 w-4" /></button>
             </div>
@@ -88,6 +167,27 @@ function RestaurantsPage() {
         />
       )}
     </div>
+  );
+}
+
+function SummaryCard({ label, value, tone }: { label: string; value: number; tone?: "good" | "warn" }) {
+  const color = tone === "good" ? "text-leaf" : tone === "warn" ? "text-warm" : "text-charcoal";
+  return (
+    <div className="bg-card border rounded-lg p-3">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className={`text-2xl font-semibold ${color}`}>{value}</div>
+    </div>
+  );
+}
+
+function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: [string, string][] }) {
+  return (
+    <label className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="px-2 py-1 rounded border bg-background text-sm">
+        {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+      </select>
+    </label>
   );
 }
 
