@@ -45,6 +45,10 @@ function Home() {
   const [phIndex, setPhIndex] = useState(0);
   const slot = useMemo(() => currentSlot(), [nonce]);
   const { meals, isLoading: mealsLoading } = useCatalogMeals();
+  const fetchDay = useServerFn(getDaySummary);
+  const fetchGoals = useServerFn(getGoals);
+  const trackerDay = useQuery({ queryKey: ["tracker", "day"], queryFn: () => fetchDay({ data: {} }), enabled: !!user });
+  const trackerGoals = useQuery({ queryKey: ["tracker", "goals"], queryFn: () => fetchGoals(), enabled: !!user });
 
   useEffect(() => {
     const t = setInterval(() => setPhIndex((i) => (i + 1) % AI_PLACEHOLDERS.length), 3500);
