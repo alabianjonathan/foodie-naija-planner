@@ -294,16 +294,41 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       }
     }
 
-    const runQuery = async (scope: "city" | "state" | "any", mealFilter: boolean, verifiedOnly: boolean) => {
+    // Locality token: the user's area if set, otherwise the city string
+    // (users often type "Ikeja" as city). Used to match against restaurant
+    // area / address so we prefer results close to them, not far-flung
+    // satellite cities like Epe or Ikorodu.
+    const locality = (area && area !== "All" ? area : city) ?? "";
+    const localityToken = locality.trim();
+    const cityIsMetro = !!city && stateCities.length > 1 && stateCities.includes(city);
+    // Satellite cities we should NOT show when the user is in the metro
+    // core (e.g. Ikeja user shouldn't see Epe).
+    const farSatellites = new Set(["Epe", "Ikorodu", "Badagry"]);
+
+    const runQuery = async (
+      scope: "area" | "city" | "state" | "any",
+      mealFilter: boolean,
+      verifiedOnly: boolean,
+    ) => {
       let q = context.supabase.from("restaurants").select(cols).eq("status", "active");
-      if (scope === "city" && city) q = q.eq("city", city);
-      else if (scope === "state" && stateCities.length) q = q.in("city", stateCities);
+      if (scope === "area" && localityToken) {
+        q = q.or(`area.ilike.%${localityToken}%,address.ilike.%${localityToken}%`);
+      } else if (scope === "city" && city) {
+        q = q.eq("city", city);
+      } else if (scope === "state" && stateCities.length) {
+        // Exclude far satellites when the user is in the metro core.
+        const cities = cityIsMetro
+          ? stateCities.filter((c) => !farSatellites.has(c))
+          : stateCities;
+        if (cities.length === 0) return [];
+        q = q.in("city", cities);
+      }
       if (verifiedOnly) q = q.eq("verified", true);
       if (mealFilter) q = q.contains("meal_slugs", [data.mealSlug]);
       const { data: rows, error } = await q
         .order("verified", { ascending: false })
         .order("rating", { ascending: false })
-        .limit(scope === "any" ? 80 : 20);
+        .limit(scope === "any" ? 80 : 30);
       if (error) throw error;
       return rows ?? [];
     };
@@ -314,49 +339,61 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       return [stateName, stateToken].filter(Boolean).some((s) => haystack.includes(String(s).toLowerCase()));
     };
 
-    const withAddressState = async (mealFilter: boolean, verifiedOnly: boolean) => {
-      const rows = await runQuery("any", mealFilter, verifiedOnly);
-      return rows.filter(stateMatches);
+    const localityMatches = (r: { area: string | null; address: string | null }) => {
+      if (!localityToken) return false;
+      const t = localityToken.toLowerCase();
+      return (r.area ?? "").toLowerCase().includes(t) || (r.address ?? "").toLowerCase().includes(t);
     };
 
-    const runFoodScope = async (scope: "city" | "state" | "any", verifiedOnly: boolean) => {
+    const runFoodScope = async (
+      scope: "area" | "city" | "state" | "any",
+      verifiedOnly: boolean,
+    ) => {
       if (foodRestaurantIds.size === 0) return [];
       let q = context.supabase.from("restaurants").select(cols).eq("status", "active")
         .in("id", Array.from(foodRestaurantIds));
-      if (scope === "city" && city) q = q.eq("city", city);
-      else if (scope === "state" && stateCities.length) q = q.in("city", stateCities);
+      if (scope === "area" && localityToken) {
+        q = q.or(`area.ilike.%${localityToken}%,address.ilike.%${localityToken}%`);
+      } else if (scope === "city" && city) {
+        q = q.eq("city", city);
+      } else if (scope === "state" && stateCities.length) {
+        const cities = cityIsMetro
+          ? stateCities.filter((c) => !farSatellites.has(c))
+          : stateCities;
+        if (cities.length === 0) return [];
+        q = q.in("city", cities);
+      }
       if (verifiedOnly) q = q.eq("verified", true);
       const { data: rows } = await q
         .order("food_data_priority", { ascending: false })
         .order("verified", { ascending: false })
         .order("rating", { ascending: false })
-        .limit(scope === "any" ? 60 : 20);
+        .limit(scope === "any" ? 60 : 30);
       return rows ?? [];
     };
 
+    // Priority: locality (area / city-as-token) > city > state (metro core) > any
     const scopes: Array<() => Promise<any[]>> = [
-      // Highest signal: imported food index
+      // Locality-first with food index
+      () => runFoodScope("area", true),
+      () => runFoodScope("area", false),
       () => runFoodScope("city", true),
       () => runFoodScope("city", false),
-      () => runFoodScope("state", true),
-      () => runFoodScope("state", false),
-      () => runFoodScope("any", true),
-      // Legacy meal_slugs
+      // Locality-first without food index
+      () => runQuery("area", true, true),
+      () => runQuery("area", false, true),
+      () => runQuery("area", true, false),
+      () => runQuery("area", false, false),
       () => runQuery("city", true, true),
       () => runQuery("city", false, true),
-      () => runQuery("state", true, true),
-      () => runQuery("state", false, true),
-      () => withAddressState(true, true),
-      () => withAddressState(false, true),
-      () => runQuery("city", true, false),
       () => runQuery("city", false, false),
-      () => runQuery("state", true, false),
+      // State fallback (metro core cities only when user is in metro)
+      () => runFoodScope("state", true),
+      () => runFoodScope("state", false),
+      () => runQuery("state", false, true),
       () => runQuery("state", false, false),
-      () => withAddressState(true, false),
-      () => withAddressState(false, false),
-      () => runQuery("any", true, true),
-      () => runQuery("any", false, true),
-      () => runQuery("any", true, false),
+      // Last resort
+      () => runFoodScope("any", false),
       () => runQuery("any", false, false),
     ];
 
@@ -366,18 +403,26 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       if (rows.length > 0) break;
     }
 
-
     const scored = rows.sort((a, b) => {
       const areaScore = (r: any) => area && r.area === area ? 1 : 0;
+      const localScore = (r: any) => localityMatches(r) ? 1 : 0;
       const cityScore = (r: any) => city && r.city === city ? 1 : 0;
       const stateScore = (r: any) => stateMatches(r) ? 1 : 0;
-      const aScore = areaScore(a) * 40 + cityScore(a) * 20 + stateScore(a) * 10 + (a.verified ? 5 : 0) + Number(a.rating ?? 0);
-      const bScore = areaScore(b) * 40 + cityScore(b) * 20 + stateScore(b) * 10 + (b.verified ? 5 : 0) + Number(b.rating ?? 0);
-      return bScore - aScore;
+      const satellitePenalty = (r: any) => cityIsMetro && r.city && farSatellites.has(r.city) ? 1 : 0;
+      const score = (r: any) =>
+        areaScore(r) * 60 +
+        localScore(r) * 40 +
+        cityScore(r) * 20 +
+        stateScore(r) * 5 -
+        satellitePenalty(r) * 50 +
+        (r.verified ? 5 : 0) +
+        Number(r.rating ?? 0);
+      return score(b) - score(a);
     }).slice(0, 3);
 
     const labelFor = (r: any) => {
       if (area && r.area === area) return `In ${area}`;
+      if (localityMatches(r) && localityToken) return `Near ${localityToken}`;
       if (city && r.city === city) return `In ${city}`;
       if (stateMatches(r)) return stateToken ? `Same state (${stateToken})` : "Same state";
       return "Available restaurant";
@@ -389,6 +434,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       rating: Number(r.rating ?? 0), verified: !!r.verified, tags: r.tags ?? [], matchLabel: labelFor(r),
     }));
   });
+
 
 // -------------------- Chef lookup --------------------
 
