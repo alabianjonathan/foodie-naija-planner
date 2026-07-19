@@ -162,6 +162,7 @@ export type ImportReport = {
   failed: number;
   foodsCreated: number;
   linksCreated: number;
+  deleted: number;
   details: Array<{ chain: string; branch: string; city: string; action: "created" | "updated" | "review" | "failed"; note?: string }>;
 };
 
