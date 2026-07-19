@@ -96,16 +96,8 @@ function Welcome() {
 
       {/* Content — distributed so nothing overlaps */}
       <div className="flex min-h-0 flex-1 flex-col justify-between px-6 pb-5 pt-5">
-        <div className="shrink-0 space-y-2">
-          <h1 className="font-display text-[clamp(1.625rem,6.5vw,2.25rem)] leading-[1.08] tracking-tight text-charcoal">
-            Plan better.
-            <br />
-            Eat better.
-            <br />
-            <span className="text-warm">Spend</span> better.
-          </h1>
-
-          <p className="line-clamp-2 text-[14px] leading-snug text-muted-foreground">
+        <div className="shrink-0 space-y-3">
+          <p className="font-display text-[clamp(1.375rem,5.5vw,1.875rem)] leading-[1.12] tracking-tight text-charcoal">
             Weekly Nigerian meal plans, honest calorie & cost estimates, and chefs or restaurants near you.
           </p>
         </div>
