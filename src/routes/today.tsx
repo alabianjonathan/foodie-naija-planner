@@ -137,6 +137,36 @@ function TodayPage() {
   const [orderFor, setOrderFor] = useState<UiMeal | null>(null);
   const [chefFor, setChefFor] = useState<UiMeal | null>(null);
   const [feedback, setFeedback] = useState<string>("");
+  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = localStorage.getItem("mb.geo");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as { lat: number; lng: number; ts: number };
+      // Cache location for 1 day.
+      if (Date.now() - parsed.ts > 24 * 3600 * 1000) return null;
+      return { lat: parsed.lat, lng: parsed.lng };
+    } catch { return null; }
+  });
+  const [geoState, setGeoState] = useState<"idle" | "asking" | "denied">(geo ? "idle" : "idle");
+
+  const requestLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      toast.error("Your device doesn't support location.");
+      return;
+    }
+    setGeoState("asking");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const g = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setGeo(g); setGeoState("idle");
+        try { localStorage.setItem("mb.geo", JSON.stringify({ ...g, ts: Date.now() })); } catch { /* ignore */ }
+        toast.success("Location set — restaurants will be ranked by distance.");
+      },
+      () => { setGeoState("denied"); toast.error("Location permission denied. You can still browse by city/area."); },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 5 * 60 * 1000 },
+    );
+  };
 
   useEffect(() => {
     const t = setInterval(() => setPhIndex((i) => (i + 1) % PLACEHOLDERS.length), 3500);
