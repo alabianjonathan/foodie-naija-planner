@@ -42,7 +42,7 @@ export type UiMeal = {
   slug: string;
 };
 
-export function toUiMeal(m: CatalogMeal): UiMeal {
+export function toUiMeal(m: CatalogMeal, opts?: { index?: number; userSeed?: string; goal?: string | null }): UiMeal {
   const { macros, nutrients } = computeNutrition({
     ingredients: m.ingredients,
     caloriesMin: m.caloriesMin,
@@ -57,6 +57,9 @@ export function toUiMeal(m: CatalogMeal): UiMeal {
   const reason = nutritionReason(m.name, nutrients, macros, {
     costText: cookMid ? `a ~₦${cookMid.toLocaleString()} cook budget` : undefined,
     considerMinutes: m.cookingTimeMin,
+    index: opts?.index,
+    userSeed: opts?.userSeed,
+    goal: opts?.goal,
   });
   return {
     id: m.slug,
@@ -98,7 +101,7 @@ export function useCatalogMeals() {
     queryFn: () => fetchMeals() as unknown as Promise<CatalogMeal[]>,
     staleTime: 5 * 60 * 1000,
   });
-  const meals = useMemo(() => (query.data ?? []).map(toUiMeal), [query.data]);
+  const meals = useMemo(() => (query.data ?? []).map((m, i) => toUiMeal(m, { index: i })), [query.data]);
   const bySlug = useMemo(() => new Map(meals.map((m) => [m.slug, m])), [meals]);
   const getMeal = (slug: string | undefined | null) => (slug ? bySlug.get(slug) : undefined);
   return { meals, getMeal, isLoading: query.isLoading, error: query.error };

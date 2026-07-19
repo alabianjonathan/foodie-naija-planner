@@ -15,6 +15,7 @@ import {
 } from "@/lib/eat-today.functions";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { useCatalogMeals, type UiMeal } from "@/hooks/useCatalogMeals";
+import { nutritionReason } from "@/lib/nutrition";
 import { useToggleSavedMeal, useSavedMealIds } from "@/hooks/useSavedMeals";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -189,9 +190,25 @@ function TodayPage() {
   // Note: we intentionally do NOT auto-run on mount. The user must press
   // "Suggest Meals" (or "Show more options") to trigger a recommendation.
 
+  const userSeed = useMemo(
+    () => [query, filters.goals.join(","), filters.preferences.join(","), filters.mealTime ?? "", filters.budget ?? ""].join("|"),
+    [query, filters.goals, filters.preferences, filters.mealTime, filters.budget],
+  );
   const picks = useMemo(() => (result?.picks ?? [])
-    .map((p) => ({ pick: p, meal: getMeal(p.mealId) }))
-    .filter((x): x is { pick: RecommendPick; meal: UiMeal } => !!x.meal), [result, getMeal]);
+    .map((p, i) => {
+      const meal = getMeal(p.mealId);
+      if (!meal) return null;
+      const cookMid = Math.round((meal.cookMin + meal.cookMax) / 2);
+      const reason = nutritionReason(meal.name, meal.nutrition, meal.macros, {
+        costText: cookMid ? `a ~₦${cookMid.toLocaleString()} cook budget` : undefined,
+        considerMinutes: meal.cookingTimeMin,
+        goal: filters.goals[0] ?? null,
+        index: i,
+        userSeed,
+      });
+      return { pick: p, meal: { ...meal, nutritionReason: reason } };
+    })
+    .filter((x): x is { pick: RecommendPick; meal: UiMeal } => !!x), [result, getMeal, filters.goals, userSeed]);
 
   const ingredientsSplit = useMemo(() => {
     if (!filters.ingredients || !openMeal) return null;
