@@ -265,8 +265,9 @@ function Onboarding() {
           ) : (
             <div className="mt-4 sm:mt-6 space-y-2 md:space-y-2.5">
               {(current.kind === "area"
-                ? (answers.city ? (cityAreas[answers.city] ?? []).map((a) => ({ label: a })) : [])
+                ? (answers.city ? (cityAreas[answers.city] ?? []).map((a): Option => ({ label: a })) : [])
                 : (current.opts ?? [])
+
               ).map((opt) => {
                 const active = answers[current.key]?.toString() === opt.label;
                 return (
