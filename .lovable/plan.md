@@ -1,69 +1,59 @@
-# Upgrade "What Should I Eat Today?" (`/today`)
+## 1. Restaurant address update (no new code)
 
-Scope: rebuild only `src/routes/today.tsx` and its supporting server function `src/lib/recommendations.functions.ts`. No changes to other routes, nav, or unrelated features. Keep MealBeta's current mobile-first look (PhoneShell, existing tokens, chips, card-soft).
+Your admin importer at `/jb12bz/import-restaurants` already accepts this exact Excel format and calls `importRestaurantsFromRows`, which matches on slug/chain+branch and updates address, phone, coordinates, and food categories in place (no duplicates, no blank overwrites).
 
-## User experience
+**Action for you:** open `/jb12bz/import-restaurants`, upload `mealbeta_restaurant_chains_complete_update_v2-2.xlsx`, and run it. Dry-run first if you want a preview.
 
-Single mobile screen with:
+I confirmed the 94 branches parse cleanly and Ikeja/Gbagada/Ikoyi/etc. all resolve to correct addresses.
 
-1. **Header** — "What Should I Eat Today?" + subtitle: *"Tell us what you feel like eating, your budget, or what ingredients you already have, and MealBeta will suggest the best options for you."*
-2. **Conversational input** — textarea + Send. Placeholder rotates through example prompts (e.g. "I have ₦3,000 and want something filling").
-3. **Quick filters** (chips, collapsible "More options" for advanced) —
-   - Meal Time, Goal, Food Preference, Budget, Time Available, Spice Level
-   - Advanced (expand): Allergies (text), Foods to avoid (text), Ingredients at home (text), People (number), City/Area (prefilled from profile)
-4. **Results** — four labeled cards: **Best Match**, **Healthier Option**, **Budget Option**, **Quick Option**. Each card shows meal image/emoji, name, short description, "Why this matches" reason, price/kcal/protein/carbs/fat/fibre estimates, prep time, main ingredients, portion, meal-time suitability, considerations.
-   - Actions: Order This Meal, Find a Chef, Cook This Meal, View Recipe (→ `/meal/$id`), Save, Share, Show Another
-   - Feedback row: I like this / Not for me / Too expensive / Too heavy / Too spicy / Ate recently / Healthier / Cheaper
-5. **Ingredients mode** — when user provides ingredients, split into *You Already Have* / *You Still Need* with substitutions & estimated extra cost.
-6. **Why this was recommended** — plain-language paragraph per card.
-7. **Disclaimer** at the bottom (nutrition estimates + medical note).
+## 2. Nutrition Tracker & Progress (new feature)
 
-Order/Chef actions open a Dialog listing matched restaurants/chefs from DB, filtered by user's city/area, rating, verified status, and (for chefs) matching service type / speciality.
+### New tables (migration)
+- `nutrition_logs` — one row per food/water/weight/activity entry
+  - `user_id, logged_at (date), meal_slot (breakfast|lunch|dinner|snack|water|weight|activity), meal_id (nullable fk), food_name, servings, calories, protein_g, carbs_g, fat_g, fiber_g, water_ml, weight_kg, activity_type, activity_minutes, notes`
+- `nutrition_goals` — one active row per user
+  - `user_id, daily_calories, protein_g, carbs_g, fat_g, fiber_g, water_ml, weight_target_kg, goal_type (lose|maintain|gain), activity_target_min`
+- `nutrition_streaks` — derived counters
+  - `user_id, current_streak, longest_streak, last_logged_on, achievements jsonb`
 
-## Backend / logic
+All three: RLS `auth.uid() = user_id`, GRANT to `authenticated` + `service_role`, updated_at trigger.
 
-Extend `src/lib/recommendations.functions.ts`:
+### Server functions (`src/lib/nutrition-tracker.functions.ts`)
+- `logEntry` — insert/update a log row; auto-fills macros from meal or ingredient DB (reuses `computeNutrition` in `src/lib/nutrition.ts`)
+- `logWater(ml)`, `logWeight(kg)`, `logActivity(type, minutes)` — thin wrappers
+- `getGoals` / `updateGoals` — with sensible defaults from profile (goal + weight)
+- `getDaySummary(date)` — totals + % of goal per macro, water, activity
+- `getRangeSummary(range: 'week'|'month')` — per-day series for charts
+- `getStreakAndAchievements` — computes streak from log dates + rule-based achievements (7-day streak, hit protein 5×, water goal 3 days, first weight-in, etc.)
+- `getAIInsights(range)` — Lovable AI Gateway call summarizing the last 7 days: what's working, one culturally-grounded Nigerian tip, one gentle nudge (no medical claims)
 
-- New `recommendMeals` server fn (auth required):
-  - Input: `{ query?: string; filters?: {...}; feedback?: {...}; avoidIds?: string[] }`
-  - Loads: profile (goal, budget, city, restriction, people, cook_order), all active meals, user's saved meals (to boost/avoid duplicates), recent recommendations stored in `profiles.recent_recommendations` (add col if missing — otherwise pass avoidIds from client localStorage).
-  - Calls Lovable AI Gateway (`google/gemini-2.5-flash`) using AI SDK `Output.object` with a small schema:
-    ```
-    { summary, picks: [{ label: "Best Match"|"Healthier Option"|"Budget Option"|"Quick Option", mealId, reason, priceEstimate, prepMinutes, considerations, mealTime }] }
-    ```
-  - Prompt encodes user profile, budget, allergies, dislikes, ingredients at home, time constraint, spice, cuisine, goal, people count, and instructs the model to pick 4 different meal IDs from the catalog with rationale. Rules: never include allergens, respect dislikes, weight-loss → moderate cal + protein + fibre, budget → cheapest matching, quick → lowest cookingTimeMin, healthier → highest healthScore. Fall back to filtered heuristic sort if the AI call fails (use `NoObjectGeneratedError.text` guard per gateway rules).
-  - Returns `{ summary, picks }`.
-- Keep the existing `generateDailyRecommendation` untouched (used elsewhere? — check; only `today.tsx` uses it, so replace usage there).
+### New route `/tracker` (auth)
+- Today card: calorie ring + macro bars, water glasses, activity minutes, current weight
+- Quick-add row: **Log meal**, **Log water**, **Log weight**, **Log activity** (bottom sheets)
+- "Log from today's plan" — pulls today's meal plan and one-taps a meal into the log
+- Range toggle: Day / Week / Month with recharts area/bar charts
+- Streak + achievements strip
+- "Personalised AI insights" card (7-day summary, refresh button)
+- Goals: edit sheet, pulled from `nutrition_goals`; defaults computed from onboarding data if empty
 
-- Add `findRestaurantsForMeal({ mealId, city, area })` server fn — queries `restaurants` where `status = 'active'`, address present, city matches, ordered by rating desc, limit 6. Returns name, address, phone, rating, verified.
-- Add `findChefsForMeal({ mealId, serviceType, city, area })` server fn — queries `chefs` joined with `chef_listings` (speciality match by meal name/category), filter `verified` desc, active plan, rating desc, city match, limit 6.
+### Integration touch points (minimal)
+- **Meal detail (`/meal/$id`)**: add a "Log this meal" button → calls `logEntry` with mealId + slot picker
+- **Today (`/today`)**: each result card gets a small "Log after eating" action → same fn
+- **Dashboard**: add a compact "Today's nutrition" card (calories + water ring) linking to `/tracker`
+- **BottomNav**: add Tracker tab (swap with least-used current tab, or as 5th)
 
-All three server fns use `requireSupabaseAuth` for authed reads and RLS-respecting client (`context.supabase`).
+### Design
+Reuse existing tokens/PhoneShell/card-soft. No new colors. Charts use `--brand` + `--warm` from styles.css. All copy in the same Nigerian-friendly voice as `nutrition.ts` (e.g., "You're doing well on protein today — jollof + fish is pulling its weight").
 
-## Frontend components (in `today.tsx` only)
+### Files touched
+- 1 migration (3 tables + policies + grants + trigger)
+- `src/lib/nutrition-tracker.functions.ts` (new)
+- `src/routes/tracker.tsx` (new, under `_authenticated`)
+- `src/components/BottomNav.tsx` (add tab)
+- `src/routes/dashboard.tsx` (add small summary card)
+- `src/routes/today.tsx` (add "Log after eating" on result card)
+- `src/routes/meal.$id.tsx` (add "Log this meal" button)
 
-- Local `QuickFilters` component (chips groups).
-- `MealResultCard` with all fields, feedback row, action buttons.
-- `RestaurantDialog` and `ChefDialog` — reuse shadcn Dialog + fetch via `useQuery`.
-- Ingredients breakdown block appears only when ingredients present.
-- Persist feedback + last picks in `localStorage` (`avoidIds` sent on next call, feedback influences next prompt).
-
-## Data assumptions & guardrails
-
-- Use existing tables only (`meals`, `restaurants`, `chefs`, `chef_listings`, `chef_reviews`, `saved_meals`, `profiles`). No schema migrations.
-- Nutrition/price shown as estimates (label "est.").
-- Empty/loading/error states styled with existing tokens.
-- Do not fabricate restaurants/chefs — if query returns none, show empty state ("No matching restaurants in your area yet — try broadening the city.").
-- Keep responses under limits by not enum-constraining schema (label is a plain string, validated client-side).
-
-## Out of scope
-
-- No changes to nav, other routes, homepage, admin, or DB schema.
-- No new legal pages / SEO changes.
-- No new tables — reuse existing.
-
-## Files touched
-
-- `src/routes/today.tsx` (rewrite in place)
-- `src/lib/recommendations.functions.ts` (add new fns, keep existing exports)
-- Possibly `src/lib/chefs.functions.ts` / new `src/lib/restaurants.functions.ts` for the two lookup fns (or add to recommendations file — will add a small `src/lib/eat-today.functions.ts` to keep concerns separate).
+### Out of scope
+- No barcode scanning, no wearables sync, no photo food recognition — say the word if you want any of those later.
+- No changes to auth, admin, or unrelated routes.

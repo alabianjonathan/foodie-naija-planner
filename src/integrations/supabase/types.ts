@@ -657,6 +657,161 @@ export type Database = {
         }
         Relationships: []
       }
+      nutrition_goals: {
+        Row: {
+          activity_target_min: number
+          carbs_g: number
+          created_at: string
+          daily_calories: number
+          fat_g: number
+          fiber_g: number
+          goal_type: string
+          protein_g: number
+          updated_at: string
+          user_id: string
+          water_ml: number
+          weight_target_kg: number | null
+        }
+        Insert: {
+          activity_target_min?: number
+          carbs_g?: number
+          created_at?: string
+          daily_calories?: number
+          fat_g?: number
+          fiber_g?: number
+          goal_type?: string
+          protein_g?: number
+          updated_at?: string
+          user_id: string
+          water_ml?: number
+          weight_target_kg?: number | null
+        }
+        Update: {
+          activity_target_min?: number
+          carbs_g?: number
+          created_at?: string
+          daily_calories?: number
+          fat_g?: number
+          fiber_g?: number
+          goal_type?: string
+          protein_g?: number
+          updated_at?: string
+          user_id?: string
+          water_ml?: number
+          weight_target_kg?: number | null
+        }
+        Relationships: []
+      }
+      nutrition_logs: {
+        Row: {
+          activity_minutes: number | null
+          activity_type: string | null
+          calories: number | null
+          carbs_g: number | null
+          created_at: string
+          entry_type: string
+          fat_g: number | null
+          fiber_g: number | null
+          food_name: string | null
+          id: string
+          logged_at: string
+          logged_on: string
+          meal_id: string | null
+          meal_slot: string | null
+          notes: string | null
+          protein_g: number | null
+          servings: number | null
+          updated_at: string
+          user_id: string
+          water_ml: number | null
+          weight_kg: number | null
+        }
+        Insert: {
+          activity_minutes?: number | null
+          activity_type?: string | null
+          calories?: number | null
+          carbs_g?: number | null
+          created_at?: string
+          entry_type: string
+          fat_g?: number | null
+          fiber_g?: number | null
+          food_name?: string | null
+          id?: string
+          logged_at?: string
+          logged_on?: string
+          meal_id?: string | null
+          meal_slot?: string | null
+          notes?: string | null
+          protein_g?: number | null
+          servings?: number | null
+          updated_at?: string
+          user_id: string
+          water_ml?: number | null
+          weight_kg?: number | null
+        }
+        Update: {
+          activity_minutes?: number | null
+          activity_type?: string | null
+          calories?: number | null
+          carbs_g?: number | null
+          created_at?: string
+          entry_type?: string
+          fat_g?: number | null
+          fiber_g?: number | null
+          food_name?: string | null
+          id?: string
+          logged_at?: string
+          logged_on?: string
+          meal_id?: string | null
+          meal_slot?: string | null
+          notes?: string | null
+          protein_g?: number | null
+          servings?: number | null
+          updated_at?: string
+          user_id?: string
+          water_ml?: number | null
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nutrition_logs_meal_id_fkey"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nutrition_streaks: {
+        Row: {
+          achievements: Json
+          created_at: string
+          current_streak: number
+          last_logged_on: string | null
+          longest_streak: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievements?: Json
+          created_at?: string
+          current_streak?: number
+          last_logged_on?: string | null
+          longest_streak?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievements?: Json
+          created_at?: string
+          current_streak?: number
+          last_logged_on?: string | null
+          longest_streak?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           key: string
