@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo } from "react";
 import { listMeals, type CatalogMeal } from "@/lib/catalog.functions";
+import { type NutrientInfo, allNutrients } from "@/lib/nutrition";
 
 /** DB meal adapted to the shape used across the mobile UI (previously src/data/meals.ts). */
 export type UiMeal = {
@@ -23,6 +24,12 @@ export type UiMeal = {
   carbs: string;
   fat: string;
   fiber: string;
+  nutrition: {
+    protein: NutrientInfo;
+    carbs: NutrientInfo;
+    fat: NutrientInfo;
+    fiber: NutrientInfo;
+  };
   portion: string;
   healthScore: number;
   healthNote: string;
@@ -54,6 +61,10 @@ export function toUiMeal(m: CatalogMeal): UiMeal {
     carbs: m.carbs ?? "Medium",
     fat: m.fat ?? "Medium",
     fiber: m.fiber ?? "Medium",
+    nutrition: allNutrients(
+      { protein: m.protein, carbs: m.carbs, fat: m.fat, fiber: m.fiber },
+      m.slug
+    ),
     portion: m.portion ?? "1 plate",
     healthScore: m.healthScore ?? 6,
     healthNote: m.healthNote ?? "",

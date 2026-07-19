@@ -110,13 +110,23 @@ function MealPage() {
 
         <div className="mt-5 card-soft">
           <h3 className="font-display text-lg">Nutrition</h3>
-          <div className="mt-3 space-y-2 text-sm">
-            {[
-              ["Protein", meal.protein], ["Carbs", meal.carbs], ["Fat", meal.fat], ["Fibre", meal.fiber],
-            ].map(([label, val]) => (
-              <div key={label} className="flex items-center justify-between">
-                <span className="text-muted-foreground">{label}</span>
-                <span className="font-medium">{val}</span>
+          <div className="mt-3 space-y-3">
+            {Object.values(meal.nutrition).map((n) => (
+              <div key={n.key}>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                    <span>{n.emoji}</span> {n.name}
+                  </span>
+                  <span className="font-medium">
+                    {n.score}/10 <span className="text-muted-foreground">• {n.label}</span>
+                  </span>
+                </div>
+                <div className="mt-1.5 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-brand"
+                    style={{ width: `${Math.min(100, Math.max(0, n.score * 10))}%` }}
+                  />
+                </div>
               </div>
             ))}
           </div>

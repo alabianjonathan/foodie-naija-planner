@@ -517,11 +517,18 @@ function ResultCard({
             <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{meal.cookingTimeMin}m</span>
             {pick.mealTime && <span className="inline-flex items-center gap-1"><Utensils className="h-3 w-3" />{pick.mealTime}</span>}
           </div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            <span title={`Protein: ${meal.protein}`} className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">Protein: {meal.protein}</span>
-            <span title={`Carbs: ${meal.carbs}`} className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">Carbs: {meal.carbs}</span>
-            <span title={`Fat: ${meal.fat}`} className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">Fat: {meal.fat}</span>
-            <span title={`Fibre: ${meal.fiber}`} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fibre: {meal.fiber}</span>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {Object.values(meal.nutrition).map((n) => (
+              <span
+                key={n.key}
+                title={`${n.name}: ${n.raw ?? "n/a"}`}
+                className="inline-flex items-center gap-1 text-[10px] px-2 py-1.5 rounded-xl bg-secondary text-charcoal font-medium"
+              >
+                <span>{n.emoji}</span>
+                <span className="truncate">{n.name}: {n.score}/10</span>
+                <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">• {n.label}</span>
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -603,6 +610,20 @@ function MealDetailDialog({
             {open.meal.description && (
               <p className="text-xs text-charcoal/80 leading-relaxed">{open.meal.description}</p>
             )}
+
+            <div className="grid grid-cols-2 gap-2">
+              {Object.values(open.meal.nutrition).map((n) => (
+                <span
+                  key={n.key}
+                  title={`${n.name}: ${n.raw ?? "n/a"}`}
+                  className="inline-flex items-center gap-1 text-[10px] px-2 py-1.5 rounded-xl bg-secondary text-charcoal font-medium"
+                >
+                  <span>{n.emoji}</span>
+                  <span className="truncate">{n.name}: {n.score}/10</span>
+                  <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">• {n.label}</span>
+                </span>
+              ))}
+            </div>
 
             {ingredientsSplit ? (
               <div className="grid grid-cols-2 gap-2">
