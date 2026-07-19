@@ -67,6 +67,8 @@ function TrackerPage() {
   const g = goals.data;
   const d = day.data;
 
+  if (loading || !user) return <PhoneShell><div className="flex-1 flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-brand" /></div></PhoneShell>;
+
   return (
     <PhoneShell>
       <header className="px-5 pt-6 pb-3">
