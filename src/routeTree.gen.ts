@@ -47,6 +47,7 @@ import { Route as Jb12bzMealsRouteImport } from './routes/jb12bz/meals'
 import { Route as Jb12bzMealPlansRouteImport } from './routes/jb12bz/meal-plans'
 import { Route as Jb12bzLeadsRouteImport } from './routes/jb12bz/leads'
 import { Route as Jb12bzImportRestaurantsRouteImport } from './routes/jb12bz/import-restaurants'
+import { Route as Jb12bzImportGooglePlacesRouteImport } from './routes/jb12bz/import-google-places'
 import { Route as Jb12bzCitiesRouteImport } from './routes/jb12bz/cities'
 import { Route as Jb12bzChefsRouteImport } from './routes/jb12bz/chefs'
 import { Route as ChefsSlugRouteImport } from './routes/chefs.$slug'
@@ -241,6 +242,12 @@ const Jb12bzImportRestaurantsRoute = Jb12bzImportRestaurantsRouteImport.update({
   path: '/import-restaurants',
   getParentRoute: () => Jb12bzRouteRoute,
 } as any)
+const Jb12bzImportGooglePlacesRoute =
+  Jb12bzImportGooglePlacesRouteImport.update({
+    id: '/import-google-places',
+    path: '/import-google-places',
+    getParentRoute: () => Jb12bzRouteRoute,
+  } as any)
 const Jb12bzCitiesRoute = Jb12bzCitiesRouteImport.update({
   id: '/cities',
   path: '/cities',
@@ -289,6 +296,7 @@ export interface FileRoutesByFullPath {
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/import-google-places': typeof Jb12bzImportGooglePlacesRoute
   '/jb12bz/import-restaurants': typeof Jb12bzImportRestaurantsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -331,6 +339,7 @@ export interface FileRoutesByTo {
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/import-google-places': typeof Jb12bzImportGooglePlacesRoute
   '/jb12bz/import-restaurants': typeof Jb12bzImportRestaurantsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -375,6 +384,7 @@ export interface FileRoutesById {
   '/chefs/$slug': typeof ChefsSlugRoute
   '/jb12bz/chefs': typeof Jb12bzChefsRoute
   '/jb12bz/cities': typeof Jb12bzCitiesRoute
+  '/jb12bz/import-google-places': typeof Jb12bzImportGooglePlacesRoute
   '/jb12bz/import-restaurants': typeof Jb12bzImportRestaurantsRoute
   '/jb12bz/leads': typeof Jb12bzLeadsRoute
   '/jb12bz/meal-plans': typeof Jb12bzMealPlansRoute
@@ -420,6 +430,7 @@ export interface FileRouteTypes {
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
+    | '/jb12bz/import-google-places'
     | '/jb12bz/import-restaurants'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -462,6 +473,7 @@ export interface FileRouteTypes {
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
+    | '/jb12bz/import-google-places'
     | '/jb12bz/import-restaurants'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -505,6 +517,7 @@ export interface FileRouteTypes {
     | '/chefs/$slug'
     | '/jb12bz/chefs'
     | '/jb12bz/cities'
+    | '/jb12bz/import-google-places'
     | '/jb12bz/import-restaurants'
     | '/jb12bz/leads'
     | '/jb12bz/meal-plans'
@@ -817,6 +830,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Jb12bzImportRestaurantsRouteImport
       parentRoute: typeof Jb12bzRouteRoute
     }
+    '/jb12bz/import-google-places': {
+      id: '/jb12bz/import-google-places'
+      path: '/import-google-places'
+      fullPath: '/jb12bz/import-google-places'
+      preLoaderRoute: typeof Jb12bzImportGooglePlacesRouteImport
+      parentRoute: typeof Jb12bzRouteRoute
+    }
     '/jb12bz/cities': {
       id: '/jb12bz/cities'
       path: '/cities'
@@ -844,6 +864,7 @@ declare module '@tanstack/react-router' {
 interface Jb12bzRouteRouteChildren {
   Jb12bzChefsRoute: typeof Jb12bzChefsRoute
   Jb12bzCitiesRoute: typeof Jb12bzCitiesRoute
+  Jb12bzImportGooglePlacesRoute: typeof Jb12bzImportGooglePlacesRoute
   Jb12bzImportRestaurantsRoute: typeof Jb12bzImportRestaurantsRoute
   Jb12bzLeadsRoute: typeof Jb12bzLeadsRoute
   Jb12bzMealPlansRoute: typeof Jb12bzMealPlansRoute
@@ -857,6 +878,7 @@ interface Jb12bzRouteRouteChildren {
 const Jb12bzRouteRouteChildren: Jb12bzRouteRouteChildren = {
   Jb12bzChefsRoute: Jb12bzChefsRoute,
   Jb12bzCitiesRoute: Jb12bzCitiesRoute,
+  Jb12bzImportGooglePlacesRoute: Jb12bzImportGooglePlacesRoute,
   Jb12bzImportRestaurantsRoute: Jb12bzImportRestaurantsRoute,
   Jb12bzLeadsRoute: Jb12bzLeadsRoute,
   Jb12bzMealPlansRoute: Jb12bzMealPlansRoute,

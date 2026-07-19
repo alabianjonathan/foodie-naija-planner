@@ -930,8 +930,10 @@ export type Database = {
           branch_name: string | null
           chain: string | null
           city: string
+          completeness_score: number
           cover_url: string | null
           created_at: string
+          cuisines: string[]
           delivery: boolean
           distance_km: number
           email: string | null
@@ -939,18 +941,25 @@ export type Database = {
           google_maps_url: string | null
           has_verified_food_data: boolean
           id: string
+          image_url: string | null
           last_imported_at: string | null
           latitude: number | null
           longitude: number | null
           meal_slugs: string[]
+          mealbeta_score: number
           name: string
           needs_review: boolean
+          neighborhood: string | null
           opening: string | null
+          opening_hours: Json | null
           owner_id: string | null
           phone: string | null
+          place_id: string | null
+          price_range: string | null
           rating: number
           restaurant_data_source: string | null
           review_reason: string | null
+          reviews_count: number
           slug: string
           source_url: string | null
           state: string | null
@@ -967,8 +976,10 @@ export type Database = {
           branch_name?: string | null
           chain?: string | null
           city: string
+          completeness_score?: number
           cover_url?: string | null
           created_at?: string
+          cuisines?: string[]
           delivery?: boolean
           distance_km?: number
           email?: string | null
@@ -976,18 +987,25 @@ export type Database = {
           google_maps_url?: string | null
           has_verified_food_data?: boolean
           id?: string
+          image_url?: string | null
           last_imported_at?: string | null
           latitude?: number | null
           longitude?: number | null
           meal_slugs?: string[]
+          mealbeta_score?: number
           name: string
           needs_review?: boolean
+          neighborhood?: string | null
           opening?: string | null
+          opening_hours?: Json | null
           owner_id?: string | null
           phone?: string | null
+          place_id?: string | null
+          price_range?: string | null
           rating?: number
           restaurant_data_source?: string | null
           review_reason?: string | null
+          reviews_count?: number
           slug: string
           source_url?: string | null
           state?: string | null
@@ -1004,8 +1022,10 @@ export type Database = {
           branch_name?: string | null
           chain?: string | null
           city?: string
+          completeness_score?: number
           cover_url?: string | null
           created_at?: string
+          cuisines?: string[]
           delivery?: boolean
           distance_km?: number
           email?: string | null
@@ -1013,18 +1033,25 @@ export type Database = {
           google_maps_url?: string | null
           has_verified_food_data?: boolean
           id?: string
+          image_url?: string | null
           last_imported_at?: string | null
           latitude?: number | null
           longitude?: number | null
           meal_slugs?: string[]
+          mealbeta_score?: number
           name?: string
           needs_review?: boolean
+          neighborhood?: string | null
           opening?: string | null
+          opening_hours?: Json | null
           owner_id?: string | null
           phone?: string | null
+          place_id?: string | null
+          price_range?: string | null
           rating?: number
           restaurant_data_source?: string | null
           review_reason?: string | null
+          reviews_count?: number
           slug?: string
           source_url?: string | null
           state?: string | null
