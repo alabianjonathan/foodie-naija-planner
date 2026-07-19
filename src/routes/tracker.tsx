@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { Loader2, Droplets, Scale, Activity, Utensils, Flame, Trash2, Sparkles, TrendingUp } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 
-export const Route = createFileRoute("/_authenticated/tracker")({
+export const Route = createFileRoute("/tracker")({
   component: TrackerPage,
 });
 
