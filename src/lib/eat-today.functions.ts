@@ -244,12 +244,29 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     lat: z.number().optional(), lng: z.number().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
+    // Look up the meal so we know its category / tags / cuisine hint.
+    const { data: mealRow } = await context.supabase
+      .from("meals")
+      .select("name, category, tags, goals")
+      .eq("slug", data.mealSlug)
+      .maybeSingle();
+    const mealCategory = String(mealRow?.category ?? "").toLowerCase();
+    const mealTags = ((mealRow?.tags as string[] | null) ?? []).map((t) => t.toLowerCase());
+    const mealNameLc = (data.mealName ?? mealRow?.name ?? data.mealSlug.replace(/-/g, " ")).toLowerCase();
+
+    // Meal-type buckets used to filter clearly-irrelevant restaurants (e.g. a
+    // yoghurt / juice bar for a rice or soup dish).
+    const isDrinkOrDessert =
+      /(dessert|drink|smoothie|juice|yoghurt|yogurt|parfait|ice.?cream|cake|pastry)/.test(mealCategory) ||
+      mealTags.some((t) => /(dessert|drink|smoothie|juice|yoghurt|yogurt|parfait|ice.?cream)/.test(t));
+    const isSavouryMain = !isDrinkOrDessert;
+    const dessertOnlyRegex = /(yoghurt|yogurt|parfait|ice.?cream|smoothie|juice bar|dessert|bakery|pastry|cupcake|donut|doughnut|frozen)/i;
+    const savouryHints = /(rice|jollof|soup|stew|swallow|amala|eba|fufu|pounded|beans|chicken|fish|meat|goat|suya|shawarma|noodle|pasta|burger|pizza|kitchen|restaurant|grill|bbq|fried|buka|mama|kebab|nigerian|african|chinese|indian|lebanese|continental|fast.?food|eatery|food)/i;
+
     // Resolve restaurantIds that carry this meal via the imported foods index.
-    // Match by foods.name / aliases against the meal name tokens.
     let foodRestaurantIds = new Set<string>();
-    const mealText = (data.mealName ?? data.mealSlug.replace(/-/g, " ")).toLowerCase();
-    if (mealText) {
-      const tokens = Array.from(new Set(mealText.split(/\s+/).filter((t) => t.length >= 3)));
+    if (mealNameLc) {
+      const tokens = Array.from(new Set(mealNameLc.split(/\s+/).filter((t) => t.length >= 3)));
       const orFilter = tokens
         .map((t) => `name.ilike.%${t}%,aliases.cs.{${t}}`)
         .join(",");
@@ -277,7 +294,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       area = area ?? profile?.area ?? undefined;
     }
 
-    const cols = "id, slug, name, chain, branch_name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status, latitude, longitude, google_maps_url";
+    const cols = "id, slug, name, chain, branch_name, city, area, address, rating, phone, whatsapp, verified, tags, cuisines, meal_slugs, status, latitude, longitude, google_maps_url";
 
     // Lookup same-state city list for fallback. Some imported restaurants use
     // satellite cities (Epe, Ikorodu, Badagry) that are not in the cities table,
