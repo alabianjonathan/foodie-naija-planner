@@ -87,52 +87,6 @@ function Welcome() {
           </Link>
         </div>
 
-        {/* Floating nutrition badges */}
-        <div className="pointer-events-none absolute inset-0">
-          {/* Calories */}
-          <div className="absolute left-[10%] top-[22%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700">
-            <div className="grid h-8 w-8 place-items-center rounded-xl bg-warm/15 text-warm">
-              <Flame className="h-4 w-4" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Calories</div>
-              <div className="text-xs font-bold text-charcoal">650–850 kcal</div>
-            </div>
-          </div>
-
-          {/* Protein */}
-          <div className="absolute left-[8%] top-[46%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700 delay-100">
-            <div className="grid h-8 w-8 place-items-center rounded-xl bg-brand/15 text-brand">
-              <Beef className="h-4 w-4" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Protein</div>
-              <div className="text-xs font-bold text-charcoal">30–40g</div>
-            </div>
-          </div>
-
-          {/* Fibre */}
-          <div className="absolute left-[10%] top-[70%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700 delay-200">
-            <div className="grid h-8 w-8 place-items-center rounded-xl bg-leaf/15 text-leaf">
-              <Leaf className="h-4 w-4" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Fibre</div>
-              <div className="text-xs font-bold text-charcoal">4–6g</div>
-            </div>
-          </div>
-
-          {/* Carbs */}
-          <div className="absolute right-[10%] top-[60%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-right-4 duration-700 delay-300">
-            <div className="grid h-8 w-8 place-items-center rounded-xl bg-accent/80 text-accent-foreground">
-              <Wheat className="h-4 w-4" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Carbs</div>
-              <div className="text-xs font-bold text-charcoal">80–100g</div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Content — distributed so nothing overlaps */}
