@@ -261,8 +261,11 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       /(dessert|drink|smoothie|juice|yoghurt|yogurt|parfait|ice.?cream|cake|pastry)/.test(mealNameLc) ||
       mealGoals.some((t) => /(dessert|drink|smoothie|juice)/.test(t));
     const isSavouryMain = !isDrinkOrDessert;
-    const dessertOnlyRegex = /(yoghurt|yogurt|parfait|ice.?cream|smoothie|juice bar|dessert|bakery|pastry|cupcake|donut|doughnut|frozen)/i;
-    const savouryHints = /(rice|jollof|soup|stew|swallow|amala|eba|fufu|pounded|beans|chicken|fish|meat|goat|suya|shawarma|noodle|pasta|burger|pizza|kitchen|restaurant|grill|bbq|fried|buka|mama|kebab|nigerian|african|chinese|indian|lebanese|continental|fast.?food|eatery|food)/i;
+    const dessertOnlyRegex = /(yoghurt|yogurt|parfait|ice.?cream|smoothie|juice bar|dessert|bakery|pastry|cupcake|donut|doughnut|frozen|tigernut|wellness juice)/i;
+    const riceMealRegex = /\b(rice|jollof|ofada|basmati)\b/i;
+    const riceSellerHints = /(rice|jollof|ofada|basmati|nigerian food|local dishes|african|buka|canteen|kitchen|restaurant|eatery|fast.?food)/i;
+    const specificSavouryHints = /(rice|jollof|ofada|soup|stew|swallow|amala|eba|fufu|pounded|beans|chicken|fish|meat|goat|suya|shawarma|noodle|pasta|burger|pizza|grill|bbq|fried|buka|kebab|nigerian|african|chinese|indian|lebanese|continental|local dishes|canteen|kitchen|restaurant|eatery|fast.?food)/i;
+    const savouryHints = new RegExp(`${specificSavouryHints.source}|food`, "i");
 
     // Resolve restaurantIds that carry this meal via the imported foods index.
     let foodRestaurantIds = new Set<string>();
@@ -442,10 +445,15 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       const haystack = `${r.name ?? ""} ${cuisines.join(" ")} ${tags.join(" ")}`.toLowerCase();
 
       if (isSavouryMain) {
+        // If the user asked for rice, don't let generic labels like "Warm Food"
+        // make juice/parfait shops look relevant.
+        if (riceMealRegex.test(mealNameLc) && !riceSellerHints.test(haystack)) return false;
+
         // Reject dessert / juice / bakery / coffee-only shops for savoury mains.
         const dessertMatch = dessertOnlyRegex.test(haystack);
         const savouryMatch = savouryHints.test(haystack);
-        if (dessertMatch && !savouryMatch) return false;
+        const specificSavouryMatch = specificSavouryHints.test(haystack);
+        if (dessertMatch && !specificSavouryMatch) return false;
         // If we know nothing savoury about the place at all, be strict.
         if (!savouryMatch && cuisines.length === 0 && tags.length === 0) {
           // Allow when the name itself doesn't scream dessert.
