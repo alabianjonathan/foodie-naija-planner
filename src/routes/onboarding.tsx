@@ -204,6 +204,9 @@ function Onboarding() {
         <div className="mt-4 sm:mt-6 flex-1">
           <span className="chip">{`Step ${step + 1} of ${steps.length}`}</span>
           <h2 className="mt-2 sm:mt-3 font-display text-xl sm:text-2xl md:text-3xl leading-tight">{current.q}</h2>
+          {current.sub && (
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{current.sub}</p>
+          )}
 
           {current.kind === "budget" && (
             <p className="mt-2 text-sm text-muted-foreground">
@@ -261,21 +264,30 @@ function Onboarding() {
             </div>
           ) : (
             <div className="mt-4 sm:mt-6 space-y-2 md:space-y-2.5">
-              {(current.kind === "area" ? (answers.city ? cityAreas[answers.city] ?? [] : []) : (current.opts ?? [])).map(opt => {
-                const active = answers[current.key]?.toString() === opt;
+              {(current.kind === "area"
+                ? (answers.city ? (cityAreas[answers.city] ?? []).map((a) => ({ label: a })) : [])
+                : (current.opts ?? [])
+              ).map((opt) => {
+                const active = answers[current.key]?.toString() === opt.label;
                 return (
                   <button
-                    key={opt}
-                    onClick={() => select(opt)}
-                    className={`w-full flex items-center justify-between rounded-2xl border-2 px-5 py-3.5 md:py-4 text-left font-medium transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
+                    key={opt.label}
+                    onClick={() => select(opt.label)}
+                    className={`w-full flex items-center justify-between gap-3 rounded-2xl border-2 px-5 py-3.5 md:py-4 text-left transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
                   >
-                    <span>{opt}</span>
-                    {active ? <Check className="h-5 w-5 text-brand" /> : <span className="text-muted-foreground text-sm">→</span>}
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-medium">{opt.label}</span>
+                      {opt.desc && (
+                        <span className="block mt-0.5 text-xs text-muted-foreground leading-snug">{opt.desc}</span>
+                      )}
+                    </span>
+                    {active ? <Check className="h-5 w-5 text-brand shrink-0" /> : <span className="text-muted-foreground text-sm shrink-0">→</span>}
                   </button>
                 );
               })}
             </div>
           )}
+
         </div>
 
         <p className="text-xs text-muted-foreground text-center">Your answers stay on this device.</p>
