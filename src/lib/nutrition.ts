@@ -289,48 +289,173 @@ export function computeNutrition(input: Parameters<typeof estimateMacros>[0]): {
   };
 }
 
-/** Personalised, nutrition-driven "why this was recommended" line — Nigerian-friendly wording. */
+/** Deterministic pseudo-random pick, seeded by meal name so each meal reads differently but is stable across renders. */
+function seededPick<T>(seed: string, salt: number, arr: T[]): T {
+  let h = 2166136261 ^ salt;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const idx = Math.abs(h) % arr.length;
+  return arr[idx];
+}
+
+/** Personalised, nutrition-driven "why this was recommended" line.
+ *  Uses the meal name as a seed so every meal gets a distinct phrasing, not a template. */
 export function nutritionReason(
   mealName: string,
   n: Record<NutrientKey, NutrientInfo>,
   macros: MacroEstimate,
   ctx?: { costText?: string; goal?: string | null; considerMinutes?: number | null },
 ): string {
-  // Build friendly, everyday strengths — the kind of thing a Nigerian friend would tell you.
-  const strengths: string[] = [];
-  if (n.protein.score >= 7) strengths.push(`packed with protein (${Math.round(n.protein.grams)}g) — good for muscle and staying full`);
-  if (n.fiber.score >= 7) strengths.push(`high in fibre (${Math.round(n.fiber.grams)}g) to help digestion and keep belly settled`);
-  if (n.fat.label === "Healthy") strengths.push("uses good fats (like fish, groundnut or avocado oil) — better for the heart");
-  if (n.carbs.label === "Balanced") strengths.push("gives steady energy without the heavy sleepy feeling after eating");
-  if (strengths.length === 0) {
-    if (n.protein.score >= 5) strengths.push(`a fair protein serving (~${Math.round(n.protein.grams)}g)`);
-    if (n.carbs.score >= 5) strengths.push(`enough carbs (~${Math.round(n.carbs.grams)}g) to carry you through work or school`);
-    if (strengths.length === 0) strengths.push(`about ${macros.calories} kcal — a normal Nigerian plate size`);
+  const seed = mealName.toLowerCase();
+  const pG = Math.round(n.protein.grams);
+  const fibG = Math.round(n.fiber.grams);
+  const fG = Math.round(macros.fatG);
+  const cG = Math.round(macros.carbsG);
+
+  // Collect candidate strengths, each with several phrasings.
+  const strengthPool: string[] = [];
+  if (n.protein.score >= 7) {
+    strengthPool.push(seededPick(seed, 1, [
+      `delivers a solid ${pG}g of protein — great for muscle repair and staying full longer`,
+      `brings in about ${pG}g of protein per plate, which keeps hunger away till the next meal`,
+      `rich in protein (~${pG}g) — the kind of meal that actually satisfies`,
+      `a strong protein hit (${pG}g) so you're not raiding the fridge an hour later`,
+    ]));
+  }
+  if (n.fiber.score >= 7) {
+    strengthPool.push(seededPick(seed, 2, [
+      `loaded with fibre (${fibG}g) to keep digestion smooth`,
+      `${fibG}g of fibre — good for the gut and steady blood sugar`,
+      `fibre-heavy at ~${fibG}g, which helps you feel light after eating`,
+      `high in fibre (${fibG}g) so your stomach settles nicely`,
+    ]));
+  }
+  if (n.fat.label === "Healthy") {
+    strengthPool.push(seededPick(seed, 3, [
+      "the fats here come from better sources like fish, groundnut or avocado oil — friendlier to the heart",
+      "uses cleaner fats (think olive oil, fish, seeds) instead of heavy frying oil",
+      "healthy fats do most of the work here — better for cholesterol than the usual palm-oil-heavy plate",
+    ]));
+  }
+  if (n.carbs.label === "Balanced") {
+    strengthPool.push(seededPick(seed, 4, [
+      "the carbs are the slow-release kind, so you get steady energy without the afternoon crash",
+      "well-balanced carbs (~" + cG + "g) — enough fuel without the sleepy feeling after",
+      "carbs are portioned right for real energy that lasts through the day",
+    ]));
+  }
+  if (n.carbs.score >= 8 && n.carbs.label !== "Balanced") {
+    strengthPool.push(seededPick(seed, 5, [
+      `energy-dense at ~${cG}g carbs — good if your day is physically demanding`,
+      `carb-forward (${cG}g) so it powers long shifts or workouts`,
+    ]));
+  }
+  if (strengthPool.length === 0) {
+    strengthPool.push(seededPick(seed, 6, [
+      `sits at about ${macros.calories} kcal — a reasonable plate size`,
+      `a moderate ${macros.calories} kcal plate — nothing too heavy, nothing too light`,
+      `roughly ${macros.calories} kcal, so it fits an average meal budget`,
+    ]));
   }
 
-  const parts: string[] = [];
-  parts.push(`${mealName} is ${strengths.slice(0, 2).join(", and ")}`);
+  // Openers vary per meal.
+  const openers = [
+    `${mealName} is worth trying because it`,
+    `We picked ${mealName} because it`,
+    `${mealName} stands out — it`,
+    `${mealName} makes the list because it`,
+    `Here's why ${mealName}:`,
+    `${mealName} works well: it`,
+  ];
+  const opener = seededPick(seed, 10, openers);
+  const chosenStrengths = strengthPool.slice(0, 2);
+  const strengthText = chosenStrengths.length > 1
+    ? `${chosenStrengths[0]}, and it ${chosenStrengths[1].startsWith("the ") || chosenStrengths[1].startsWith("uses") || chosenStrengths[1].startsWith("healthy") ? chosenStrengths[1] : chosenStrengths[1]}`
+    : chosenStrengths[0];
 
+  let sentence = opener.endsWith(":") ? `${opener} ${strengthText}.` : `${opener} ${strengthText}.`;
+
+  // Goal alignment — varied phrasings.
   const goal = (ctx?.goal ?? "").toLowerCase();
-  if (goal.includes("protein") && n.protein.score >= 7) parts.push("which matches your goal to add more protein");
-  else if ((goal.includes("weight loss") || goal.includes("lose")) && macros.calories <= 500) parts.push("and it keeps calories light for your weight-loss plan");
-  else if (goal.includes("gain") && macros.calories >= 700) parts.push("and the calories are enough to help you gain healthily");
-  else if (goal.includes("energy") && n.carbs.score >= 6) parts.push("and it gives long-lasting energy from its carb base");
-  else if (goal.includes("diabet") && n.carbs.label === "Balanced") parts.push("and the carbs are the slow-release type — friendlier for blood sugar");
+  const goalLines: string[] = [];
+  if (goal.includes("protein") && n.protein.score >= 7) {
+    goalLines.push(seededPick(seed, 20, [
+      "It lines up with your goal of adding more protein.",
+      "Perfect fit for your higher-protein plan.",
+      "This meal directly serves your protein target.",
+    ]));
+  } else if ((goal.includes("weight loss") || goal.includes("lose")) && macros.calories <= 500) {
+    goalLines.push(seededPick(seed, 21, [
+      "Calories stay light, which supports your weight-loss goal.",
+      "A lean pick that keeps your calorie count in check.",
+      "Good match for weight loss — filling without the calorie load.",
+    ]));
+  } else if (goal.includes("gain") && macros.calories >= 700) {
+    goalLines.push(seededPick(seed, 22, [
+      "Calories are generous enough to help you gain in a healthy way.",
+      "Substantial enough to support your weight-gain plan.",
+    ]));
+  } else if (goal.includes("energy") && n.carbs.score >= 6) {
+    goalLines.push(seededPick(seed, 23, [
+      "Great for sustained energy through a long day.",
+      "The carb base gives you fuel that actually lasts.",
+    ]));
+  } else if (goal.includes("diabet") && n.carbs.label === "Balanced") {
+    goalLines.push("The slow-release carbs are friendlier for blood sugar.");
+  }
+  if (goalLines.length) sentence += " " + goalLines[0];
 
-  if (ctx?.costText) parts.push(`and it fits ${ctx.costText} — no need to break the bank`);
+  // Cost — varied.
+  if (ctx?.costText) {
+    sentence += " " + seededPick(seed, 30, [
+      `It also fits ${ctx.costText} — no need to break the bank.`,
+      `Budget-wise, it lands around ${ctx.costText}.`,
+      `Cost stays reasonable at about ${ctx.costText}.`,
+    ]);
+  }
 
-  let sentence = parts.join(", ") + ".";
-
-  // Considerations — friendly heads-up written like a market advice.
+  // Considerations — pick one at most, varied wording.
   const cons: string[] = [];
-  if (n.fat.label === "High" && n.fat.score < 6) cons.push(`oil is on the high side (~${Math.round(macros.fatG)}g) — try to reduce palm oil or fried plantain`);
-  if (n.fiber.score < 4) cons.push("fibre is low — add vegetables like ugu, ewedu, or a small salad on the side");
-  if (n.protein.score < 4) cons.push("protein is small — add boiled egg, fish, or beans to balance it");
-  if (macros.calories >= 900) cons.push("it's a heavy plate — share, or take a smaller portion if you're watching weight");
-  if (ctx?.considerMinutes && ctx.considerMinutes >= 60) cons.push(`cooking takes about ${ctx.considerMinutes} minutes, so plan ahead`);
-  else if (ctx?.considerMinutes && ctx.considerMinutes <= 30) sentence += ` Bonus: ready in ~${ctx.considerMinutes} minutes, so it's great for busy days.`;
+  if (n.fat.label === "High" && n.fat.score < 6) {
+    cons.push(seededPick(seed, 40, [
+      `oil is a bit heavy (~${fG}g) — ease up on palm oil or skip the fried side`,
+      `watch the oil — around ${fG}g, so grill instead of frying where you can`,
+    ]));
+  }
+  if (n.fiber.score < 4) {
+    cons.push(seededPick(seed, 41, [
+      "fibre is on the low side — throw in ugu, ewedu, or a small salad",
+      "add some veg (ugu, spinach, cucumber) to lift the fibre",
+    ]));
+  }
+  if (n.protein.score < 4) {
+    cons.push(seededPick(seed, 42, [
+      "protein is thin — an egg, fish, or beans on the side helps",
+      "boost the protein with a piece of chicken, fish or moi moi",
+    ]));
+  }
+  if (macros.calories >= 900) {
+    cons.push(seededPick(seed, 43, [
+      "it's a heavy plate — share it or reduce the portion if you're watching weight",
+      "portion is large; consider splitting if calories matter to you",
+    ]));
+  }
+  if (ctx?.considerMinutes && ctx.considerMinutes >= 60) {
+    cons.push(`cooking runs ~${ctx.considerMinutes} minutes, so start early`);
+  } else if (ctx?.considerMinutes && ctx.considerMinutes <= 30) {
+    sentence += " " + seededPick(seed, 50, [
+      `Bonus: it's ready in ~${ctx.considerMinutes} minutes — great for busy days.`,
+      `And it comes together in about ${ctx.considerMinutes} minutes.`,
+      `Quick too — ~${ctx.considerMinutes} minutes from pot to plate.`,
+    ]);
+  }
 
-  if (cons.length) sentence += ` Heads up: ${cons.slice(0, 2).join("; ")}.`;
+  if (cons.length) {
+    const lead = seededPick(seed, 60, ["Heads up:", "One thing:", "Small note:", "Just so you know:"]);
+    sentence += ` ${lead} ${cons[0]}.`;
+  }
   return sentence;
 }
+
