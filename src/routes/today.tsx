@@ -615,7 +615,7 @@ function MealDetailDialog({
               {Object.values(open.meal.nutrition).map((n) => (
                 <span
                   key={n.key}
-                  title={`${n.name}: ${n.raw ?? "n/a"}`}
+                  title={`${n.name}: ~${n.grams}g`}
                   className="inline-flex items-center gap-1 text-[10px] px-2 py-1.5 rounded-xl bg-secondary text-charcoal font-medium"
                 >
                   <span>{n.emoji}</span>
