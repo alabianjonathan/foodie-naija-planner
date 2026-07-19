@@ -431,6 +431,34 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       if (rows.length >= 24) break;
     }
 
+    // Meal-relevance filter — drop restaurants that clearly don't serve this meal.
+    const isRelevant = (r: any): boolean => {
+      // Explicit signals of a match — always relevant.
+      if (foodRestaurantIds.has(r.id)) return true;
+      if (Array.isArray(r.meal_slugs) && r.meal_slugs.includes(data.mealSlug)) return true;
+
+      const cuisines = (r.cuisines ?? []).map((c: string) => String(c).toLowerCase());
+      const tags = (r.tags ?? []).map((c: string) => String(c).toLowerCase());
+      const haystack = `${r.name ?? ""} ${cuisines.join(" ")} ${tags.join(" ")}`.toLowerCase();
+
+      if (isSavouryMain) {
+        // Reject dessert / juice / bakery / coffee-only shops for savoury mains.
+        const dessertMatch = dessertOnlyRegex.test(haystack);
+        const savouryMatch = savouryHints.test(haystack);
+        if (dessertMatch && !savouryMatch) return false;
+        // If we know nothing savoury about the place at all, be strict.
+        if (!savouryMatch && cuisines.length === 0 && tags.length === 0) {
+          // Allow when the name itself doesn't scream dessert.
+          return !dessertOnlyRegex.test(String(r.name ?? "").toLowerCase());
+        }
+        return true;
+      }
+      // For drinks / desserts, prefer places that actually sell them.
+      return dessertOnlyRegex.test(haystack) || /drink|beverage|smoothie|juice|dessert|yoghurt|yogurt|bakery|cafe|café/.test(haystack);
+    };
+    const relevantRows = rows.filter(isRelevant);
+    if (relevantRows.length >= 1) rows = relevantRows;
+
     // Compute haversine distance in km when we have the user's lat/lng.
     const haversineKm = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
       const R = 6371;
