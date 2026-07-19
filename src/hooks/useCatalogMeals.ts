@@ -24,6 +24,12 @@ export type UiMeal = {
   carbs: string;
   fat: string;
   fiber: string;
+  nutrition: {
+    protein: NutrientInfo;
+    carbs: NutrientInfo;
+    fat: NutrientInfo;
+    fiber: NutrientInfo;
+  };
   portion: string;
   healthScore: number;
   healthNote: string;
