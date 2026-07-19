@@ -331,7 +331,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       const { data: rows, error } = await q
         .order("verified", { ascending: false })
         .order("rating", { ascending: false })
-        .limit(scope === "any" ? 80 : 30);
+        .limit(scope === "any" ? 120 : 40);
       if (error) throw error;
       return rows ?? [];
     };
@@ -371,7 +371,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
         .order("food_data_priority", { ascending: false })
         .order("verified", { ascending: false })
         .order("rating", { ascending: false })
-        .limit(scope === "any" ? 60 : 30);
+        .limit(scope === "any" ? 120 : 40);
       return rows ?? [];
     };
 
@@ -401,9 +401,16 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     ];
 
     let rows: any[] = [];
+    const seenRowIds = new Set<string>();
     for (const load of scopes) {
-      rows = await load();
-      if (rows.length > 0) break;
+      const nextRows = await load();
+      for (const row of nextRows) {
+        if (!seenRowIds.has(row.id)) {
+          seenRowIds.add(row.id);
+          rows.push(row);
+        }
+      }
+      if (rows.length >= 24) break;
     }
 
     // Compute haversine distance in km when we have the user's lat/lng.
@@ -416,9 +423,69 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       return 2 * R * Math.asin(Math.sqrt(s));
     };
     const hasUserLoc = typeof data.lat === "number" && typeof data.lng === "number";
+    const normalizeKey = (s: string | null | undefined) => (s ?? "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+    const approxCoords: Record<string, { lat: number; lng: number }> = {
+      ikeja: { lat: 6.6018, lng: 3.3515 },
+      "ikeja gra": { lat: 6.5816, lng: 3.3581 },
+      opebi: { lat: 6.591, lng: 3.3582 },
+      maryland: { lat: 6.5726, lng: 3.3672 },
+      ilupeju: { lat: 6.5536, lng: 3.3568 },
+      gbagada: { lat: 6.5542, lng: 3.3891 },
+      ojota: { lat: 6.5864, lng: 3.3819 },
+      ogudu: { lat: 6.5791, lng: 3.3947 },
+      ojodu: { lat: 6.6374, lng: 3.3548 },
+      omole: { lat: 6.6351, lng: 3.3624 },
+      ogba: { lat: 6.6251, lng: 3.3378 },
+      agege: { lat: 6.6217, lng: 3.3251 },
+      akowonjo: { lat: 6.6043, lng: 3.2964 },
+      abulegba: { lat: 6.6348, lng: 3.2937 },
+      yaba: { lat: 6.5158, lng: 3.3861 },
+      akoka: { lat: 6.5221, lng: 3.3878 },
+      surulere: { lat: 6.5009, lng: 3.3581 },
+      festac: { lat: 6.4698, lng: 3.2834 },
+      "festac town": { lat: 6.4698, lng: 3.2834 },
+      apapa: { lat: 6.4488, lng: 3.3641 },
+      marina: { lat: 6.4549, lng: 3.3995 },
+      ikoyi: { lat: 6.4527, lng: 3.4358 },
+      "victoria island": { lat: 6.4281, lng: 3.4219 },
+      lekki: { lat: 6.4698, lng: 3.5852 },
+      "lekki phase 1": { lat: 6.4479, lng: 3.4735 },
+      chevron: { lat: 6.4421, lng: 3.5354 },
+      ajah: { lat: 6.4698, lng: 3.5852 },
+      ikota: { lat: 6.4608, lng: 3.5587 },
+      vgc: { lat: 6.4687, lng: 3.5629 },
+      ikorodu: { lat: 6.6194, lng: 3.5105 },
+      isolo: { lat: 6.5391, lng: 3.3124 },
+      okota: { lat: 6.5093, lng: 3.3142 },
+      itire: { lat: 6.5093, lng: 3.3421 },
+      lagos: { lat: 6.5244, lng: 3.3792 },
+      ibadan: { lat: 7.3775, lng: 3.947 },
+      abuja: { lat: 9.0765, lng: 7.3986 },
+      owerri: { lat: 5.485, lng: 7.0353 },
+      "port harcourt": { lat: 4.8156, lng: 7.0498 },
+    };
+    const coordsFor = (r: any): { lat: number; lng: number; estimated: boolean } | null => {
+      if (r.latitude != null && r.longitude != null) return { lat: Number(r.latitude), lng: Number(r.longitude), estimated: false };
+      const keys = [r.area, r.branch_name, r.city]
+        .map((value) => normalizeKey(value))
+        .filter(Boolean);
+      const address = normalizeKey(r.address);
+      for (const key of keys) if (approxCoords[key]) return { ...approxCoords[key], estimated: true };
+      for (const [key, coords] of Object.entries(approxCoords)) {
+        if (address.includes(key)) return { ...coords, estimated: true };
+      }
+      return null;
+    };
     const distFor = (r: any): number | null => {
-      if (!hasUserLoc || r.latitude == null || r.longitude == null) return null;
-      return haversineKm({ lat: data.lat!, lng: data.lng! }, { lat: Number(r.latitude), lng: Number(r.longitude) });
+      if (!hasUserLoc) return null;
+      const coords = coordsFor(r);
+      if (!coords) return null;
+      return haversineKm({ lat: data.lat!, lng: data.lng! }, { lat: coords.lat, lng: coords.lng });
     };
 
     const streetFromAddress = (address: string | null | undefined) => {
@@ -455,13 +522,17 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       const selected: any[] = [];
       const chainCounts = new Map<string, number>();
       const streetCounts = new Map<string, number>();
+      const addressCounts = new Map<string, number>();
       const add = (r: any) => {
         if (selected.some((x) => x.id === r.id)) return false;
+        const addressKey = normalizeKey(r.address || `${r.chain} ${r.branch_name} ${r.area} ${r.city}`);
+        if (addressKey && (addressCounts.get(addressKey) ?? 0) > 0) return false;
         selected.push(r);
         const chainKey = String(r.chain ?? r.name).toLowerCase();
         const streetKey = streetFromAddress(r.address);
         chainCounts.set(chainKey, (chainCounts.get(chainKey) ?? 0) + 1);
         if (streetKey) streetCounts.set(streetKey, (streetCounts.get(streetKey) ?? 0) + 1);
+        if (addressKey) addressCounts.set(addressKey, (addressCounts.get(addressKey) ?? 0) + 1);
         return selected.length >= 3;
       };
 
