@@ -244,21 +244,22 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     lat: z.number().optional(), lng: z.number().optional(),
   }).parse(input))
   .handler(async ({ data, context }): Promise<MatchedRestaurant[]> => {
-    // Look up the meal so we know its category / tags / cuisine hint.
+    // Look up the meal so we know its category / goals / cuisine hint.
     const { data: mealRow } = await context.supabase
       .from("meals")
-      .select("name, category, tags, goals")
+      .select("name, category, goals")
       .eq("slug", data.mealSlug)
       .maybeSingle();
     const mealCategory = String(mealRow?.category ?? "").toLowerCase();
-    const mealTags = ((mealRow?.tags as string[] | null) ?? []).map((t) => t.toLowerCase());
+    const mealGoals = ((mealRow?.goals as string[] | null) ?? []).map((t: string) => t.toLowerCase());
     const mealNameLc = (data.mealName ?? mealRow?.name ?? data.mealSlug.replace(/-/g, " ")).toLowerCase();
 
     // Meal-type buckets used to filter clearly-irrelevant restaurants (e.g. a
     // yoghurt / juice bar for a rice or soup dish).
     const isDrinkOrDessert =
       /(dessert|drink|smoothie|juice|yoghurt|yogurt|parfait|ice.?cream|cake|pastry)/.test(mealCategory) ||
-      mealTags.some((t) => /(dessert|drink|smoothie|juice|yoghurt|yogurt|parfait|ice.?cream)/.test(t));
+      /(dessert|drink|smoothie|juice|yoghurt|yogurt|parfait|ice.?cream|cake|pastry)/.test(mealNameLc) ||
+      mealGoals.some((t) => /(dessert|drink|smoothie|juice)/.test(t));
     const isSavouryMain = !isDrinkOrDessert;
     const dessertOnlyRegex = /(yoghurt|yogurt|parfait|ice.?cream|smoothie|juice bar|dessert|bakery|pastry|cupcake|donut|doughnut|frozen)/i;
     const savouryHints = /(rice|jollof|soup|stew|swallow|amala|eba|fufu|pounded|beans|chicken|fish|meat|goat|suya|shawarma|noodle|pasta|burger|pizza|kitchen|restaurant|grill|bbq|fried|buka|mama|kebab|nigerian|african|chinese|indian|lebanese|continental|fast.?food|eatery|food)/i;
