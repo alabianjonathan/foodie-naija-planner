@@ -24,23 +24,91 @@ type Answers = {
   restriction?: string;
 };
 
+type Option = { label: string; desc?: string };
+
 type Step = {
   key: keyof Answers;
   q: string;
-  opts?: readonly string[];
+  sub?: string;
+  opts?: readonly Option[];
   kind?: "budget" | "area";
 };
 
 const buildSteps = (cities: string[]): readonly Step[] => [
-  { key: "planningType", q: "Who are you planning for?", opts: ["Just me", "Me + partner", "Family", "Roommates"] },
-  { key: "people", q: "How many people are eating?", opts: ["1", "2", "3", "4", "5+"] },
-  { key: "city", q: "Which city are you in?", opts: [...cities, "Other"] },
-  { key: "area", q: "Which area?", kind: "area" },
-  { key: "budget", q: "What's your daily food budget?", kind: "budget" },
-  { key: "cookOrder", q: "Do you prefer to cook or order?", opts: ["I love to cook", "I mostly order", "Both work for me"] },
-  { key: "goal", q: "What's your health goal?", opts: ["Weight loss", "Weight gain", "Healthy eating", "Just normal meals", "High protein"] },
-  { key: "restriction", q: "Any food restrictions?", opts: ["None", "Low oil", "Low sugar", "No pepper", "Vegetarian", "Diabetic-friendly"] },
+  {
+    key: "planningType",
+    q: "Who are you planning for?",
+    sub: "This helps us size portions and suggest the right budget for your household.",
+    opts: [
+      { label: "Just me", desc: "Single-serve meals and smaller shopping lists." },
+      { label: "Me + partner", desc: "Portions and budget scaled for two people." },
+      { label: "Family", desc: "Bigger portions, family-style meals, weekly bulk buys." },
+      { label: "Roommates", desc: "Shared meals with flexible portions and split costs." },
+    ],
+  },
+  {
+    key: "people",
+    q: "How many people are eating?",
+    sub: "We use this to calculate ingredient quantities and cost per meal accurately.",
+    opts: [
+      { label: "1" }, { label: "2" }, { label: "3" }, { label: "4" }, { label: "5+" },
+    ],
+  },
+  {
+    key: "city",
+    q: "Which city are you in?",
+    sub: "So we can match you with nearby restaurants and private chefs.",
+    opts: [...cities.map((c) => ({ label: c })), { label: "Other", desc: "We'll still plan your meals — provider matching may be limited." }],
+  },
+  {
+    key: "area",
+    q: "Which area?",
+    sub: "The closer we know your area, the better we can suggest chefs and delivery-ready spots.",
+    kind: "area",
+  },
+  {
+    key: "budget",
+    q: "What's your daily food budget?",
+    sub: "We'll only suggest meals and options you can actually afford in Nigeria today.",
+    kind: "budget",
+  },
+  {
+    key: "cookOrder",
+    q: "Do you prefer to cook or order?",
+    sub: "Tell us how you like to eat so we mix the right balance of home-cooked and ordered meals.",
+    opts: [
+      { label: "I love to cook", desc: "Recipes first, with a shopping list you can take to the market." },
+      { label: "I mostly order", desc: "We'll lean on restaurants and private chefs near you." },
+      { label: "Both work for me", desc: "A healthy mix of cook-at-home and order-out." },
+    ],
+  },
+  {
+    key: "goal",
+    q: "What's your health goal?",
+    sub: "We'll tune calories, protein and fibre so your plan supports this goal.",
+    opts: [
+      { label: "Weight loss", desc: "Lighter calories, more protein and vegetables." },
+      { label: "Weight gain", desc: "Bigger, energy-rich meals with healthy carbs and fats." },
+      { label: "Healthy eating", desc: "Balanced Nigerian meals — nothing extreme." },
+      { label: "Just normal meals", desc: "Everyday Nigerian favourites, no strict rules." },
+      { label: "High protein", desc: "More fish, chicken, beans and eggs in your plan." },
+    ],
+  },
+  {
+    key: "restriction",
+    q: "Any food restrictions?",
+    sub: "We'll avoid or reduce these in every meal we suggest for you.",
+    opts: [
+      { label: "None", desc: "No restrictions — anything goes." },
+      { label: "Low oil", desc: "Less palm oil and fried foods." },
+      { label: "Low sugar", desc: "Less sugar, soft drinks and sweet snacks." },
+      { label: "No pepper", desc: "Mild meals, easy on the pepper." },
+      { label: "Vegetarian", desc: "No meat or fish — beans, egg and veggies focus." },
+      { label: "Diabetic-friendly", desc: "Slow-release carbs and controlled portions." },
+    ],
+  },
 ];
+
 
 const SOLO_BUDGETS = ["₦2,000", "₦5,000", "₦10,000", "₦20,000"];
 const FAMILY_BUDGETS = ["₦10,000", "₦20,000", "₦30,000", "₦50,000"];
@@ -136,6 +204,9 @@ function Onboarding() {
         <div className="mt-4 sm:mt-6 flex-1">
           <span className="chip">{`Step ${step + 1} of ${steps.length}`}</span>
           <h2 className="mt-2 sm:mt-3 font-display text-xl sm:text-2xl md:text-3xl leading-tight">{current.q}</h2>
+          {current.sub && (
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{current.sub}</p>
+          )}
 
           {current.kind === "budget" && (
             <p className="mt-2 text-sm text-muted-foreground">
@@ -193,21 +264,31 @@ function Onboarding() {
             </div>
           ) : (
             <div className="mt-4 sm:mt-6 space-y-2 md:space-y-2.5">
-              {(current.kind === "area" ? (answers.city ? cityAreas[answers.city] ?? [] : []) : (current.opts ?? [])).map(opt => {
-                const active = answers[current.key]?.toString() === opt;
+              {(current.kind === "area"
+                ? (answers.city ? (cityAreas[answers.city] ?? []).map((a): Option => ({ label: a })) : [])
+                : (current.opts ?? [])
+
+              ).map((opt) => {
+                const active = answers[current.key]?.toString() === opt.label;
                 return (
                   <button
-                    key={opt}
-                    onClick={() => select(opt)}
-                    className={`w-full flex items-center justify-between rounded-2xl border-2 px-5 py-3.5 md:py-4 text-left font-medium transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
+                    key={opt.label}
+                    onClick={() => select(opt.label)}
+                    className={`w-full flex items-center justify-between gap-3 rounded-2xl border-2 px-5 py-3.5 md:py-4 text-left transition-all ${active ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/40"}`}
                   >
-                    <span>{opt}</span>
-                    {active ? <Check className="h-5 w-5 text-brand" /> : <span className="text-muted-foreground text-sm">→</span>}
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-medium">{opt.label}</span>
+                      {opt.desc && (
+                        <span className="block mt-0.5 text-xs text-muted-foreground leading-snug">{opt.desc}</span>
+                      )}
+                    </span>
+                    {active ? <Check className="h-5 w-5 text-brand shrink-0" /> : <span className="text-muted-foreground text-sm shrink-0">→</span>}
                   </button>
                 );
               })}
             </div>
           )}
+
         </div>
 
         <p className="text-xs text-muted-foreground text-center">Your answers stay on this device.</p>
