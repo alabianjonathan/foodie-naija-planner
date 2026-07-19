@@ -219,8 +219,14 @@ function Restaurants() {
             );
           })}
         </div>
+
+        <Link to="/become-a-restaurant" className="mt-6 block rounded-2xl border-2 border-dashed border-brand/40 bg-brand/5 p-4 text-center">
+          <p className="text-sm font-semibold text-brand">Own a restaurant? List it on MealBeta</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Free to apply · reviewed and approved by our team</p>
+        </Link>
       </div>
       <div className="h-6" />
+
     </PhoneShell>
   );
 }
