@@ -19,6 +19,7 @@ import {
 } from "@/lib/nutrition-tracker.functions";
 import { useCatalogMeals } from "@/hooks/useCatalogMeals";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useRequireAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
