@@ -31,6 +31,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ChefsRouteImport } from './routes/chefs'
 import { Route as ChefPlansRouteImport } from './routes/chef-plans'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
+import { Route as BecomeARestaurantRouteImport } from './routes/become-a-restaurant'
 import { Route as BecomeAChefRouteImport } from './routes/become-a-chef'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
@@ -160,6 +161,11 @@ const ChangePasswordRoute = ChangePasswordRouteImport.update({
   path: '/change-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BecomeARestaurantRoute = BecomeARestaurantRouteImport.update({
+  id: '/become-a-restaurant',
+  path: '/become-a-restaurant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BecomeAChefRoute = BecomeAChefRouteImport.update({
   id: '/become-a-chef',
   path: '/become-a-chef',
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/become-a-chef': typeof BecomeAChefRoute
+  '/become-a-restaurant': typeof BecomeARestaurantRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
@@ -298,6 +305,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/become-a-chef': typeof BecomeAChefRoute
+  '/become-a-restaurant': typeof BecomeARestaurantRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/become-a-chef': typeof BecomeAChefRoute
+  '/become-a-restaurant': typeof BecomeARestaurantRoute
   '/change-password': typeof ChangePasswordRoute
   '/chef-plans': typeof ChefPlansRoute
   '/chefs': typeof ChefsRouteWithChildren
@@ -385,6 +394,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/become-a-chef'
+    | '/become-a-restaurant'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
@@ -426,6 +436,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/become-a-chef'
+    | '/become-a-restaurant'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/become-a-chef'
+    | '/become-a-restaurant'
     | '/change-password'
     | '/chef-plans'
     | '/chefs'
@@ -511,6 +523,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   BecomeAChefRoute: typeof BecomeAChefRoute
+  BecomeARestaurantRoute: typeof BecomeARestaurantRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
   ChefPlansRoute: typeof ChefPlansRoute
   ChefsRoute: typeof ChefsRouteWithChildren
@@ -690,6 +703,13 @@ declare module '@tanstack/react-router' {
       path: '/change-password'
       fullPath: '/change-password'
       preLoaderRoute: typeof ChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/become-a-restaurant': {
+      id: '/become-a-restaurant'
+      path: '/become-a-restaurant'
+      fullPath: '/become-a-restaurant'
+      preLoaderRoute: typeof BecomeARestaurantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/become-a-chef': {
@@ -879,6 +899,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   BecomeAChefRoute: BecomeAChefRoute,
+  BecomeARestaurantRoute: BecomeARestaurantRoute,
   ChangePasswordRoute: ChangePasswordRoute,
   ChefPlansRoute: ChefPlansRoute,
   ChefsRoute: ChefsRouteWithChildren,
@@ -906,13 +927,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
