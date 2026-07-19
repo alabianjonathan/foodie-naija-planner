@@ -170,8 +170,9 @@ function ImportPage() {
 
         {report && (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-7 gap-2 text-sm">
               <Stat label="Total" value={report.totalRows} />
+              <Stat label="Deleted" value={report.deleted} tone={report.deleted > 0 ? "bad" : undefined} />
               <Stat label="Created" value={report.created} tone="good" />
               <Stat label="Updated" value={report.updated} tone="good" />
               <Stat label="Foods" value={report.foodsCreated} />
