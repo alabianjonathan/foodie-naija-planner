@@ -231,6 +231,7 @@ Respond ONLY with JSON:
 export type MatchedRestaurant = {
   id: string; slug: string; name: string; city: string; area: string | null;
   address: string | null; phone: string | null; whatsapp: string | null;
+  chain: string | null; branchName: string | null; googleMapsUrl: string | null;
   rating: number; verified: boolean; tags: string[]; matchLabel: string;
   distanceKm: number | null;
 };
@@ -276,7 +277,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       area = area ?? profile?.area ?? undefined;
     }
 
-    const cols = "id, slug, name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status, latitude, longitude";
+    const cols = "id, slug, name, chain, branch_name, city, area, address, rating, phone, whatsapp, verified, tags, meal_slugs, status, latitude, longitude, google_maps_url";
 
     // Lookup same-state city list for fallback. Some imported restaurants use
     // satellite cities (Epe, Ikorodu, Badagry) that are not in the cities table,
@@ -420,7 +421,12 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
       return haversineKm({ lat: data.lat!, lng: data.lng! }, { lat: Number(r.latitude), lng: Number(r.longitude) });
     };
 
-    const scored = rows
+    const streetFromAddress = (address: string | null | undefined) => {
+      const first = (address ?? "").split(",")[0]?.trim().toLowerCase() ?? "";
+      return first.replace(/^\d+[a-z]?\s+/i, "").replace(/^plot\s+\d+[a-z]?\s*,?\s*/i, "").trim();
+    };
+
+    const ranked = rows
       .map((r) => ({ ...r, _dist: distFor(r) }))
       .sort((a, b) => {
         // When we know user location, distance dominates.
@@ -440,8 +446,39 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
           satellitePenalty(r) * 50 +
           (r.verified ? 5 : 0) +
           Number(r.rating ?? 0);
-        return score(b) - score(a);
-      }).slice(0, 3);
+        const scoreDiff = score(b) - score(a);
+        if (scoreDiff !== 0) return scoreDiff;
+        return String(a.name).localeCompare(String(b.name));
+      });
+
+    const pickDiverse = (items: any[]) => {
+      const selected: any[] = [];
+      const chainCounts = new Map<string, number>();
+      const streetCounts = new Map<string, number>();
+      const add = (r: any) => {
+        if (selected.some((x) => x.id === r.id)) return false;
+        selected.push(r);
+        const chainKey = String(r.chain ?? r.name).toLowerCase();
+        const streetKey = streetFromAddress(r.address);
+        chainCounts.set(chainKey, (chainCounts.get(chainKey) ?? 0) + 1);
+        if (streetKey) streetCounts.set(streetKey, (streetCounts.get(streetKey) ?? 0) + 1);
+        return selected.length >= 3;
+      };
+
+      for (const r of items) {
+        const chainKey = String(r.chain ?? r.name).toLowerCase();
+        const streetKey = streetFromAddress(r.address);
+        if ((chainCounts.get(chainKey) ?? 0) === 0 && (!streetKey || (streetCounts.get(streetKey) ?? 0) === 0) && add(r)) return selected;
+      }
+      for (const r of items) {
+        const chainKey = String(r.chain ?? r.name).toLowerCase();
+        if ((chainCounts.get(chainKey) ?? 0) === 0 && add(r)) return selected;
+      }
+      for (const r of items) if (add(r)) return selected;
+      return selected;
+    };
+
+    const scored = pickDiverse(ranked);
 
     const labelFor = (r: any) => {
       if (r._dist != null) return `${r._dist < 1 ? "<1" : r._dist.toFixed(1)} km away`;
@@ -455,6 +492,7 @@ export const findRestaurantsForMeal = createServerFn({ method: "POST" })
     return scored.map((r) => ({
       id: r.id, slug: r.slug, name: r.name, city: r.city, area: r.area,
       address: r.address ?? null, phone: r.phone ?? null, whatsapp: r.whatsapp ?? null,
+      chain: r.chain ?? null, branchName: r.branch_name ?? null, googleMapsUrl: r.google_maps_url ?? null,
       rating: Number(r.rating ?? 0), verified: !!r.verified, tags: r.tags ?? [], matchLabel: labelFor(r),
       distanceKm: r._dist,
     }));
