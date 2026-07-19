@@ -61,6 +61,10 @@ export function toUiMeal(m: CatalogMeal): UiMeal {
     carbs: m.carbs ?? "Medium",
     fat: m.fat ?? "Medium",
     fiber: m.fiber ?? "Medium",
+    nutrition: allNutrients(
+      { protein: m.protein, carbs: m.carbs, fat: m.fat, fiber: m.fiber },
+      m.slug
+    ),
     portion: m.portion ?? "1 plate",
     healthScore: m.healthScore ?? 6,
     healthNote: m.healthNote ?? "",
