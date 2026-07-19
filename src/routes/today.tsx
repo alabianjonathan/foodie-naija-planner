@@ -137,18 +137,17 @@ function TodayPage() {
   const [orderFor, setOrderFor] = useState<UiMeal | null>(null);
   const [chefFor, setChefFor] = useState<UiMeal | null>(null);
   const [feedback, setFeedback] = useState<string>("");
-  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(() => {
-    if (typeof window === "undefined") return null;
+  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoState, setGeoState] = useState<"idle" | "asking" | "denied">("idle");
+  useEffect(() => {
     try {
       const raw = localStorage.getItem("mb.geo");
-      if (!raw) return null;
+      if (!raw) return;
       const parsed = JSON.parse(raw) as { lat: number; lng: number; ts: number };
-      // Cache location for 1 day.
-      if (Date.now() - parsed.ts > 24 * 3600 * 1000) return null;
-      return { lat: parsed.lat, lng: parsed.lng };
-    } catch { return null; }
-  });
-  const [geoState, setGeoState] = useState<"idle" | "asking" | "denied">(geo ? "idle" : "idle");
+      if (Date.now() - parsed.ts > 24 * 3600 * 1000) return;
+      setGeo({ lat: parsed.lat, lng: parsed.lng });
+    } catch { /* ignore */ }
+  }, []);
 
   const requestLocation = () => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
