@@ -180,6 +180,34 @@ function Home() {
       <>
 
 
+      {/* Today's nutrition compact */}
+      {trackerDay.data && trackerGoals.data && (
+        <section className="px-5 mt-4">
+          <Link to="/tracker" className="block rounded-3xl bg-gradient-to-br from-brand/8 to-warm/20 p-4 shadow-[var(--shadow-soft)]">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-brand">
+                <LineChart className="h-4 w-4" />
+                <p className="text-[11px] uppercase tracking-widest font-medium">Today's nutrition</p>
+              </div>
+              <span className="text-xs text-brand font-medium">Open →</span>
+            </div>
+            <div className="mt-3 flex items-center gap-4">
+              <div className="flex-1">
+                <p className="font-display text-2xl leading-none">{trackerDay.data.calories}<span className="text-sm text-muted-foreground font-sans"> / {trackerGoals.data.daily_calories} kcal</span></p>
+                <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
+                  <div className="h-full bg-brand" style={{ width: `${Math.min(100, Math.round((trackerDay.data.calories / trackerGoals.data.daily_calories) * 100))}%` }} />
+                </div>
+              </div>
+              <div className="flex items-center gap-1 text-charcoal">
+                <Droplets className="h-4 w-4 text-brand" />
+                <span className="font-display text-lg">{Math.round(trackerDay.data.water_ml / 250)}</span>
+                <span className="text-[11px] text-muted-foreground">glasses</span>
+              </div>
+            </div>
+          </Link>
+        </section>
+      )}
+
       {/* Bento grid */}
       <section className="px-5 mt-5 grid grid-cols-6 gap-3">
 
