@@ -43,6 +43,21 @@ export type UiMeal = {
 };
 
 export function toUiMeal(m: CatalogMeal): UiMeal {
+  const { macros, nutrients } = computeNutrition({
+    ingredients: m.ingredients,
+    caloriesMin: m.caloriesMin,
+    caloriesMax: m.caloriesMax,
+    category: m.category,
+    protein: m.protein,
+    carbs: m.carbs,
+    fat: m.fat,
+    fiber: m.fiber,
+  });
+  const cookMid = Math.round(((m.cookMin ?? 0) + (m.cookMax ?? 0)) / 2);
+  const reason = nutritionReason(m.name, nutrients, macros, {
+    costText: cookMid ? `a ~₦${cookMid.toLocaleString()} cook budget` : undefined,
+    considerMinutes: m.cookingTimeMin,
+  });
   return {
     id: m.slug,
     slug: m.slug,
@@ -63,10 +78,9 @@ export function toUiMeal(m: CatalogMeal): UiMeal {
     carbs: m.carbs ?? "Medium",
     fat: m.fat ?? "Medium",
     fiber: m.fiber ?? "Medium",
-    nutrition: allNutrients(
-      { protein: m.protein, carbs: m.carbs, fat: m.fat, fiber: m.fiber },
-      m.slug
-    ),
+    nutrition: nutrients,
+    macros,
+    nutritionReason: reason,
     portion: m.portion ?? "1 plate",
     healthScore: m.healthScore ?? 6,
     healthNote: m.healthNote ?? "",
