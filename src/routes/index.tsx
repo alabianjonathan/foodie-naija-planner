@@ -65,14 +65,14 @@ function Welcome() {
       }}
     >
       {/* Hero image — full-bleed with floating nutrition badges */}
-      <div className="relative h-[45dvh] min-h-0 w-full shrink-0 overflow-hidden">
+      <div className="relative h-[42dvh] min-h-0 w-full shrink-0 overflow-hidden">
         <img
           src={heroFood.url}
           alt="A warm plate of Nigerian fried rice with chicken, plantain and nutrition labels"
           className="h-full w-full object-cover"
           draggable={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-background" />
 
         {/* Top bar with logo */}
         <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-4">
@@ -90,7 +90,7 @@ function Welcome() {
         {/* Floating nutrition badges */}
         <div className="pointer-events-none absolute inset-0">
           {/* Calories */}
-          <div className="absolute left-[8%] top-[18%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700">
+          <div className="absolute left-[10%] top-[22%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700">
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-warm/15 text-warm">
               <Flame className="h-4 w-4" />
             </div>
@@ -101,7 +101,7 @@ function Welcome() {
           </div>
 
           {/* Protein */}
-          <div className="absolute left-[6%] top-[44%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700 delay-100">
+          <div className="absolute left-[8%] top-[46%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700 delay-100">
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-brand/15 text-brand">
               <Beef className="h-4 w-4" />
             </div>
@@ -112,7 +112,7 @@ function Welcome() {
           </div>
 
           {/* Fibre */}
-          <div className="absolute left-[8%] top-[68%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700 delay-200">
+          <div className="absolute left-[10%] top-[70%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-left-4 duration-700 delay-200">
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-leaf/15 text-leaf">
               <Leaf className="h-4 w-4" />
             </div>
@@ -123,7 +123,7 @@ function Welcome() {
           </div>
 
           {/* Carbs */}
-          <div className="absolute right-[8%] top-[58%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-right-4 duration-700 delay-300">
+          <div className="absolute right-[10%] top-[60%] flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-soft backdrop-blur animate-in fade-in slide-in-from-right-4 duration-700 delay-300">
             <div className="grid h-8 w-8 place-items-center rounded-xl bg-accent/80 text-accent-foreground">
               <Wheat className="h-4 w-4" />
             </div>
