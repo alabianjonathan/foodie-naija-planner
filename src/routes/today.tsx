@@ -736,6 +736,21 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
           <DialogTitle className="font-display text-lg">Order {meal?.name}</DialogTitle>
           <DialogDescription className="text-xs">Top restaurant matches near you{locationText ? ` in ${locationText}` : ""}. If your area has no match, MealBeta checks the same state and then available listings. Tap a card to view the full profile.</DialogDescription>
         </DialogHeader>
+        {!geo && (
+          <button
+            onClick={onEnableLocation}
+            className="w-full flex items-center justify-between gap-2 rounded-xl border border-brand/30 bg-brand/5 px-3 py-2 text-left"
+          >
+            <span className="text-xs">
+              <span className="font-semibold text-charcoal">Use my precise location</span>
+              <span className="block text-[11px] text-muted-foreground">Rank restaurants by distance from where you are right now.</span>
+            </span>
+            <MapPin className="h-4 w-4 text-brand shrink-0" />
+          </button>
+        )}
+        {geo && (
+          <p className="text-[11px] text-leaf flex items-center gap-1"><MapPin className="h-3 w-3" /> Ranking by distance from your location</p>
+        )}
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
         {q.isError && (
           <p className="text-sm text-muted-foreground text-center py-6">Restaurants could not load right now. Please try again.</p>
