@@ -47,12 +47,12 @@ function TrackerPage() {
   const fetchStreak = useServerFn(getStreakAndAchievements);
   const fetchInsights = useServerFn(getAIInsights);
 
-  const day = useQuery({ queryKey: ["tracker", "day"], queryFn: () => fetchDay({ data: {} }) });
-  const week = useQuery({ queryKey: ["tracker", "range", "week"], queryFn: () => fetchRange({ data: { range: "week" } }) });
-  const month = useQuery({ queryKey: ["tracker", "range", "month"], queryFn: () => fetchRange({ data: { range: "month" } }), enabled: range === "month" });
-  const goals = useQuery({ queryKey: ["tracker", "goals"], queryFn: () => fetchGoals() });
-  const streak = useQuery({ queryKey: ["tracker", "streak"], queryFn: () => fetchStreak() });
-  const insights = useQuery({ queryKey: ["tracker", "insights"], queryFn: () => fetchInsights(), staleTime: 30 * 60 * 1000 });
+  const day = useQuery({ queryKey: ["tracker", "day"], queryFn: () => fetchDay({ data: {} }), enabled: !!user });
+  const week = useQuery({ queryKey: ["tracker", "range", "week"], queryFn: () => fetchRange({ data: { range: "week" } }), enabled: !!user });
+  const month = useQuery({ queryKey: ["tracker", "range", "month"], queryFn: () => fetchRange({ data: { range: "month" } }), enabled: !!user && range === "month" });
+  const goals = useQuery({ queryKey: ["tracker", "goals"], queryFn: () => fetchGoals(), enabled: !!user });
+  const streak = useQuery({ queryKey: ["tracker", "streak"], queryFn: () => fetchStreak(), enabled: !!user });
+  const insights = useQuery({ queryKey: ["tracker", "insights"], queryFn: () => fetchInsights(), staleTime: 30 * 60 * 1000, enabled: !!user });
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["tracker"] });
