@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo } from "react";
 import { listMeals, type CatalogMeal } from "@/lib/catalog.functions";
+import { type NutrientInfo, allNutrients } from "@/lib/nutrition";
 
 /** DB meal adapted to the shape used across the mobile UI (previously src/data/meals.ts). */
 export type UiMeal = {
