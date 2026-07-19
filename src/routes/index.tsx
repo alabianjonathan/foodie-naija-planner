@@ -99,7 +99,7 @@ function Welcome() {
           </div>
 
           <p className="font-display text-[clamp(1.5rem,5.5vw,2rem)] leading-[1.15] tracking-tight text-charcoal">
-            Weekly meal plans for everyone, honest calorie & cost estimates, and book a chef or order from a restaurant near you.
+            Weekly meal plans for everyone, honest calorie & cost estimates, book a chef or order from a restaurant near you.
           </p>
         </div>
 
