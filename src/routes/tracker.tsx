@@ -36,6 +36,7 @@ function pct(value: number, goal: number) {
 }
 
 function TrackerPage() {
+  const { user, loading } = useRequireAuth();
   const qc = useQueryClient();
   const [range, setRange] = useState<"day" | "week" | "month">("day");
 
