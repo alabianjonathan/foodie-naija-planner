@@ -186,11 +186,8 @@ function TodayPage() {
 
   const submit = () => mutation.mutate(undefined);
 
-  // Auto-run once when arriving with ?q=…&auto=1 from the dashboard.
-  useEffect(() => {
-    if (search.auto && search.q && !authLoading && user) submit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user]);
+  // Note: we intentionally do NOT auto-run on mount. The user must press
+  // "Suggest Meals" (or "Show more options") to trigger a recommendation.
 
   const picks = useMemo(() => (result?.picks ?? [])
     .map((p) => ({ pick: p, meal: getMeal(p.mealId) }))
