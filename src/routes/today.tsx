@@ -774,17 +774,15 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
         )}
         <div className="space-y-3">
           {q.data?.map((r, index) => (
-            <Link
+            <article
               key={r.id}
-              to="/restaurants/$slug"
-              params={{ slug: r.slug }}
-              onClick={onClose}
-              className="group block overflow-hidden rounded-3xl border border-border bg-card shadow-[0_14px_32px_-24px_oklch(0.22_0.03_155_/_0.35)] transition hover:border-brand/40"
+              className="overflow-hidden rounded-3xl border border-border bg-card shadow-[0_14px_32px_-24px_oklch(0.22_0.03_155_/_0.35)]"
             >
-              <div className="relative h-16 bg-gradient-to-br from-brand/90 via-leaf/75 to-warm/80 px-4 py-3">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-card/95 px-2 py-1 text-[10px] font-semibold text-brand">
-                    <MapPin className="h-3 w-3" /> {r.matchLabel}
+              <div className="relative bg-gradient-to-br from-brand/90 via-leaf/75 to-warm/80 px-4 py-3">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                  <span className="inline-flex min-w-0 items-center gap-1 rounded-full bg-card/95 px-2 py-1 text-[10px] font-semibold text-brand">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{r.matchLabel}</span>
                   </span>
                   <span className="rounded-full bg-card/95 px-2 py-1 text-[10px] font-semibold text-charcoal">#{index + 1}</span>
                 </div>
@@ -796,7 +794,7 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
                     <p className="truncate text-sm font-semibold text-charcoal">{r.chain ?? r.name}</p>
                     <p className="mt-0.5 text-xs font-medium text-brand">{r.branchName || r.area || r.city}</p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="flex shrink-0 flex-col items-end gap-1">
                     {r.verified && <span className="rounded-full bg-leaf/15 px-2 py-1 text-[10px] font-semibold text-leaf">✓ Verified</span>}
                     {r.rating > 0 && <span className="rounded-full bg-warm/20 px-2 py-1 text-[10px] font-semibold text-charcoal">★ {r.rating.toFixed(1)}</span>}
                   </div>
@@ -816,13 +814,20 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
                   )}
                 </div>
 
-                <div className="mt-3 grid grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <div className="mt-3 grid grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-2">
                   {r.phone && <a href={`tel:${r.phone}`} className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-medium text-brand-foreground"><Phone className="h-3 w-3" /> Call</a>}
                   {r.googleMapsUrl && <a href={r.googleMapsUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-charcoal"><Navigation className="h-3 w-3" /> Map</a>}
-                  <span className="justify-self-end truncate text-[11px] text-muted-foreground inline-flex items-center gap-1">View profile <ArrowRight className="h-3 w-3 shrink-0" /></span>
+                  <Link
+                    to="/restaurants/$slug"
+                    params={{ slug: r.slug }}
+                    onClick={onClose}
+                    className="inline-flex min-w-0 items-center justify-self-end gap-1 truncate text-[11px] font-medium text-brand"
+                  >
+                    View profile <ArrowRight className="h-3 w-3 shrink-0" />
+                  </Link>
                 </div>
               </div>
-            </Link>
+            </article>
           ))}
         </div>
         </div>
