@@ -721,7 +721,7 @@ function MealDetailDialog({
   );
 }
 
-function OrderDialog({ meal, city, area, geo, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; geo: { lat: number; lng: number } | null; onClose: () => void; enabled: boolean }) {
+function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; geo: { lat: number; lng: number } | null; onEnableLocation: () => void; onClose: () => void; enabled: boolean }) {
   const fetchFn = useServerFn(findRestaurantsForMeal);
   const q = useQuery({
     queryKey: ["today-restaurants", meal?.slug, city, area, geo?.lat, geo?.lng],
