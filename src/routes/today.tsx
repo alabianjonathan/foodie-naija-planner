@@ -521,10 +521,10 @@ function ResultCard({
             {pick.mealTime && <span className="inline-flex items-center gap-1"><Utensils className="h-3 w-3" />{pick.mealTime}</span>}
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">P: {meal.protein}</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">C: {meal.carbs}</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">F: {meal.fat}</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fibre: {meal.fiber}</span>
+            <span title={`Protein: ${meal.protein}`} className="text-[10px] px-2 py-0.5 rounded-full bg-leaf/10 text-leaf font-medium">Protein: {meal.protein}</span>
+            <span title={`Carbs: ${meal.carbs}`} className="text-[10px] px-2 py-0.5 rounded-full bg-warm/20 text-charcoal font-medium">Carbs: {meal.carbs}</span>
+            <span title={`Fat: ${meal.fat}`} className="text-[10px] px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">Fat: {meal.fat}</span>
+            <span title={`Fibre: ${meal.fiber}`} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-charcoal font-medium">Fibre: {meal.fiber}</span>
           </div>
         </div>
       </div>
