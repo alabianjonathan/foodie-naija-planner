@@ -67,8 +67,8 @@ function Welcome() {
       {/* Hero image — capped so it never steals space from content on short screens */}
       <div className="relative h-[35dvh] max-h-[300px] min-h-0 w-full shrink-0 overflow-hidden">
         <img
-          src={heroFood}
-          alt="A warm plate of Nigerian jollof rice with chicken and plantain"
+          src={heroFood.url}
+          alt="A warm plate of Nigerian fried rice with chicken, plantain and nutrition labels"
           className="h-full w-full object-cover"
           draggable={false}
         />
