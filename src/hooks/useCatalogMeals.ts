@@ -30,6 +30,8 @@ export type UiMeal = {
     fat: NutrientInfo;
     fiber: NutrientInfo;
   };
+  macros: MacroEstimate;
+  nutritionReason: string;
   portion: string;
   healthScore: number;
   healthNote: string;
