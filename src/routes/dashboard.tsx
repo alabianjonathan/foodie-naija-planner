@@ -1,7 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
 import { MealCard } from "@/components/MealCard";
-import { Sparkles, CalendarDays, ShoppingBasket, Store, Flame, Loader2, Clock, ChefHat, Mic, Send, SlidersHorizontal } from "lucide-react";
+import { Sparkles, CalendarDays, ShoppingBasket, Store, Flame, Loader2, Clock, ChefHat, Mic, Send, SlidersHorizontal, LineChart, Droplets } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getDaySummary, getGoals } from "@/lib/nutrition-tracker.functions";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
