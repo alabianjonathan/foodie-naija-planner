@@ -721,12 +721,12 @@ function MealDetailDialog({
   );
 }
 
-function OrderDialog({ meal, city, area, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; onClose: () => void; enabled: boolean }) {
+function OrderDialog({ meal, city, area, geo, onClose, enabled }: { meal: UiMeal | null; city?: string; area?: string; geo: { lat: number; lng: number } | null; onClose: () => void; enabled: boolean }) {
   const fetchFn = useServerFn(findRestaurantsForMeal);
   const q = useQuery({
-    queryKey: ["today-restaurants", meal?.slug, city, area],
+    queryKey: ["today-restaurants", meal?.slug, city, area, geo?.lat, geo?.lng],
     enabled: !!meal && enabled,
-    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, mealName: meal!.name, city, area } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
+    queryFn: () => fetchFn({ data: { mealSlug: meal!.slug, mealName: meal!.name, city, area, lat: geo?.lat, lng: geo?.lng } }) as unknown as ReturnType<typeof findRestaurantsForMeal>,
   });
   const locationText = [area, city].filter(Boolean).join(", ");
   return (
