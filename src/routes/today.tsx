@@ -187,8 +187,15 @@ function TodayPage() {
 
   const submit = () => mutation.mutate(undefined);
 
-  // Note: we intentionally do NOT auto-run on mount. The user must press
-  // "Suggest Meals" (or "Show more options") to trigger a recommendation.
+  // Auto-run once when we arrived from another page (e.g. dashboard Suggest Meals)
+  // with `?auto=1`. Users landing on /today directly must still tap Suggest Meals.
+  const [didAutoRun, setDidAutoRun] = useState(false);
+  useEffect(() => {
+    if (search.auto && !didAutoRun && !mutation.isPending && !result) {
+      setDidAutoRun(true);
+      mutation.mutate(undefined);
+    }
+  }, [search.auto, didAutoRun, mutation, result]);
 
   const userSeed = useMemo(
     () => [query, filters.goals.join(","), filters.preferences.join(","), filters.mealTime ?? "", filters.budget ?? ""].join("|"),
