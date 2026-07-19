@@ -535,8 +535,8 @@ function ResultCard({
 
       <div className="mt-3 rounded-xl bg-secondary/50 p-2.5">
         <p className="text-[11px] font-semibold text-charcoal mb-0.5">Why this was recommended</p>
-        <p className="text-xs text-charcoal/80 leading-snug">{pick.reason}</p>
-        {pick.considerations && <p className="text-[11px] text-muted-foreground mt-1">Consider: {pick.considerations}</p>}
+        <p className="text-xs text-charcoal/80 leading-snug">{meal.nutritionReason}</p>
+        {pick.considerations && <p className="text-[11px] text-muted-foreground mt-1">Note: {pick.considerations}</p>}
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
