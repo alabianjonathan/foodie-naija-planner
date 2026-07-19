@@ -653,7 +653,7 @@ function MealDetailDialog({
 
             <div className="rounded-2xl bg-secondary/50 p-3">
               <p className="text-xs font-semibold mb-1">Why this was recommended</p>
-              <p className="text-xs text-charcoal/80 leading-relaxed">{open.pick.reason}</p>
+              <p className="text-xs text-charcoal/80 leading-relaxed">{open.meal.nutritionReason}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
