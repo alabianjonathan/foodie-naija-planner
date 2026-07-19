@@ -289,26 +289,55 @@ export function computeNutrition(input: Parameters<typeof estimateMacros>[0]): {
   };
 }
 
-/** Deterministic pseudo-random pick, seeded by meal name so each meal reads differently but is stable across renders. */
-function seededPick<T>(seed: string, salt: number, arr: T[]): T {
+/** Deterministic pseudo-random pick, seeded by meal name + context so each meal
+ *  reads differently but is stable across renders. */
+function hashSeed(seed: string, salt: number): number {
   let h = 2166136261 ^ salt;
   for (let i = 0; i < seed.length; i++) {
     h ^= seed.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
-  const idx = Math.abs(h) % arr.length;
-  return arr[idx];
+  return Math.abs(h);
+}
+function seededPick<T>(seed: string, salt: number, arr: T[]): T {
+  return arr[hashSeed(seed, salt) % arr.length];
+}
+/** Fisher-Yates shuffle driven by the seed, so different meals get different
+ *  orderings of the same candidate pool. */
+function seededShuffle<T>(seed: string, salt: number, arr: T[]): T[] {
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = hashSeed(seed, salt + i) % (i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 /** Personalised, nutrition-driven "why this was recommended" line.
- *  Uses the meal name as a seed so every meal gets a distinct phrasing, not a template. */
+ *  Uses the meal name + user context as a seed so every meal in a result set
+ *  gets a distinct phrasing — never a template shared with a sibling. */
 export function nutritionReason(
   mealName: string,
   n: Record<NutrientKey, NutrientInfo>,
   macros: MacroEstimate,
-  ctx?: { costText?: string; goal?: string | null; considerMinutes?: number | null },
+  ctx?: {
+    costText?: string;
+    goal?: string | null;
+    considerMinutes?: number | null;
+    /** Position of the meal in the result set — guarantees variance between siblings. */
+    index?: number;
+    /** Extra user-context seed (e.g. query text, filters) to vary phrasing per session. */
+    userSeed?: string;
+  },
 ): string {
-  const seed = mealName.toLowerCase();
+  // Mix meal name, position, goal and user context into the seed so two meals
+  // with similar nutrition profiles never share phrasing.
+  const seed = [
+    mealName.toLowerCase(),
+    ctx?.index != null ? `#${ctx.index}` : "",
+    (ctx?.goal ?? "").toLowerCase(),
+    (ctx?.userSeed ?? "").toLowerCase().slice(0, 40),
+  ].filter(Boolean).join("|");
   const pG = Math.round(n.protein.grams);
   const fibG = Math.round(n.fiber.grams);
   const fG = Math.round(macros.fatG);
@@ -322,6 +351,7 @@ export function nutritionReason(
       `brings in about ${pG}g of protein per plate, which keeps hunger away till the next meal`,
       `rich in protein (~${pG}g) — the kind of meal that actually satisfies`,
       `a strong protein hit (${pG}g) so you're not raiding the fridge an hour later`,
+      `packs roughly ${pG}g of protein, which builds and repairs the body`,
     ]));
   }
   if (n.fiber.score >= 7) {
@@ -330,6 +360,7 @@ export function nutritionReason(
       `${fibG}g of fibre — good for the gut and steady blood sugar`,
       `fibre-heavy at ~${fibG}g, which helps you feel light after eating`,
       `high in fibre (${fibG}g) so your stomach settles nicely`,
+      `${fibG}g of fibre keeps the belly settled and things moving well`,
     ]));
   }
   if (n.fat.label === "Healthy") {
@@ -337,19 +368,22 @@ export function nutritionReason(
       "the fats here come from better sources like fish, groundnut or avocado oil — friendlier to the heart",
       "uses cleaner fats (think olive oil, fish, seeds) instead of heavy frying oil",
       "healthy fats do most of the work here — better for cholesterol than the usual palm-oil-heavy plate",
+      "fat quality is on point — leaner oils and fish rather than deep-fried heaviness",
     ]));
   }
   if (n.carbs.label === "Balanced") {
     strengthPool.push(seededPick(seed, 4, [
       "the carbs are the slow-release kind, so you get steady energy without the afternoon crash",
-      "well-balanced carbs (~" + cG + "g) — enough fuel without the sleepy feeling after",
+      `well-balanced carbs (~${cG}g) — enough fuel without the sleepy feeling after`,
       "carbs are portioned right for real energy that lasts through the day",
+      `the ${cG}g of carbs sit in a sweet spot — enough energy, no food coma`,
     ]));
   }
   if (n.carbs.score >= 8 && n.carbs.label !== "Balanced") {
     strengthPool.push(seededPick(seed, 5, [
       `energy-dense at ~${cG}g carbs — good if your day is physically demanding`,
       `carb-forward (${cG}g) so it powers long shifts or workouts`,
+      `${cG}g of carbs means real fuel for a busy, active day`,
     ]));
   }
   if (strengthPool.length === 0) {
@@ -357,10 +391,11 @@ export function nutritionReason(
       `sits at about ${macros.calories} kcal — a reasonable plate size`,
       `a moderate ${macros.calories} kcal plate — nothing too heavy, nothing too light`,
       `roughly ${macros.calories} kcal, so it fits an average meal budget`,
+      `lands around ${macros.calories} kcal, which is a sensible everyday portion`,
     ]));
   }
 
-  // Openers vary per meal.
+  // Openers vary per meal AND per position, so siblings never share the same one.
   const openers = [
     `${mealName} is worth trying because it`,
     `We picked ${mealName} because it`,
@@ -368,11 +403,16 @@ export function nutritionReason(
     `${mealName} makes the list because it`,
     `Here's why ${mealName}:`,
     `${mealName} works well: it`,
+    `Going with ${mealName} because it`,
+    `${mealName} is a smart pick — it`,
   ];
   const opener = seededPick(seed, 10, openers);
-  const chosenStrengths = strengthPool.slice(0, 2);
+  // Shuffle the strength pool so meals with the same nutrition profile still
+  // pick a different pair.
+  const shuffled = seededShuffle(seed, 11, strengthPool);
+  const chosenStrengths = shuffled.slice(0, Math.min(2, shuffled.length));
   const strengthText = chosenStrengths.length > 1
-    ? `${chosenStrengths[0]}, and it ${chosenStrengths[1].startsWith("the ") || chosenStrengths[1].startsWith("uses") || chosenStrengths[1].startsWith("healthy") ? chosenStrengths[1] : chosenStrengths[1]}`
+    ? `${chosenStrengths[0]}, and it ${chosenStrengths[1]}`
     : chosenStrengths[0];
 
   let sentence = opener.endsWith(":") ? `${opener} ${strengthText}.` : `${opener} ${strengthText}.`;
