@@ -759,9 +759,7 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
                 Use my precise location
               </span>
               <span className="mt-1 block text-[11px] text-muted-foreground">
-                {geoState === "denied"
-                  ? "Location blocked. Tap the 🔒 in your address bar → Location → Allow, then reload."
-                  : "Right now we're ranking by city only. Tap to rank by real distance from where you are."}
+                Right now we're ranking by city only. Tap to rank by real distance from where you are. If your browser blocks it, tap the 🔒 in the address bar → Location → Allow.
               </span>
             </span>
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground">
