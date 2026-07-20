@@ -751,11 +751,18 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
         {!geo && (
           <button
             onClick={onEnableLocation}
-            className="mb-3 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-brand/25 bg-brand/5 px-4 py-3 text-left"
+            className="mb-3 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-warm/40 bg-warm/10 px-4 py-3 text-left"
           >
             <span className="text-xs">
-              <span className="font-semibold text-charcoal">Use my precise location</span>
-              <span className="block text-[11px] text-muted-foreground">Rank restaurants by distance from where you are right now.</span>
+              <span className="flex items-center gap-1.5 font-semibold text-charcoal">
+                <span className="inline-flex items-center gap-1 rounded-full bg-warm/25 px-2 py-0.5 text-[10px]">⚠ Approximate</span>
+                Use my precise location
+              </span>
+              <span className="mt-1 block text-[11px] text-muted-foreground">
+                {geoState === "denied"
+                  ? "Location blocked. Tap the 🔒 in your address bar → Location → Allow, then reload."
+                  : "Right now we're ranking by city only. Tap to rank by real distance from where you are."}
+              </span>
             </span>
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground">
               <MapPin className="h-4 w-4" />
@@ -763,7 +770,13 @@ function OrderDialog({ meal, city, area, geo, onEnableLocation, onClose, enabled
           </button>
         )}
         {geo && (
-          <p className="mb-3 flex items-center gap-1.5 rounded-full bg-leaf/10 px-3 py-1.5 text-[11px] font-medium text-leaf"><MapPin className="h-3 w-3" /> Ranking by distance from your location</p>
+          <div className="mb-3 flex items-center justify-between gap-2 rounded-full bg-leaf/10 px-3 py-1.5 text-[11px] font-medium text-leaf">
+            <span className="inline-flex items-center gap-1.5 truncate">
+              <span className="inline-flex items-center gap-1 rounded-full bg-leaf/20 px-2 py-0.5 text-[10px]">✓ Precise</span>
+              <MapPin className="h-3 w-3" /> Ranked by distance from you
+            </span>
+            <button onClick={onEnableLocation} className="shrink-0 text-[11px] font-semibold text-leaf underline underline-offset-2">Refresh</button>
+          </div>
         )}
         {q.isLoading && <div className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-brand" /></div>}
         {q.isError && (
